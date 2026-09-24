@@ -22,4 +22,9 @@ public enum ThemedControls {
     /// workspace; the host re-sets it on `NSWorkspace.accessibilityDisplayOptionsDidChangeNotification`
     /// (a harness sets it directly). Controls that move — the switch's slide — snap when it is on.
     nonisolated(unsafe) public static var reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+
+    /// Mirror of System Settings ▸ Accessibility ▸ Display ▸ Differentiate Without Colour, kept
+    /// the same way as `reduceMotion`. A host whose surfaces say something by colour alone (a
+    /// git-tinted tab title) adds a second signal while it is on.
+    nonisolated(unsafe) public static var differentiateWithoutColor: Bool = NSWorkspace.shared.accessibilityDisplayShouldDifferentiateWithoutColor
 }
