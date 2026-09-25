@@ -18,6 +18,15 @@ AppKit controls drawn from a host-supplied palette. Module `ThemedControls`; `sw
 @CONTRIBUTING.md
 
 - A control reads `ThemedControls.palette` at draw time and observes `ThemedControls.paletteDidChange`; it never caches a colour across a theme switch.
+- **`FontCatalog`'s two halves must stay apart.** Enumeration walks a family's members through
+  `NSFontManager` — fine in a settings pane, ruinous anywhere else, because a host's editor-font
+  accessor is called once per line number while a gutter draws and resolving a family through the
+  font system there measured 349 ms in a sampled stall. A pane resolves a chosen weight to its
+  PostScript name ONCE, at the click; the render path only ever does an exact `NSFont(name:)` and
+  is `nonisolated` so background callers can use it at all.
+- **Its fallback ORDER is a decision:** a stale PostScript name keeps the FAMILY and drops to its
+  default face, because the family is much the bigger part of what the user chose. Only a missing
+  family falls all the way back to the system font.
 - Classes the host may subclass are `open` with `open` overridable members; everything else is `public final`.
 - Layout must degrade: a label that does not fit is shortened or dropped, never overlapped (`ThemedSegmentBar.content(for:width:)` is the model).
 - A cell that draws its own background must also drop `isHighlighted` around `drawInterior` — AppKit's cells paint
