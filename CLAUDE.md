@@ -9,11 +9,12 @@ whole check.
 
 ## Module map
 
+- `Core/` — NavigationHistory (two stacks, not a cursor: a new jump BRANCHES, so the forward path is cleared rather than silently rejoinable)
 - `Enums/` — ZoomKeyDirection (⌘= / ⌘- / ⌘0 → in / out / actual; `nil` for any other key, so a caller can hand the event straight on)
-- `Models/` — CellPosition (a row and a field tag; a POSITION rather than a view, because committing an edit usually rebuilds the rows)
+- `Models/` — CellPosition; DocumentLocation (a file and a range, captured at jump time and never revalidated) (a row and a field tag; a POSITION rather than a view, because committing an edit usually rebuilds the rows)
 - `Protocols/` — ExpandableTree (a view whose content is a tree, so one command can act on whichever is in front); CellTabbing (a table whose editable cells Tab walks; the extension carries the walk, the retry and the first-responder test)
-- `Extensions/` — NSOutlineView+Expansion (autoExpand / expandEveryNode / collapseEveryNode, all batched with the row animation off)
-- `Views/` — ZoomingScrollView (the wheel zooms at the pointer on every device), CenteringClipView (a small document sits centred), PannableImageView (drag-to-pan with the hand cursor), ZoomKeyView (answers the zoom keys before the menu; `open`, since a host may subclass it)
+- `Extensions/` — NSPasteboard+Drops (one drop flow for files, raw image bytes, file promises and links; the callback is `@MainActor` and may run more than once); NSOutlineView+Expansion (autoExpand / expandEveryNode / collapseEveryNode, all batched with the row animation off)
+- `Views/` — ZoomingScrollView (the wheel zooms at the pointer on every device), CenteringClipView (a small document sits centred), PannableImageView (drag-to-pan with the hand cursor), CardGridView (reflows its column count with its width); ZoomKeyView (answers the zoom keys before the menu; `open`, since a host may subclass it)
 
 ## Rules
 
@@ -38,4 +39,11 @@ whole check.
 - **A container over other content returns an EMPTY menu from `menu(for:)`, never nil.** Nil lets
   the right-click climb to whatever sits beneath.
 - A class the host may subclass is `open` with `open` members; everything else is `public final`.
+- **A width-to-height view reports its height from `setFrameSize`, never from `layout()`, and
+  only at DISCRETE breakpoints.** Invalidating inside `layout()` re-dirties the view mid-pass and
+  a continuous resize never converges, which AppKit aborts as "more layout passes than there are
+  views". `CardGridView` re-invalidates only when its column count changes.
+- **A callback that a background queue delivers is `@MainActor`, not `@Sendable`.** A `@Sendable`
+  sink forces every caller to build a thread-safe box for a value that was always going to arrive
+  on main. `NSPasteboard.readDroppedFiles` hops and declares the hop.
 - **Auditing? Read `AUDIT.md` first** — what the last audit checked and the known non-issues.

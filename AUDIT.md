@@ -73,3 +73,36 @@ second. The batching stays on that evidence (0.39 s / 0.71 s per-row against 0.2
 - `CellTabbing.isEditing(_:)` ignores its argument's `tag` and asks only whether a field of this
   view holds the keyboard. That is what the retry needs, and narrowing it would require the host
   to expose its field views.
+
+
+## Second wave — 26 September 2026
+
+`NavigationHistory` + `DocumentLocation`, `NSPasteboard+Drops` and `CardGridView` followed, from
+the same app. 73 tests now.
+
+### Changed in the move
+
+- **`NavLocation` became `DocumentLocation`.** The old name described the feature that used it;
+  the type is just a file and a range.
+- **The drop callback is `@MainActor`, not `@Sendable`.** The first attempt marked it `@Sendable`
+  because the promise receiver delivers off the main thread — which compiled, and then made every
+  caller and every test build a thread-safe sink for a value that is hopped to main anyway. The
+  hop is declared instead: `readDroppedFiles` is `@MainActor` and the promise completion uses
+  `Task { @MainActor in }`.
+- **The drops folder is configurable.** It was hard-coded to `SidewatchDrops`; a host sets
+  `NSPasteboard.dropsFolderName` once at launch, so two apps using this package cannot write into
+  each other's temporary files.
+- **`CardGridView` takes built cards** rather than `(String, String)` pairs and a factory. The
+  package positions views; deciding what a card looks like is the host's.
+- **Its metrics are parameters.** `minCardWidth`, `cardHeight` and `spacing` were constants tuned
+  for one pane's stat cards.
+- **Three dead imports** came out of the card grid.
+
+### Known non-issues (second wave)
+
+- `NSPasteboard.dropsFolderName` is `nonisolated(unsafe)`. It is written once at launch and read
+  thereafter, which is the same written-once contract the family uses elsewhere; making it an
+  actor would put an await in a drop handler for a string that never changes.
+- The file-promise branch of `readDroppedFiles` cannot be exercised headlessly: a promise needs a
+  real dragging source. The URL, image-bytes and link branches are all covered, and the promise
+  branch's own delivery is the one line that differs.
