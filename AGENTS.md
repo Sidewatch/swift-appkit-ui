@@ -9,7 +9,7 @@ AppKit controls drawn from a host-supplied palette. Module `ThemedControls`; `sw
 
 - `Protocols/` — protocols the module exposes: ControlPalette (what a control reads from the theme)
 - `Core/` — the engine: ThemedControls (the installed palette and the paletteDidChange notification)
-- `Controls/` — one control per file: ThemedSegmentBar, ThemedPillButton, ThemedSlider, ThemedSwitch (`controlSize` sizes it like the stock switch), ThemedCheckbox, ThemedSearchField, ThemedInputField, ThemedRowView, ThemedScrollView, EmptyStateView, ThemedPopUpButton, ThemedTableHeaderView, ThemedTableHeaderCell (secondary types alongside: ThemedInputStyle, PaddedFieldCell, ThemedSecureInputField, ThemedSelectionRowView, ThemedGroupRowView)
+- `Controls/` — one control per file: PathBarView (a path as crumbs, each dropping its folder; the HOST supplies the listing and the icons, so hidden files, ignore rules and sort order stay one decision made wherever the app already shows that tree), ThemedSegmentBar, ThemedPillButton, ThemedSlider, ThemedSwitch (`controlSize` sizes it like the stock switch), ThemedCheckbox, ThemedSearchField, ThemedInputField, ThemedRowView, ThemedScrollView, EmptyStateView, ThemedPopUpButton, ThemedTableHeaderView, ThemedTableHeaderCell (secondary types alongside: ThemedInputStyle, PaddedFieldCell, ThemedSecureInputField, ThemedSelectionRowView, ThemedGroupRowView)
 - `Support/` — pure helpers: SystemPalette (the macOS system colours as a palette)
 - `Extensions/` — one extension per idiom: NSColor+Blend, NSImage+Tinted, NSTextView+SystemTextIntelligence, NSTextView+WritingTools
 
@@ -32,5 +32,14 @@ Read `CONTRIBUTING.md` before changing anything: it is the layout and PR ruleboo
 - A cell that draws its own background must also drop `isHighlighted` around `drawInterior` — AppKit's cells paint
   the system pressed fill from there, which lands on top of the palette one (`ThemedTableHeaderCell`).
 - Pixel tests render the view and sample the bitmap: sample in POINTS (the rep is at backing scale) and compare
+- **A path bar must NOT probe the file system to decide what a crumb is.** `PathSegment` carries
+  `isDirectory` because the host knows it. Probing means touching the disk on the main thread
+  every time a menu opens, and makes the answer depend on whether the path happens to exist —
+  a crumb for a just-deleted file would silently change what its menu shows.
+- **A separator in a crumb strip is MARKED, not recognised by its text.** A crumb legitimately
+  named "›" would otherwise be skipped by every restyle.
+- **`pageBackground` and `cardBackground` have protocol defaults so old palettes compile**, but a
+  host drawing settings forms must answer them properly: a card the same colour as its page is
+  not a card.
 - **Auditing? Read `AUDIT.md` first** — what the last full audit checked and fixed, and the known non-issues to skip; extend it, do not redo it.
   against the palette colour rendered through the SAME path, never against its hex — colour spaces differ.

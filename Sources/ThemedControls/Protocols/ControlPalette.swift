@@ -27,9 +27,23 @@ public protocol ControlPalette: Sendable {
     var mutedText: NSColor { get }
     /// The status bar's background, also used for table headers.
     var statusBackground: NSColor { get }
+
+    /// The page a settings form sits on.
+    var pageBackground: NSColor { get }
+    /// A card raised off that page. It must differ from `pageBackground` or the cards vanish.
+    var cardBackground: NSColor { get }
     /// The small UI font (captions, secondary buttons).
     var smallFont: NSFont { get }
     /// A surface lifted off the background: the foreground blended in by `dark` on a dark
     /// theme and by `light` on a light one (chips, fields, segment bars).
     func elevatedSurface(dark: CGFloat, light: CGFloat) -> NSColor
+}
+
+
+extension ControlPalette {
+    /// Defaults so an existing palette keeps compiling. They are honest but plain: a host that
+    /// draws settings forms should give real answers, because a card the same colour as its page
+    /// is not a card.
+    public var pageBackground: NSColor { statusBackground }
+    public var cardBackground: NSColor { sidebarBackground }
 }
