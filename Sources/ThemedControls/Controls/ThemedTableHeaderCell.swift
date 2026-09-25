@@ -72,7 +72,9 @@ public final class ThemedTableHeaderCell: NSTableHeaderCell {
         // than a full-height grid line. Only for a real column: under the `.automatic` table
         // style AppKit draws this same cell for the 10pt inset strips at either end, and a
         // divider there is a hairline floating in empty space.
-        if isColumnRect(cellFrame, in: controlView) {
+        // …and never after the LAST column: that edge is the table's, not a boundary between
+        // two titles (25 Sep 2026, with the body's grid).
+        if isColumnRect(cellFrame, in: controlView), !isLastColumn(in: controlView) {
             palette.rowSeparator.setFill()
             NSRect(x: cellFrame.maxX - 1, y: cellFrame.minY + 5, width: 1, height: max(0, cellFrame.height - 11)).fill()
         }
@@ -103,6 +105,13 @@ public final class ThemedTableHeaderCell: NSTableHeaderCell {
         isHighlighted = false
         drawInterior(withFrame: interior, in: controlView)
         isHighlighted = pressed
+    }
+
+    /// Whether this cell's column is the last one — its trailing edge is the table's edge.
+    private func isLastColumn(in controlView: NSView) -> Bool {
+        guard let header = controlView as? NSTableHeaderView, let table = header.tableView,
+              let index = table.tableColumns.firstIndex(where: { $0.headerCell === self }) else { return false }
+        return index == table.tableColumns.count - 1
     }
 
     /// Whether `frame` is the rect of the column this cell belongs to, rather than one of the

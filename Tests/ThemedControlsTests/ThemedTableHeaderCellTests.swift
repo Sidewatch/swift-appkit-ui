@@ -46,13 +46,15 @@ final class ThemedTableHeaderCellTests: XCTestCase {
 
     private static let size = NSSize(width: 200, height: 24)
 
-    /// A table whose single column uses `cell`, laid out and rendered into a bitmap.
+    /// A table whose FIRST column uses `cell`, laid out and rendered into a bitmap. `columns`
+    /// says how many there are, because a divider is drawn between two columns and never after
+    /// the last one — with a single column there is nothing to divide (25 Sep 2026).
     ///
     /// `bitmapImageRepForCachingDisplay` allocates at the BACKING scale, so the rep is 2× the
     /// view on this machine and every sample below is taken in POINTS and scaled — a pixel
     /// coordinate read as a point coordinate lands in the middle of the cell and quietly
     /// samples the fill instead of the hairline it was aiming at.
-    private func renderedHeader(cell: NSTableHeaderCell) -> NSBitmapImageRep {
+    private func renderedHeader(cell: NSTableHeaderCell, columns: Int = 1) -> NSBitmapImageRep {
         let table = NSTableView(frame: NSRect(origin: .zero, size: NSSize(width: Self.size.width, height: 100)))
         // `.plain` with no intercell spacing makes the header rect exactly the column rect;
         // the default `.automatic` style insets it by 10pt at each end and the samples below
@@ -63,6 +65,12 @@ final class ThemedTableHeaderCellTests: XCTestCase {
         column.width = Self.size.width
         column.headerCell = cell
         table.addTableColumn(column)
+        for i in 1..<max(1, columns) {
+            let extra = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("c\(i)"))
+            extra.width = Self.size.width
+            extra.headerCell = ThemedTableHeaderCell(title: "x")
+            table.addTableColumn(extra)
+        }
         let header = ThemedTableHeaderView()
         header.tableView = table
         table.headerView = header
@@ -123,11 +131,21 @@ final class ThemedTableHeaderCellTests: XCTestCase {
     }
 
     func testTheBottomHairlineIsTheBorderColourAndTheColumnDividerIsTheRowSeparator() {
-        let rep = renderedHeader(cell: ThemedTableHeaderCell(title: "id"))
+        // TWO columns, so the first has a neighbour to be divided from.
+        let rep = renderedHeader(cell: ThemedTableHeaderCell(title: "id"), columns: 2)
         assertSameColor(sample(rep, 100, 23.5), rendered(Loud().border),
                         "bottom hairline separates the header from row 1")
         assertSameColor(sample(rep, 199.5, 12), rendered(Loud().rowSeparator),
-                        "column divider on the trailing edge")
+                        "column divider between the first column and the second")
+    }
+
+    /// A divider divides two columns. The LAST column's trailing edge is the table's own edge,
+    /// and ruling it drew a frame rather than a grid (25 Sep 2026, David of the CSV preview:
+    /// "should the furthest left one have another separator line? probably not").
+    func testTheLastColumnIsNotRuledOffAtItsTrailingEdge() {
+        let rep = renderedHeader(cell: ThemedTableHeaderCell(title: "id"))   // one column: it IS the last
+        assertSameColor(sample(rep, 199.5, 12), rendered(Loud().statusBackground),
+                        "the header's own trailing edge carries no divider")
     }
 
     func testAPressedHeaderLightensRatherThanKeepingTheRestingFill() {
