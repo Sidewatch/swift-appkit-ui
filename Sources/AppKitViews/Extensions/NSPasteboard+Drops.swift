@@ -9,6 +9,7 @@
 //
 
 import AppKit
+import FoundationExtensions
 
 /// The shared "hand the agent a file" pasteboard flow: turns dragged or pasted
 /// local files, raw image bytes, file promises, and links into shell-ready path
@@ -103,14 +104,7 @@ extension NSPasteboard {
     /// The files' shell-quoted paths (space-separated, trailing space), escaping
     /// single quotes so paths with spaces/apostrophes stay one argument.
     nonisolated private static func shellQuoted(_ files: [URL]) -> String {
-        files.map { Self.singleQuoted($0.path) }.joined(separator: " ") + " "
-    }
-
-    /// A path as ONE shell argument: wrapped in single quotes with any single quote inside
-    /// closed, escaped and reopened. Spaces and apostrophes are ordinary in a Mac filename and
-    /// each would otherwise split the path into several arguments.
-    nonisolated static func singleQuoted(_ path: String) -> String {
-        "'" + path.replacingOccurrences(of: "'", with: "'" + #"\'"# + "'") + "'"
+        files.map { $0.path.shellQuoted }.joined(separator: " ") + " "
     }
 
     /// Writes raw dropped data (e.g. an image off the clipboard) into the drops

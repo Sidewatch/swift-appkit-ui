@@ -10,6 +10,7 @@
 import XCTest
 import AppKit
 @testable import AppKitViews
+import FoundationExtensions
 
 @MainActor final class PasteboardDropTests: XCTestCase {
     private var board: NSPasteboard!
@@ -136,14 +137,14 @@ import AppKit
     /// A space or an apostrophe is ordinary in a Mac filename, and each would otherwise split
     /// the path into several shell arguments.
     func testAwkwardPathsStayOneArgument() {
-        XCTAssertEqual(NSPasteboard.singleQuoted("/tmp/plain.txt"), "'/tmp/plain.txt'")
-        XCTAssertEqual(NSPasteboard.singleQuoted("/tmp/with space.txt"), "'/tmp/with space.txt'")
-        XCTAssertEqual(NSPasteboard.singleQuoted("/tmp/it's.txt"), #"'/tmp/it'\''s.txt'"#)
+        XCTAssertEqual("/tmp/plain.txt".shellQuoted, "'/tmp/plain.txt'")
+        XCTAssertEqual("/tmp/with space.txt".shellQuoted, "'/tmp/with space.txt'")
+        XCTAssertEqual("/tmp/it's.txt".shellQuoted, #"'/tmp/it'\''s.txt'"#)
     }
 
     func testAQuotedPathSurvivesTheShellsOwnParsing() {
         // What `sh` would do with the quoted form: strip the quotes, keep the apostrophe.
-        let quoted = NSPasteboard.singleQuoted("/tmp/it's a file.txt")
+        let quoted = "/tmp/it's a file.txt".shellQuoted
         XCTAssertFalse(quoted.contains("\" "), "no double quoting")
         XCTAssertTrue(quoted.hasPrefix("'") && quoted.hasSuffix("'"))
     }

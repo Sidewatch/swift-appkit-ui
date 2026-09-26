@@ -8,8 +8,11 @@ let package = Package(
     products: [
         .library(name: "AppKitViews", targets: ["AppKitViews"]),
     ],
+    dependencies: [
+        .package(path: "../swift-foundation-extensions"),
+    ],
     targets: [
-        .target(name: "AppKitViews", swiftSettings: [.swiftLanguageMode(.v6)]),
+        .target(name: "AppKitViews", dependencies: [.product(name: "FoundationExtensions", package: "swift-foundation-extensions")], swiftSettings: [.swiftLanguageMode(.v6)]),
         .testTarget(name: "AppKitViewsTests", dependencies: ["AppKitViews"], swiftSettings: [.swiftLanguageMode(.v6)]),
     ]
 )
