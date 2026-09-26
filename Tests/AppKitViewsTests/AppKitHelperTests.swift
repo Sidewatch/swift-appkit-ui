@@ -175,15 +175,15 @@ import AppKit
         XCTAssertFalse(child.isVisibleToUser, "a hidden ancestor hides it")
         parent.isHidden = false
         // A scroll view clips: a row scrolled out of sight is not visible, though nothing is hidden.
-        let scroll = NSScrollView(frame: NSRect(x: 0, y: 0, width: 100, height: 100))
+        let scroll = NSScrollView(frame: NSRect(x: 0, y: 100, width: 100, height: 100))   // the window's top half
         let doc = FlippedDocument(frame: NSRect(x: 0, y: 0, width: 100, height: 1000))
-        let row = NSView(frame: NSRect(x: 0, y: 900, width: 100, height: 50))
+        let row = NSView(frame: NSRect(x: 0, y: 120, width: 100, height: 50))   // below the clip, still inside the window
         doc.addSubview(row)
         scroll.documentView = doc
         parent.addSubview(scroll)
         doc.scroll(.zero)
-        XCTAssertFalse(row.isVisibleToUser, "scrolled out of sight")
-        doc.scroll(NSPoint(x: 0, y: 880))
+        XCTAssertFalse(row.isVisibleToUser, "scrolled out of the clip view, though still inside the window")
+        doc.scroll(NSPoint(x: 0, y: 100))
         XCTAssertTrue(row.isVisibleToUser, "scrolled into view")
     }
 }
