@@ -10,7 +10,6 @@
 //
 
 import AppKit
-import ThemedControls
 
 /// One axis node of a split tree: lays out
 /// its members — leaves or nested axes — along one axis from a
