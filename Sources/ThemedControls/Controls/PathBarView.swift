@@ -62,7 +62,6 @@ open class PathBarView: NSView, NSMenuDelegate {
     /// Submenus waiting for their folder to be listed, keyed by menu identity — filled the first
     /// time AppKit asks, so a deep tree costs nothing until it is opened.
     private var pendingFolders: [ObjectIdentifier: URL] = [:]
-    private var titleSegmentActions: [() -> Void] = []
 
     public override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
