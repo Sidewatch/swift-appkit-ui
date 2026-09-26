@@ -8,6 +8,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// A centered icon + title + subtitle empty state, shared by the sidebar panels
 /// and lists. Replaces the bare one-line labels that read as broken
@@ -142,8 +143,7 @@ public final class EmptyStateView: NSView {
     /// Swaps the glyph — a list's "nothing here yet" and "your filter matched
     /// nothing" states are different situations and shouldn't share an icon.
     public func setSymbol(_ symbol: String) {
-        iconView.image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)?
-            .withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 34, weight: .light))
+        iconView.image = NSImage.symbol(symbol, pointSize: 34, weight: .light)
     }
 
     // MARK: - Hosting over a list

@@ -9,6 +9,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// The font choices Settings offers, and the one place a stored choice is turned back into an
 /// `NSFont`.
@@ -132,7 +133,7 @@ public enum FontCatalog {
     public nonisolated static func font(family: String?, postScriptName: String?, face: String? = nil,
                                 size: CGFloat) -> NSFont {
         guard let family else {
-            return .monospacedSystemFont(ofSize: size, weight: systemWeight(named: face))
+            return .mono(size, weight: systemWeight(named: face))
         }
         // Exact, and cheap: no member walk, which is the whole reason the name was resolved when
         // the user picked it rather than here.
@@ -142,7 +143,7 @@ public enum FontCatalog {
         if let font = NSFont(descriptor: NSFontDescriptor(fontAttributes: [.family: family]), size: size) {
             return font
         }
-        return .monospacedSystemFont(ofSize: size, weight: .regular)
+        return .mono(size)
     }
 
     // MARK: - The system monospaced font

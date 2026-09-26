@@ -114,8 +114,7 @@ public final class ThemedSegmentBar: NSControl {
             let symbolW: CGFloat = plan.symbol == nil ? 0 : (plan.text.isEmpty ? 14 : 18)
             let total = ts.width + symbolW
             var x = f.midX - total / 2
-            if let name = plan.symbol, let img = NSImage(systemSymbolName: name, accessibilityDescription: nil)?
-                .withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 11, weight: .medium)) {
+            if let name = plan.symbol, let img = NSImage.symbol(name, pointSize: 11, weight: .medium) {
                 let tinted = img.tinted(color)
                 tinted.draw(in: NSRect(x: x, y: f.midY - 7, width: 14, height: 14), from: .zero, operation: .sourceOver, fraction: 1)
                 x += symbolW

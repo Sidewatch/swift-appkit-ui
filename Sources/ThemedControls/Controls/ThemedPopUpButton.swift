@@ -55,8 +55,7 @@ open class ThemedPopUpButton: NSPopUpButton {
         let title = (titleOfSelectedItem ?? "") as NSString
         let h = title.size(withAttributes: attrs).height
         title.draw(in: NSRect(x: x, y: bounds.midY - h / 2, width: max(0, bounds.width - x - 22), height: h), withAttributes: attrs)
-        if let chevron = NSImage(systemSymbolName: "chevron.up.chevron.down", accessibilityDescription: nil)?
-            .withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 8, weight: .semibold)) {
+        if let chevron = NSImage.symbol("chevron.up.chevron.down", pointSize: 8, weight: .semibold) {
             chevron.tinted(ThemedControls.palette.mutedText).draw(in: NSRect(x: bounds.maxX - 16, y: bounds.midY - 5, width: 10, height: 10),
                                                from: .zero, operation: .sourceOver, fraction: 1)
         }
