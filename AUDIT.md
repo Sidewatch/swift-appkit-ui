@@ -106,3 +106,5 @@ the same app. 73 tests now.
 - The file-promise branch of `readDroppedFiles` cannot be exercised headlessly: a promise needs a
   real dragging source. The URL, image-bytes and link branches are all covered, and the promise
   branch's own delivery is the one line that differs.
+- 27 Sep 2026 — the one-call helpers above arrived from the Sidewatch app and swift-themed-controls
+  (which now depends on this package); 14 tests, eight mutants each failing its own test.

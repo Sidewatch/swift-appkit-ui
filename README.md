@@ -57,6 +57,24 @@ bottom-left corner, and the image view pans under a drag with the hand cursor. `
 container that answers ⌘= / ⌘- / ⌘0 before the main menu, so its content zooms while it is on
 screen and a menu item bound to the same keys keeps working when it is not.
 
+## One-call helpers
+
+The idioms every AppKit screen otherwise spells out, one extension each:
+
+| Helper | Replaces |
+|---|---|
+| `addSubviewsForAutoLayout(_:)`, `addPinnedSubview(_:insets:edges:)` | the autoresizing-mask line + `addSubview` |
+| `pinEdges(to:insets:edges:priority:)`, `edgeConstraints(to:…)`, `pinSize`, `pinCenter` | four anchor constraints and their `activate` (views or layout guides) |
+| `NSTextField.label(_:font:color:lineBreak:alignment:)` | a label and its four style lines |
+| `NSImage.symbol(_:pointSize:weight:description:)`, `menuSymbol(_:)` | a symbol and its configuration; the 14-pt menu glyph |
+| `NSFont.mono(_:weight:)`, `monoDigits(_:weight:)` | `monospacedSystemFont(ofSize:weight:)` and its digit twin |
+| `styleLayer(background:cornerRadius:borderColor:borderWidth:masksToBounds:)` | `wantsLayer` and the layer properties |
+| `NSAlert(message:information:style:buttons:)`, `runConfirmed()`, `beginConfirmed(on:_:)` | building an alert line by line and comparing its response |
+| `NSPasteboard.copy(_:)` | `clearContents()` + `setString(_:forType:)` |
+| `NSMenu.addItem(_:action:target:symbol:key:represented:)` | building, targeting and glyphing a menu item |
+| `NSColor.blended(_:toward:)`, `NSImage.tinted(_:)` | lifting a surface off a background; painting a template |
+| `disableSystemTextIntelligence()`, `FieldEditorPolicy` | Writing Tools, autocorrect and predictions off, per view and per window |
+
 ## Notes worth knowing
 
 - `allowsMagnification` governs **programmatic** magnification too. With it false, assigning
