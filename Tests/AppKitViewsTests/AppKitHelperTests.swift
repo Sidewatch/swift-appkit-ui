@@ -174,7 +174,18 @@ import AppKit
         parent.isHidden = true
         XCTAssertFalse(child.isVisibleToUser, "a hidden ancestor hides it")
         parent.isHidden = false
-        child.frame.size = .zero
-        XCTAssertFalse(child.isVisibleToUser, "nothing of it is showing")
+        // A scroll view clips: a row scrolled out of sight is not visible, though nothing is hidden.
+        let scroll = NSScrollView(frame: NSRect(x: 0, y: 0, width: 100, height: 100))
+        let doc = FlippedDocument(frame: NSRect(x: 0, y: 0, width: 100, height: 1000))
+        let row = NSView(frame: NSRect(x: 0, y: 900, width: 100, height: 50))
+        doc.addSubview(row)
+        scroll.documentView = doc
+        parent.addSubview(scroll)
+        doc.scroll(.zero)
+        XCTAssertFalse(row.isVisibleToUser, "scrolled out of sight")
+        doc.scroll(NSPoint(x: 0, y: 880))
+        XCTAssertTrue(row.isVisibleToUser, "scrolled into view")
     }
 }
+
+private final class FlippedDocument: NSView { override var isFlipped: Bool { true } }
