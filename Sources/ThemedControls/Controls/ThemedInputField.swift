@@ -8,6 +8,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// Shared theming for Settings text inputs. The system `NSTextField` / `NSSecureTextField`
 /// bezel ignores the app theme — it paints a system-tinted box that clashes with a warm

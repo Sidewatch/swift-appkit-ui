@@ -8,6 +8,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// The macOS system colours as a palette: what a control looks like with nothing installed.
 public struct SystemPalette: ControlPalette {

@@ -7,8 +7,11 @@ let package = Package(
     products: [
         .library(name: "ThemedControls", targets: ["ThemedControls"]),
     ],
+    dependencies: [
+        .package(path: "../swift-appkit-views"),
+    ],
     targets: [
-        .target(name: "ThemedControls", path: "Sources",
+        .target(name: "ThemedControls", dependencies: [.product(name: "AppKitViews", package: "swift-appkit-views")], path: "Sources",
                 swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]),
         .testTarget(name: "ThemedControlsTests", dependencies: ["ThemedControls"], path: "Tests",
                     swiftSettings: [.swiftLanguageMode(.v6)]),

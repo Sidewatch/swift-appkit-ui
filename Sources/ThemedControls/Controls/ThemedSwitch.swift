@@ -8,6 +8,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// A theme-tinted on/off switch. `NSSwitch` fills with the macOS accent when on and offers no
 /// API to change that, so on a gold or teal theme every switch in Settings was the one blue

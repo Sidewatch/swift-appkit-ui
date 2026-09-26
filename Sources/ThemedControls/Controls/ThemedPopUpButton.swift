@@ -9,6 +9,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// An `NSPopUpButton` that keeps the native MENU and loses the system bezel: a rounded
 /// themed box, the selected title (and its image) in the foreground colour, a quiet

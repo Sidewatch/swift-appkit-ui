@@ -11,6 +11,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// A theme-aware search/filter input matching the Find-in-Project field: a rounded
 /// `ThemedControls.palette.border` container over an elevated surface, holding a *borderless* text

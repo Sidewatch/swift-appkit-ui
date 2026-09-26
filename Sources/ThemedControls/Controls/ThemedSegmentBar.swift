@@ -9,6 +9,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// A themed replacement for `NSSegmentedControl`: a rounded bar of segments with the
 /// accent on the selected one. The stock control paints a system bezel and selection

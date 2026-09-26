@@ -8,6 +8,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// A table row that paints the app's selection style.
 ///

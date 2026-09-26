@@ -9,6 +9,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// A column header drawn entirely from the palette.
 ///
