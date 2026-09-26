@@ -158,4 +158,23 @@ import AppKit
         XCTAssertTrue(FieldEditorPolicy.editor(for: w) === FieldEditorPolicy.editor(for: w), "one editor per window")
         XCTAssertTrue(FieldEditorPolicy.editor(for: w).isFieldEditor)
     }
+
+    func testVisibleToUserNeedsAShownWindowAnUnhiddenChainAndSomeArea() {
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 200, height: 200), styleMask: [.borderless],
+                              backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        let parent = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 200))
+        let child = NSView(frame: NSRect(x: 10, y: 10, width: 50, height: 50))
+        parent.addSubview(child)
+        window.contentView = parent
+        XCTAssertFalse(child.isVisibleToUser, "a window never shown")
+        window.orderFrontRegardless()
+        defer { window.orderOut(nil) }
+        XCTAssertTrue(child.isVisibleToUser)
+        parent.isHidden = true
+        XCTAssertFalse(child.isVisibleToUser, "a hidden ancestor hides it")
+        parent.isHidden = false
+        child.frame.size = .zero
+        XCTAssertFalse(child.isVisibleToUser, "nothing of it is showing")
+    }
 }
