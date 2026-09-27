@@ -11,22 +11,12 @@
 import AppKit
 
 /// A split tree whose `root` is a single leaf or an axis of leaves and axes, mounted in
-/// `container`. Generic over the leaf so a host keeps its own type all the way through:
-/// `panes` gives back leaves, not `NSView`s to be cast.
-///
-/// The algorithms are Zed's exactly, and each is load-bearing:
-/// - a **same-axis** split INSERTS into that axis's members, so the tree stays N-ary and flat
-///   rather than growing a spine of two-member axes;
-/// - a **cross-axis** split WRAPS the one member in place, leaving the parent's members and
-///   flexes untouched so the wrapper inherits the slot's fraction — the property whose absence
-///   made an `NSSplitView` attempt collapse to zero width;
-/// - any membership change resets that axis's flexes to equal;
-/// - an axis left with ONE member pops it into the parent slot, or becomes the root, splicing a
-///   same-orientation axis flat so one run of dividers keeps ruling it.
-///
-/// There is no `NSSplitView` and no Auto Layout on members anywhere beneath this: an axis
-/// assigns frames arithmetically from its flex vector, so the resize feedback loop that crashes
-/// constraint-driven splitters is impossible by construction.
+/// `container`; generic over the leaf so `panes` gives back the host's own type.
+/// The algorithms are Zed's: a same-axis split INSERTS (the tree stays N-ary and flat); a
+/// cross-axis split WRAPS the member in place so the wrapper inherits the slot's fraction; any
+/// membership change resets that axis's flexes; a one-member axis collapses into its parent.
+/// No `NSSplitView` and no Auto Layout on members: frames are arithmetic from flex vectors, so
+/// the resize feedback loop of constraint-driven splitters cannot happen.
 @MainActor public final class PaneTree<Leaf: NSView> {
     /// The view the tree is mounted in. A host sizes and places this.
     public let container = NSView()

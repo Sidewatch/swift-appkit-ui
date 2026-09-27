@@ -12,15 +12,11 @@
 
 import AppKit
 
-/// One axis node of a split tree: lays out
-/// its members — leaves or nested axes — along one axis from a
-/// **flex vector**, the ONLY size truth (invariants: `flexes.count == members.count`,
-/// sum == count). `layout()` assigns frames arithmetically: `perFlex = length / count`,
-/// member i gets `round(perFlex × flexes[i])` and the LAST member takes the rounding
-/// remainder so frames tile exactly. NO NSSplitView, NO Auto Layout on members (they
-/// keep `translatesAutoresizingMaskIntoConstraints == true` and only ever receive
-/// frames) — layout is a pure function of the vector, so the resize-loop crash class
-/// the first split attempt died on is impossible by construction.
+/// One axis node of a split tree: lays out its members — leaves or nested axes — from a
+/// **flex vector**, the ONLY size truth. Member i gets `round(length / count × flexes[i])` and
+/// the LAST takes the rounding remainder, so frames tile exactly. No `NSSplitView`, no Auto
+/// Layout on members (they only ever receive frames): layout is a pure function of the vector,
+/// so a resize feedback loop is impossible by construction.
 public final class PaneAxisView: NSView {
     /// Which way this axis lays its members out.
     public let orientation: PaneOrientation
@@ -34,6 +30,7 @@ public final class PaneAxisView: NSView {
     /// everything down proportionally — layout only scales, it never fights).
     private var minMemberLength: CGFloat { orientation == .horizontal ? 80 : 100 }
 
+    /// An empty axis; ``setMembers(_:)`` seeds it.
     public init(orientation: PaneOrientation) {
         self.orientation = orientation
         super.init(frame: .zero)
@@ -77,6 +74,8 @@ public final class PaneAxisView: NSView {
         assertInvariants()
     }
 
+    /// Removes `view` and resets the remaining flexes to equal; the caller collapses a
+    /// one-member axis.
     public func removeMember(_ view: NSView) {
         guard let idx = members.firstIndex(where: { $0 === view }) else { return }
         members.remove(at: idx)
@@ -88,8 +87,8 @@ public final class PaneAxisView: NSView {
     }
 
     /// Cross-axis split / collapse plumbing: swaps `old` for `new` IN PLACE. The slot's
-    /// flex is untouched, so the replacement inherits the slot's fraction — precisely
-    /// the property whose absence made the reverted NSSplitView attempt go 0-wide.
+    /// flex is untouched, so the replacement inherits the slot's fraction; without that a
+    /// wrapped member collapses to zero width.
     public func replaceMember(_ old: NSView, with new: NSView) {
         guard let idx = members.firstIndex(where: { $0 === old }) else { return }
         old.removeFromSuperview()
@@ -139,6 +138,7 @@ public final class PaneAxisView: NSView {
         }
     }
 
+    /// Debug-asserts the flex vector matches the members in count and sums to that count.
     public func assertInvariants() {
         assert(flexes.count == members.count, "PaneAxisView: flex/member count mismatch")
         assert(members.isEmpty || abs(flexes.reduce(0, +) - CGFloat(members.count)) < 0.01,
@@ -177,7 +177,7 @@ public final class PaneAxisView: NSView {
 
     /// Tracks a divider drag: the pixel delta becomes a flex delta on the (index,
     /// index+1) pair, clamped to the minimum member size with the remainder cascading
-    /// into successive neighbors (Zed's resize). Each step recomputes `flexes` from the
+    /// into successive neighbours (Zed's resize). Each step recomputes `flexes` from the
     /// sizes captured at mouse-down (no incremental drift) and marks THIS axis for
     /// layout only.
     public func beginDividerDrag(at index: Int, with event: NSEvent) {

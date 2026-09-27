@@ -12,12 +12,14 @@
 import AppKit
 import ThemedControls
 
-/// The ~5pt invisible hit strip centered on a pane boundary; draws the 1pt hairline at
-/// its center. Drag resizes the two neighboring members, double-click equalizes the axis.
+/// The ~5pt invisible hit strip centred on a pane boundary; draws the 1pt hairline at
+/// its centre. Drag resizes the two neighbouring members, double-click equalises the axis.
 public final class PaneDividerView: NSView {
+    /// The axis whose members this divider separates.
     public weak var axis: PaneAxisView?
     private let index: Int
 
+    /// A divider between `axis`'s members `index` and `index + 1`.
     public init(axis: PaneAxisView, index: Int) {
         self.axis = axis
         self.index = index
