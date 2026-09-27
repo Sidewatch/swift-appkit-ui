@@ -11,7 +11,7 @@ AppKit controls drawn from a host-supplied palette. Module `ThemedControls`; `sw
 - `Core/` — the engine: ThemedControls (the installed palette and the paletteDidChange notification)
 - `Controls/` — one control per file: PathBarView (a path as crumbs, each dropping its folder; the HOST supplies the listing and the icons, so hidden files, ignore rules and sort order stay one decision made wherever the app already shows that tree), ThemedSegmentBar, ThemedPillButton, ThemedSlider, ThemedSwitch (`controlSize` sizes it like the stock switch), ThemedCheckbox, ThemedSearchField, ThemedInputField, ThemedRowView, ThemedScrollView, EmptyStateView, ThemedPopUpButton, ThemedTableHeaderView, ThemedTableHeaderCell, InnerGridTableView (vertical grid lines BETWEEN columns only — the stock mask rules the table's outer edges too, which frames it rather than dividing it) (secondary types alongside: ThemedInputStyle, PaddedFieldCell, ThemedSecureInputField, ThemedSelectionRowView, ThemedGroupRowView)
 - `Support/` — pure helpers: SystemPalette (the macOS system colours as a palette); CellEditFormatter (what a cell DRAWS against what it EDITS — quotes, a trailing colon, a `••••••••` mask; a `Formatter`, because swapping a field's `stringValue` in `controlTextDidBeginEditing` does NOT reach the field editor AppKit has already loaded, and the edit is read from `objectValue`)
-- `Extensions/` — one extension per idiom: NSColor+Blend, NSImage+Tinted, NSTextView+SystemTextIntelligence, NSTextView+WritingTools
+- AppKit helpers (`NSColor.blended`, `NSImage.tinted`, the text-intelligence policy) come from swift-appkit-views.
 
 ## Rules
 
