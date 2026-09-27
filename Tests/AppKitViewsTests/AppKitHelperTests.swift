@@ -112,6 +112,28 @@ import AppKit
         XCTAssertEqual(NSAlert(message: "x").alertStyle, NSAlert().alertStyle, "the default style is AppKit's own")
     }
 
+    func testHexParsesEveryLengthAndRejectsTheRest() throws {
+        func rgba(_ hex: String) -> [Int]? {
+            NSColor(hex: hex).map { c in [c.redComponent, c.greenComponent, c.blueComponent, c.alphaComponent].map { Int(($0 * 255).rounded()) } }
+        }
+        XCTAssertEqual(rgba("#1E90FF"), [30, 144, 255, 255])
+        XCTAssertEqual(rgba("1e90ff"), [30, 144, 255, 255], "the # is optional, case does not matter")
+        XCTAssertEqual(rgba("  #1E90FF\n"), [30, 144, 255, 255], "surrounding whitespace is ignored")
+        XCTAssertEqual(rgba("#F80"), [255, 136, 0, 255], "three digits double up")
+        XCTAssertEqual(rgba("#1E90FF80"), [30, 144, 255, 128], "the fourth pair is alpha")
+        for bad in ["", "#", "#12", "#12345", "#1234567", "zzzzzz", "#+12345", "#-1E90F", "#1E 90FF"] {
+            XCTAssertNil(NSColor(hex: bad), bad)
+        }
+    }
+
+    func testHexStringIsSRGBAndRoundTrips() throws {
+        XCTAssertEqual(NSColor(hex: "#1E90FF")?.hexString, "#1E90FF")
+        XCTAssertEqual(NSColor(hex: "#1E90FF80")?.hexString, "#1E90FF", "alpha is dropped")
+        XCTAssertEqual(NSColor(white: 1, alpha: 1).hexString, "#FFFFFF", "a grey-space colour converts")
+        XCTAssertEqual(NSColor(hex: "#1E90FF")?.cssColor(), "#1E90FF")
+        XCTAssertEqual(NSColor(hex: "#1E90FF")?.cssColor(alpha: 0.5), "rgba(30, 144, 255, 0.5)", "below full alpha it is rgba")
+    }
+
     func testAlertGivesEscapeToTheTranslatedCancelButton() {
         let a = NSAlert(message: "M", buttons: ["Löschen", "Abbrechen"], cancel: "Abbrechen")
         XCTAssertEqual(a.buttons[1].keyEquivalent, "\u{1b}", "the app's Cancel answers Escape in any language")
