@@ -20,7 +20,7 @@ final class HeadsUpDisplayTests: XCTestCase {
 
     func testShowsTopCentredClickThroughAndGoesAfterTheDwell() {
         let saved = ThemedControls.reduceMotion
-        ThemedControls.reduceMotion = true   // no fades: the state is exact
+        ThemedControls.reduceMotion = true  // no fades: the state is exact
         defer { ThemedControls.reduceMotion = saved }
         let w = window()
         HeadsUpDisplay.show("Copied format", systemImage: "doc.on.doc", in: w)
@@ -43,7 +43,7 @@ final class HeadsUpDisplayTests: XCTestCase {
     }
 
     func testANilWindowShowsNothing() {
-        HeadsUpDisplay.show("Copied", systemImage: "doc.on.doc", in: nil)   // must not trap
+        HeadsUpDisplay.show("Copied", systemImage: "doc.on.doc", in: nil)  // must not trap
     }
 
     func testDifferentiateWithoutColorMirrorsTheWorkspaceUntilSet() {

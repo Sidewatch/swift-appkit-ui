@@ -46,8 +46,9 @@ public final class SettingsLabel: NSTextField {
         }
         translatesAutoresizingMaskIntoConstraints = false
         applyThemeColor()
-        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(themeChanged),
+            name: ThemedControls.paletteDidChange, object: nil)
     }
 
     @available(*, unavailable)
@@ -63,9 +64,9 @@ public final class SettingsLabel: NSTextField {
 
     private func applyThemeColor() {
         switch role {
-        case .primary:   textColor = dimmed ? ThemedControls.palette.foreground.withAlphaComponent(0.35) : ThemedControls.palette.foreground
+        case .primary: textColor = dimmed ? ThemedControls.palette.foreground.withAlphaComponent(0.35) : ThemedControls.palette.foreground
         case .secondary: textColor = ThemedControls.palette.statusText
-        case .tertiary:  textColor = ThemedControls.palette.statusText.withAlphaComponent(0.85)
+        case .tertiary: textColor = ThemedControls.palette.statusText.withAlphaComponent(0.85)
         }
     }
 }

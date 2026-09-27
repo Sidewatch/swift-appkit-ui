@@ -34,7 +34,7 @@ extension SettingsPane {
     public func buildPane(_ sections: [SettingsSection]) {
         // The window is a fixed size, so the sections live in a flipped documentView inside a
         // borderless, background-less scroll view: a tall pane scrolls instead of being clipped.
-        let content = SettingsScrollContent()   // isFlipped → lays out top-down
+        let content = SettingsScrollContent()  // isFlipped → lays out top-down
         content.translatesAutoresizingMaskIntoConstraints = false
         let scroll = NSScrollView()
         scroll.translatesAutoresizingMaskIntoConstraints = false
@@ -58,12 +58,15 @@ extension SettingsPane {
             element.translatesAutoresizingMaskIntoConstraints = false
             content.addSubview(element)
             constraints += [
-                element.leadingAnchor.constraint(equalTo: content.leadingAnchor,
-                                                 constant: SettingsMetrics.margin + inset),
-                element.trailingAnchor.constraint(equalTo: content.trailingAnchor,
-                                                  constant: -(SettingsMetrics.margin + inset)),
-                element.topAnchor.constraint(equalTo: previous?.bottomAnchor ?? content.topAnchor,
-                                             constant: gap),
+                element.leadingAnchor.constraint(
+                    equalTo: content.leadingAnchor,
+                    constant: SettingsMetrics.margin + inset),
+                element.trailingAnchor.constraint(
+                    equalTo: content.trailingAnchor,
+                    constant: -(SettingsMetrics.margin + inset)),
+                element.topAnchor.constraint(
+                    equalTo: previous?.bottomAnchor ?? content.topAnchor,
+                    constant: gap),
             ]
             previous = element
         }
@@ -83,8 +86,10 @@ extension SettingsPane {
         // The last element sets the scrolling content's height (+ a bottom margin); the
         // content's width tracks the clip view so nothing ever scrolls horizontally.
         if let previous {
-            constraints.append(content.bottomAnchor.constraint(equalTo: previous.bottomAnchor,
-                                                               constant: SettingsMetrics.margin))
+            constraints.append(
+                content.bottomAnchor.constraint(
+                    equalTo: previous.bottomAnchor,
+                    constant: SettingsMetrics.margin))
         }
         constraints += [
             content.widthAnchor.constraint(equalTo: scroll.contentView.widthAnchor),
@@ -151,4 +156,3 @@ extension SettingsPane {
         ])
     }
 }
-

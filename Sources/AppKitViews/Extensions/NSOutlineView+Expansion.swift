@@ -39,7 +39,8 @@ extension NSOutlineView {
         while level < maxDepth {
             let closed = (0..<numberOfRows).compactMap { row -> Any? in
                 guard self.level(forRow: row) == level, let item = item(atRow: row),
-                      isExpandable(item), !isItemExpanded(item) else { return nil }
+                    isExpandable(item), !isItemExpanded(item)
+                else { return nil }
                 return item
             }
             guard !closed.isEmpty else { return }

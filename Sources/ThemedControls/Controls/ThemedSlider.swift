@@ -21,8 +21,9 @@ open class ThemedSlider: NSSlider {
     deinit { NotificationCenter.default.removeObserver(self) }
 
     private func setup() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(applyTheme),
+            name: ThemedControls.paletteDidChange, object: nil)
         applyTheme()
     }
 

@@ -13,8 +13,10 @@ import AppKit
 public extension NSImage {
     /// The SF Symbol `name`, configured at `pointSize` and `weight` when a size is given, or nil
     /// when the name is not a symbol.
-    static func symbol(_ name: String, pointSize: CGFloat? = nil, weight: NSFont.Weight = .regular,
-                       description: String? = nil) -> NSImage? {
+    static func symbol(
+        _ name: String, pointSize: CGFloat? = nil, weight: NSFont.Weight = .regular,
+        description: String? = nil
+    ) -> NSImage? {
         let image = NSImage(systemSymbolName: name, accessibilityDescription: description)
         guard let pointSize else { return image }
         return image?.withSymbolConfiguration(.init(pointSize: pointSize, weight: weight))

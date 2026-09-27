@@ -39,8 +39,9 @@ open class ThemedPillButton: NSButton {
         translatesAutoresizingMaskIntoConstraints = false
         heightAnchor.constraint(equalToConstant: 22).isActive = true
         widthAnchor.constraint(greaterThanOrEqualToConstant: 62).isActive = true
-        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(applyTheme),
+            name: ThemedControls.paletteDidChange, object: nil)
         applyTheme()
     }
 
@@ -60,11 +61,13 @@ open class ThemedPillButton: NSButton {
     /// Repaints title, fill and border from the palette; subclasses call super.
     @objc open func applyTheme() {
         let para = NSMutableParagraphStyle(); para.alignment = .center
-        attributedTitle = NSAttributedString(string: title, attributes: [
-            .font: NSFont.systemFont(ofSize: 11, weight: .semibold),
-            .foregroundColor: tint.withAlphaComponent(enabledAlpha),
-            .paragraphStyle: para,
-        ])
+        attributedTitle = NSAttributedString(
+            string: title,
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 11, weight: .semibold),
+                .foregroundColor: tint.withAlphaComponent(enabledAlpha),
+                .paragraphStyle: para,
+            ])
         layer?.backgroundColor = tint.withAlphaComponent(restingFillAlpha).cgColor
         layer?.borderColor = tint.withAlphaComponent(0.35 * enabledAlpha).cgColor
     }

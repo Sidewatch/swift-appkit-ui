@@ -27,10 +27,10 @@ final class ThemedTableHeaderCellTests: XCTestCase {
         var sidebarBackground: NSColor { NSColor(srgbRed: 0, green: 0, blue: 0, alpha: 1) }
         var sidebarText: NSColor { .lightGray }
         var statusText: NSColor { .lightGray }
-        var border: NSColor { NSColor(srgbRed: 0, green: 1, blue: 0, alpha: 1) }          // #00FF00
-        var rowSeparator: NSColor { NSColor(srgbRed: 0, green: 0, blue: 1, alpha: 1) }    // #0000FF
+        var border: NSColor { NSColor(srgbRed: 0, green: 1, blue: 0, alpha: 1) }  // #00FF00
+        var rowSeparator: NSColor { NSColor(srgbRed: 0, green: 0, blue: 1, alpha: 1) }  // #0000FF
         var mutedText: NSColor { .gray }
-        var statusBackground: NSColor { NSColor(srgbRed: 1, green: 0, blue: 0, alpha: 1) } // #FF0000
+        var statusBackground: NSColor { NSColor(srgbRed: 1, green: 0, blue: 0, alpha: 1) }  // #FF0000
         var smallFont: NSFont { .systemFont(ofSize: 11, weight: .medium) }
         func elevatedSurface(dark: CGFloat, light: CGFloat) -> NSColor { .darkGray }
     }
@@ -105,8 +105,10 @@ final class ThemedTableHeaderCellTests: XCTestCase {
         return rep.colorAt(x: px, y: py)!
     }
 
-    private func assertSameColor(_ a: NSColor, _ b: NSColor, _ message: String,
-                                 file: StaticString = #filePath, line: UInt = #line) {
+    private func assertSameColor(
+        _ a: NSColor, _ b: NSColor, _ message: String,
+        file: StaticString = #filePath, line: UInt = #line
+    ) {
         let x = a.usingColorSpace(.sRGB)!, y = b.usingColorSpace(.sRGB)!
         for (l, r) in [(x.redComponent, y.redComponent), (x.greenComponent, y.greenComponent), (x.blueComponent, y.blueComponent)] {
             XCTAssertEqual(l, r, accuracy: 0.03, "\(message) — got \(x), want \(y)", file: file, line: line)
@@ -124,28 +126,33 @@ final class ThemedTableHeaderCellTests: XCTestCase {
         // the code this class replaces, and it must NOT produce that colour — otherwise this
         // test would pass with the fix reverted.
         let stock = sample(renderedHeader(cell: NSTableHeaderCell(textCell: "id")), 150, 8)
-        let drift = abs(stock.redComponent - want.redComponent)
+        let drift =
+            abs(stock.redComponent - want.redComponent)
             + abs(stock.greenComponent - want.greenComponent)
             + abs(stock.blueComponent - want.blueComponent)
-        XCTAssertGreaterThan(drift, 0.1,
-                             "the stock cell paints its own background — if it matched the palette there would be nothing to fix (got \(stock))")
+        XCTAssertGreaterThan(
+            drift, 0.1,
+            "the stock cell paints its own background — if it matched the palette there would be nothing to fix (got \(stock))")
     }
 
     func testTheBottomHairlineIsTheBorderColourAndTheColumnDividerIsTheRowSeparator() {
         // TWO columns, so the first has a neighbour to be divided from.
         let rep = renderedHeader(cell: ThemedTableHeaderCell(title: "id"), columns: 2)
-        assertSameColor(sample(rep, 100, 23.5), rendered(Loud().border),
-                        "bottom hairline separates the header from row 1")
-        assertSameColor(sample(rep, 199.5, 12), rendered(Loud().rowSeparator),
-                        "column divider between the first column and the second")
+        assertSameColor(
+            sample(rep, 100, 23.5), rendered(Loud().border),
+            "bottom hairline separates the header from row 1")
+        assertSameColor(
+            sample(rep, 199.5, 12), rendered(Loud().rowSeparator),
+            "column divider between the first column and the second")
     }
 
     /// A divider divides two columns. The LAST column's trailing edge is the table's own edge,
     /// and ruling it would draw a frame rather than a grid.
     func testTheLastColumnIsNotRuledOffAtItsTrailingEdge() {
-        let rep = renderedHeader(cell: ThemedTableHeaderCell(title: "id"))   // one column: it IS the last
-        assertSameColor(sample(rep, 199.5, 12), rendered(Loud().statusBackground),
-                        "the header's own trailing edge carries no divider")
+        let rep = renderedHeader(cell: ThemedTableHeaderCell(title: "id"))  // one column: it IS the last
+        assertSameColor(
+            sample(rep, 199.5, 12), rendered(Loud().statusBackground),
+            "the header's own trailing edge carries no divider")
     }
 
     func testAPressedHeaderLightensRatherThanKeepingTheRestingFill() {
@@ -153,14 +160,16 @@ final class ThemedTableHeaderCellTests: XCTestCase {
         cell.isHighlighted = true
         let pressed = sample(renderedHeader(cell: cell), 150, 8).usingColorSpace(.sRGB)!
         let resting = rendered(Loud().statusBackground).usingColorSpace(.sRGB)!
-        XCTAssertGreaterThan(pressed.greenComponent + pressed.blueComponent,
-                             resting.greenComponent + resting.blueComponent + 0.02,
-                             "a click must lift the fill toward the foreground, or the header reads as dead")
+        XCTAssertGreaterThan(
+            pressed.greenComponent + pressed.blueComponent,
+            resting.greenComponent + resting.blueComponent + 0.02,
+            "a click must lift the fill toward the foreground, or the header reads as dead")
 
         // The system pressed grey must not be what comes back: `drawInterior` paints one when
         // the cell is highlighted, which is why the fix drops the flag around the title draw.
-        XCTAssertGreaterThan(pressed.redComponent - pressed.greenComponent, 0.4,
-                             "a pressed header stayed in the palette rather than turning system grey (got \(pressed))")
+        XCTAssertGreaterThan(
+            pressed.redComponent - pressed.greenComponent, 0.4,
+            "a pressed header stayed in the palette rather than turning system grey (got \(pressed))")
     }
 
     func testTheTitleIsThePalettesColourOneWeightStepUpFromItsSmallFont() {
@@ -183,7 +192,9 @@ final class ThemedTableHeaderCellTests: XCTestCase {
             for px in 0..<rep.pixelsWide {
                 for py in stride(from: Int(6 * scale), to: Int(18 * scale), by: 1) {
                     guard let c = rep.colorAt(x: px, y: py)?.usingColorSpace(.sRGB) else { continue }
-                    let drift = abs(c.redComponent - band.redComponent) + abs(c.greenComponent - band.greenComponent) + abs(c.blueComponent - band.blueComponent)
+                    let drift =
+                        abs(c.redComponent - band.redComponent) + abs(c.greenComponent - band.greenComponent)
+                        + abs(c.blueComponent - band.blueComponent)
                     if drift > 0.10 { return CGFloat(px) / scale }
                 }
             }
@@ -213,10 +224,12 @@ final class ThemedTableHeaderCellTests: XCTestCase {
             header.cacheDisplay(in: header.bounds, to: rep)
             let scale = CGFloat(rep.pixelsWide) / Self.size.width
             var minY = Int.max, maxY = -1
-            for y in 0..<rep.pixelsHigh { for x in 0..<rep.pixelsWide {
-                guard let c = rep.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { continue }
-                if c.greenComponent > 0.4 && c.blueComponent > 0.4 { minY = min(minY, y); maxY = max(maxY, y) }
-            } }
+            for y in 0..<rep.pixelsHigh {
+                for x in 0..<rep.pixelsWide {
+                    guard let c = rep.colorAt(x: x, y: y)?.usingColorSpace(.sRGB) else { continue }
+                    if c.greenComponent > 0.4 && c.blueComponent > 0.4 { minY = min(minY, y); maxY = max(maxY, y) }
+                }
+            }
             return CGFloat(minY + maxY) / 2 / scale
         }
         for height: CGFloat in [24, 28] {

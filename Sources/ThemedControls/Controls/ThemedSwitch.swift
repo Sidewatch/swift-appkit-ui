@@ -51,8 +51,9 @@ open class ThemedSwitch: NSControl {
         translatesAutoresizingMaskIntoConstraints = false
         setAccessibilityRole(.checkBox)
         setAccessibilitySubrole(NSAccessibility.Subrole(rawValue: "AXSwitch"))
-        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(themeChanged),
+            name: ThemedControls.paletteDidChange, object: nil)
     }
     @available(*, unavailable) public required init?(coder: NSCoder) { fatalError() }
     deinit { NotificationCenter.default.removeObserver(self) }

@@ -18,14 +18,15 @@ public enum SettingsMetrics {
     /// One width for every pane — switching pages must not resize the window under
     /// the pointer, so panes share a width and shorter ones leave the rest of the
     /// page empty.
-    public static let paneWidth: CGFloat = 620   // fills the sidebar window's content column without dead margins
+    public static let paneWidth: CGFloat = 620  // fills the sidebar window's content column without dead margins
     /// The floor a pane's height can reach, so a page never collapses to a sliver.
     public static let paneMinHeight: CGFloat = 360
     /// The window: ONE size for every page, a tall page scrolling inside it rather than the
     /// window resizing per page.
-    public static let windowSize = NSSize(width: 900, height: 660)   // Appearance, Editor and Sidebar fit without scrolling; Terminal scrolls
+    // Appearance, Editor and Sidebar fit without scrolling; Terminal scrolls
+    public static let windowSize = NSSize(width: 900, height: 660)
     /// The smallest the window may be dragged to.
-    public static let windowMinSize = NSSize(width: 880, height: 460)   // sidebar + the 620-pt column with 20-pt margins
+    public static let windowMinSize = NSSize(width: 880, height: 460)  // sidebar + the 620-pt column with 20-pt margins
     /// The page list down the left edge.
     public static let sidebarWidth: CGFloat = 200
     /// The strip across the top that holds the traffic lights (over the sidebar) and the
@@ -71,4 +72,3 @@ public enum SettingsMetrics {
     /// are pinned at construction, before they have a window. 2× when there is no screen.
     public static var hairline: CGFloat { 1 / (NSScreen.main?.backingScaleFactor ?? 2) }
 }
-

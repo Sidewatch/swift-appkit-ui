@@ -22,8 +22,9 @@ import AppKit
     }
 
     func testASmallerDocumentIsCentredOnBothAxes() {
-        let scroll = self.scroll(viewport: NSSize(width: 400, height: 300),
-                                 document: NSSize(width: 100, height: 50))
+        let scroll = self.scroll(
+            viewport: NSSize(width: 400, height: 300),
+            document: NSSize(width: 100, height: 50))
         let origin = scroll.contentView.bounds.origin
         XCTAssertEqual(origin.x, (100 - 400) / 2, accuracy: 0.5)
         XCTAssertEqual(origin.y, (50 - 300) / 2, accuracy: 0.5)
@@ -31,16 +32,18 @@ import AppKit
 
     /// Mixed is the real case: a wide, short image in a tall pane.
     func testOnlyTheAxisWithRoomIsCentred() {
-        let scroll = self.scroll(viewport: NSSize(width: 200, height: 400),
-                                 document: NSSize(width: 800, height: 50))
+        let scroll = self.scroll(
+            viewport: NSSize(width: 200, height: 400),
+            document: NSSize(width: 800, height: 50))
         let origin = scroll.contentView.bounds.origin
         XCTAssertEqual(origin.x, 0, accuracy: 0.5, "a document wider than the viewport is not centred")
         XCTAssertEqual(origin.y, (50 - 400) / 2, accuracy: 0.5)
     }
 
     func testADocumentBiggerThanTheViewportScrollsNormally() {
-        let scroll = self.scroll(viewport: NSSize(width: 200, height: 200),
-                                 document: NSSize(width: 1000, height: 1000))
+        let scroll = self.scroll(
+            viewport: NSSize(width: 200, height: 200),
+            document: NSSize(width: 1000, height: 1000))
         XCTAssertEqual(scroll.contentView.bounds.origin, .zero)
     }
 

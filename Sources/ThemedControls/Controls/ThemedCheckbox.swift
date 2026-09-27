@@ -21,8 +21,9 @@ open class ThemedCheckbox: NSButton {
         super.init(frame: frameRect)
         setButtonType(.switch)
         isBordered = false
-        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(themeChanged),
+            name: ThemedControls.paletteDidChange, object: nil)
     }
     @available(*, unavailable) public required init?(coder: NSCoder) { fatalError() }
     deinit { NotificationCenter.default.removeObserver(self) }
@@ -34,8 +35,9 @@ open class ThemedCheckbox: NSButton {
 
     open override var intrinsicContentSize: NSSize {
         let t = titleSize()
-        return NSSize(width: t.width > 0 ? boxSize + gap + t.width : boxSize,
-                      height: max(boxSize, t.height))
+        return NSSize(
+            width: t.width > 0 ? boxSize + gap + t.width : boxSize,
+            height: max(boxSize, t.height))
     }
 
     private func titleSize() -> NSSize {
@@ -55,8 +57,10 @@ open class ThemedCheckbox: NSButton {
             // whichever way the view's coordinate system runs.
             func pt(_ fx: CGFloat, _ fyFromBottom: CGFloat) -> NSPoint {
                 let x = box.minX + box.width * fx
-                let y = isFlipped ? box.maxY - box.height * fyFromBottom
-                                  : box.minY + box.height * fyFromBottom
+                let y =
+                    isFlipped
+                    ? box.maxY - box.height * fyFromBottom
+                    : box.minY + box.height * fyFromBottom
                 return NSPoint(x: x, y: y)
             }
             let check = NSBezierPath()
@@ -76,8 +80,9 @@ open class ThemedCheckbox: NSButton {
                 .foregroundColor: ThemedControls.palette.foreground,
             ]
             let ts = (title as NSString).size(withAttributes: attrs)
-            (title as NSString).draw(at: NSPoint(x: boxSize + gap, y: (bounds.height - ts.height) / 2),
-                                     withAttributes: attrs)
+            (title as NSString).draw(
+                at: NSPoint(x: boxSize + gap, y: (bounds.height - ts.height) / 2),
+                withAttributes: attrs)
         }
     }
 }

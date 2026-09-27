@@ -20,8 +20,9 @@ public final class SettingsSeparatorView: NSView {
     public init() {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
-        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(themeChanged),
+            name: ThemedControls.paletteDidChange, object: nil)
     }
 
     @available(*, unavailable)

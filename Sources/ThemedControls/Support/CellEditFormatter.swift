@@ -56,9 +56,11 @@ public final class CellEditFormatter: Formatter, @unchecked Sendable {
     public nonisolated override func editingString(for obj: Any?) -> String? { obj as? String }
 
     /// The typed text, kept exactly as written.
-    public nonisolated override func getObjectValue(_ obj: AutoreleasingUnsafeMutablePointer<AnyObject?>?,
-                                                    for string: String,
-                                                    errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
+    public nonisolated override func getObjectValue(
+        _ obj: AutoreleasingUnsafeMutablePointer<AnyObject?>?,
+        for string: String,
+        errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?
+    ) -> Bool {
         obj?.pointee = string as NSString
         return true
     }

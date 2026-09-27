@@ -32,7 +32,8 @@ public final class PaneDividerView: NSView {
 
     public override func draw(_ dirtyRect: NSRect) {
         ThemedControls.palette.border.setFill()
-        let line = axis?.orientation == .horizontal
+        let line =
+            axis?.orientation == .horizontal
             ? NSRect(x: bounds.midX - 0.5, y: 0, width: 1, height: bounds.height)
             : NSRect(x: 0, y: bounds.midY - 0.5, width: bounds.width, height: 1)
         line.fill()

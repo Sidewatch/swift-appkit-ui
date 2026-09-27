@@ -22,7 +22,7 @@ public final class ThemedScrollView: NSScrollView {
 
     public override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        scrollerStyle = .overlay   // no reserved track strip — matches the sidebar
+        scrollerStyle = .overlay  // no reserved track strip — matches the sidebar
         // Uniform auto-hide so every themed scroll view renders the SAME thin overlay
         // knob. Left at the default (false), an overlay scroller stays shown in its
         // wider expanded form — so a split with one auto-hiding pane and one default

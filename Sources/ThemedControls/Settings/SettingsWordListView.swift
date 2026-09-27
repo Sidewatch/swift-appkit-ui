@@ -18,7 +18,8 @@ import AppKit
 /// Vends TWO views for two separate rows: `SettingsRowView(spanning: listView, inset: 0,
 /// padding: 0)` and `SettingsRowView(spanning: buttonBar)` — one zero-padding row jams the buttons.
 public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTableViewDelegate,
-                                  NSTextFieldDelegate {
+    NSTextFieldDelegate
+{
 
     /// Called with the canonical list — trimmed, de-duplicated, sorted — whenever it changes.
     public var onChange: (([String]) -> Void)?
@@ -35,11 +36,15 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
 
     private let table = NSTableView()
     private let addRemoveControl = ThemedSegmentBar(
-        labels: [String(localized: "Add", bundle: .module,
-                        comment: "Word list: accessibility name of the + button that adds a word"),
-                 String(localized: "Remove", bundle: .module,
-                        comment: "Word list: accessibility name of the − button that removes the selected words")],
-        symbols: ["plus", "minus"])   // themed +/−, momentary
+        labels: [
+            String(
+                localized: "Add", bundle: .module,
+                comment: "Word list: accessibility name of the + button that adds a word"),
+            String(
+                localized: "Remove", bundle: .module,
+                comment: "Word list: accessibility name of the − button that removes the selected words"),
+        ],
+        symbols: ["plus", "minus"])  // themed +/−, momentary
     private let restoreButton = ThemedPillButton(title: String(localized: "Restore Defaults", bundle: .module), target: nil, action: nil)
     private let columnID = NSUserInterfaceItemIdentifier("WordListItem")
 
@@ -55,12 +60,14 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
 
     /// Creates an empty list whose blank rows show `noun` as a placeholder.
     public init(noun: String? = nil) {
-        self.noun = noun ?? String(localized: "word", bundle: .module,
-                                   comment: "Word list: placeholder shown on a new, blank row")
+        self.noun =
+            noun
+            ?? String(
+                localized: "word", bundle: .module,
+                comment: "Word list: placeholder shown on a new, blank row")
         super.init()
         buildUI()
     }
-
 
     // MARK: - Layout
 
@@ -114,8 +121,9 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
             addRemoveControl.centerYAnchor.constraint(equalTo: buttonBar.centerYAnchor),
             restoreButton.trailingAnchor.constraint(equalTo: buttonBar.trailingAnchor),
             restoreButton.centerYAnchor.constraint(equalTo: buttonBar.centerYAnchor),
-            restoreButton.leadingAnchor.constraint(greaterThanOrEqualTo: addRemoveControl.trailingAnchor,
-                                                   constant: 12),
+            restoreButton.leadingAnchor.constraint(
+                greaterThanOrEqualTo: addRemoveControl.trailingAnchor,
+                constant: 12),
         ])
     }
 
@@ -127,7 +135,8 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     /// `textField` outlet: it is what editing focuses, and what the table recolors to stay
     /// legible on a selected row.
     public func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        let cell = (tableView.makeView(withIdentifier: columnID, owner: self) as? NSTableCellView)
+        let cell =
+            (tableView.makeView(withIdentifier: columnID, owner: self) as? NSTableCellView)
             ?? makeWordCell()
         cell.textField?.stringValue = words[row]
         return cell
@@ -175,7 +184,8 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     private func beginEditing(row: Int) {
         table.scrollRowToVisible(row)
         guard let cell = table.view(atColumn: 0, row: row, makeIfNecessary: true) as? NSTableCellView,
-              let field = cell.textField else { return }
+            let field = cell.textField
+        else { return }
         table.window?.makeFirstResponder(field)
     }
 
@@ -269,7 +279,8 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     /// Trimmed, blanks dropped, de-duplicated case-insensitively, sorted.
     private func canonical(_ input: [String]) -> [String] {
         var seen = Set<String>()
-        return input
+        return
+            input
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty && seen.insert($0.lowercased()).inserted }
             .sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }

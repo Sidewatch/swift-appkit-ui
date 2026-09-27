@@ -92,8 +92,10 @@ import AppKit
     /// type 0" the moment `super` inspects it.
     func testAZeroDeltaChangesNothing() throws {
         let scroll = makeScroll()
-        let cg = try XCTUnwrap(CGEvent(scrollWheelEvent2Source: nil, units: .pixel,
-                                       wheelCount: 1, wheel1: 0, wheel2: 0, wheel3: 0))
+        let cg = try XCTUnwrap(
+            CGEvent(
+                scrollWheelEvent2Source: nil, units: .pixel,
+                wheelCount: 1, wheel1: 0, wheel2: 0, wheel3: 0))
         let event = try XCTUnwrap(NSEvent(cgEvent: cg))
         scroll.scrollWheel(with: event)
         XCTAssertEqual(scroll.magnification, 1, accuracy: 0.0001)

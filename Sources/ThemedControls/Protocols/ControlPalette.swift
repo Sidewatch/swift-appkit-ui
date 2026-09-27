@@ -48,7 +48,6 @@ public protocol ControlPalette: Sendable {
     func elevatedSurface(dark: CGFloat, light: CGFloat) -> NSColor
 }
 
-
 /// Defaults for the settings-form surfaces.
 extension ControlPalette {
     /// Defaults so an existing palette keeps compiling. A host that draws settings forms should

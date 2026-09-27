@@ -21,8 +21,9 @@ import AppKit
         XCTAssertFalse(families.isEmpty)
         XCTAssertTrue(families.contains("Menlo"), "a monospaced family ships on every Mac")
         for proportional in ["Helvetica", "Times New Roman", "Arial"] {
-            XCTAssertFalse(families.contains(proportional),
-                           "\(proportional) is proportional; a terminal grid assumes one advance width")
+            XCTAssertFalse(
+                families.contains(proportional),
+                "\(proportional) is proportional; a terminal grid assumes one advance width")
         }
     }
 
@@ -37,8 +38,9 @@ import AppKit
     /// point would give every rendered italic something to derive from twice.
     func testItalicFacesAreNotOffered() {
         let names = FontCatalog.faces(inFamily: "Menlo").map { $0.name.lowercased() }
-        XCTAssertFalse(names.contains { $0.contains("italic") || $0.contains("oblique") },
-                       "got \(names)")
+        XCTAssertFalse(
+            names.contains { $0.contains("italic") || $0.contains("oblique") },
+            "got \(names)")
     }
 
     func testFacesComeBackLightestFirst() {
@@ -113,8 +115,10 @@ import AppKit
     }
 
     func testANilFamilyIsTheSystemFontAtTheNamedWeight() {
-        for (name, weight) in [("Light", NSFont.Weight.light), ("Medium", .medium),
-                               ("Semibold", .semibold), ("Bold", .bold)] {
+        for (name, weight) in [
+            ("Light", NSFont.Weight.light), ("Medium", .medium),
+            ("Semibold", .semibold), ("Bold", .bold),
+        ] {
             let font = FontCatalog.font(family: nil, postScriptName: nil, face: name, size: 12)
             let expected = NSFont.monospacedSystemFont(ofSize: 12, weight: weight)
             XCTAssertEqual(font.fontName, expected.fontName, "weight \(name)")

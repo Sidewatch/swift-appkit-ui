@@ -26,9 +26,11 @@ public extension NSView {
 
     /// Adds `view` for Auto Layout and pins the chosen edges to this view, activated.
     @discardableResult
-    func addPinnedSubview(_ view: NSView,
-                          insets: NSDirectionalEdgeInsets = .init(),
-                          edges: NSDirectionalRectEdge = .all) -> [NSLayoutConstraint] {
+    func addPinnedSubview(
+        _ view: NSView,
+        insets: NSDirectionalEdgeInsets = .init(),
+        edges: NSDirectionalRectEdge = .all
+    ) -> [NSLayoutConstraint] {
         addSubviewsForAutoLayout(view)
         return view.pinEdges(to: self, insets: insets, edges: edges)
     }
@@ -36,10 +38,12 @@ public extension NSView {
     /// Pins the chosen edges to `other`, inset inward by `insets`, and activates them. Turns
     /// this view's autoresizing mask off.
     @discardableResult
-    func pinEdges(to other: LayoutAnchoring,
-                  insets: NSDirectionalEdgeInsets = .init(),
-                  edges: NSDirectionalRectEdge = .all,
-                  priority: NSLayoutConstraint.Priority = .required) -> [NSLayoutConstraint] {
+    func pinEdges(
+        to other: LayoutAnchoring,
+        insets: NSDirectionalEdgeInsets = .init(),
+        edges: NSDirectionalRectEdge = .all,
+        priority: NSLayoutConstraint.Priority = .required
+    ) -> [NSLayoutConstraint] {
         let constraints = edgeConstraints(to: other, insets: insets, edges: edges, priority: priority)
         NSLayoutConstraint.activate(constraints)
         return constraints
@@ -47,24 +51,30 @@ public extension NSView {
 
     /// The constraints ``pinEdges(to:insets:edges:priority:)`` would activate, NOT activated,
     /// for a caller that activates one combined list. Turns the autoresizing mask off.
-    func edgeConstraints(to other: LayoutAnchoring,
-                         insets: NSDirectionalEdgeInsets = .init(),
-                         edges: NSDirectionalRectEdge = .all,
-                         priority: NSLayoutConstraint.Priority = .required) -> [NSLayoutConstraint] {
+    func edgeConstraints(
+        to other: LayoutAnchoring,
+        insets: NSDirectionalEdgeInsets = .init(),
+        edges: NSDirectionalRectEdge = .all,
+        priority: NSLayoutConstraint.Priority = .required
+    ) -> [NSLayoutConstraint] {
         translatesAutoresizingMaskIntoConstraints = false
         var constraints: [NSLayoutConstraint] = []
         if edges.contains(.top) { constraints.append(topAnchor.constraint(equalTo: other.topAnchor, constant: insets.top)) }
         if edges.contains(.leading) { constraints.append(leadingAnchor.constraint(equalTo: other.leadingAnchor, constant: insets.leading)) }
         if edges.contains(.bottom) { constraints.append(bottomAnchor.constraint(equalTo: other.bottomAnchor, constant: -insets.bottom)) }
-        if edges.contains(.trailing) { constraints.append(trailingAnchor.constraint(equalTo: other.trailingAnchor, constant: -insets.trailing)) }
+        if edges.contains(.trailing) {
+            constraints.append(trailingAnchor.constraint(equalTo: other.trailingAnchor, constant: -insets.trailing))
+        }
         for c in constraints { c.priority = priority }
         return constraints
     }
 
     /// Fixes the width and/or height, activated. Turns the autoresizing mask off.
     @discardableResult
-    func pinSize(width: CGFloat? = nil, height: CGFloat? = nil,
-                 priority: NSLayoutConstraint.Priority = .required) -> [NSLayoutConstraint] {
+    func pinSize(
+        width: CGFloat? = nil, height: CGFloat? = nil,
+        priority: NSLayoutConstraint.Priority = .required
+    ) -> [NSLayoutConstraint] {
         translatesAutoresizingMaskIntoConstraints = false
         var constraints: [NSLayoutConstraint] = []
         if let width { constraints.append(widthAnchor.constraint(equalToConstant: width)) }
@@ -76,8 +86,10 @@ public extension NSView {
 
     /// Centres this view in `other` on the chosen axes, offset by `offset`, activated.
     @discardableResult
-    func pinCenter(to other: LayoutAnchoring, x: Bool = true, y: Bool = true,
-                   offset: CGPoint = .zero) -> [NSLayoutConstraint] {
+    func pinCenter(
+        to other: LayoutAnchoring, x: Bool = true, y: Bool = true,
+        offset: CGPoint = .zero
+    ) -> [NSLayoutConstraint] {
         translatesAutoresizingMaskIntoConstraints = false
         var constraints: [NSLayoutConstraint] = []
         if x { constraints.append(centerXAnchor.constraint(equalTo: other.centerXAnchor, constant: offset.x)) }

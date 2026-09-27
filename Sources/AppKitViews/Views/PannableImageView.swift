@@ -54,7 +54,7 @@ public final class PannableImageView: NSImageView {
     public override func mouseUp(with event: NSEvent) {
         guard panPoint != nil else { super.mouseUp(with: event); return }
         panPoint = nil
-        NSCursor.pop()   // balances the push in mouseDown
+        NSCursor.pop()  // balances the push in mouseDown
     }
 
     /// A drag interrupted by the view being torn down — switching tabs with the button still

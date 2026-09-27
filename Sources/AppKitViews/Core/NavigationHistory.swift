@@ -45,7 +45,7 @@ import Foundation
     /// records nothing rather than pushing a placeholder that Back would land on.
     public func recordJump(from: DocumentLocation?) {
         guard let from else { return }
-        if back.last == from { return }     // coalesce a repeat of the same spot
+        if back.last == from { return }  // coalesce a repeat of the same spot
         back.append(from)
         if back.count > cap { back.removeFirst(back.count - cap) }
         forward.removeAll()

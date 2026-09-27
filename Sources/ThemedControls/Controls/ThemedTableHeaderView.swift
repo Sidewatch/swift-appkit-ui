@@ -17,6 +17,6 @@ public final class ThemedTableHeaderView: NSTableHeaderView {
     public override func draw(_ dirtyRect: NSRect) {
         ThemedControls.palette.statusBackground.setFill()
         dirtyRect.fill()
-        super.draw(dirtyRect)   // then the cells, which draw themselves below
+        super.draw(dirtyRect)  // then the cells, which draw themselves below
     }
 }

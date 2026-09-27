@@ -60,7 +60,9 @@ public final class ThemedGroupRowView: NSTableRowView {
     public override func drawBackground(in dirtyRect: NSRect) {
         ThemedControls.palette.sidebarBackground.setFill()
         bounds.fill()
-        ThemedControls.palette.sidebarBackground.blended(ThemedControls.palette.isDark ? 0.06 : 0.035, toward: ThemedControls.palette.foreground).setFill()
+        ThemedControls.palette.sidebarBackground.blended(
+            ThemedControls.palette.isDark ? 0.06 : 0.035, toward: ThemedControls.palette.foreground
+        ).setFill()
         bounds.fill()
         ThemedControls.palette.rowSeparator.setFill()
         NSRect(x: 0, y: 0, width: bounds.width, height: 1).fill()

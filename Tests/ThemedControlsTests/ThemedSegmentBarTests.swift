@@ -77,8 +77,10 @@ final class ThemedSegmentBarTests: XCTestCase {
         let counter = Counter()
         bar.target = counter; bar.action = #selector(Counter.fire(_:))
         func key(_ code: UInt16) throws -> NSEvent {
-            try XCTUnwrap(NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0,
-                                           context: nil, characters: "", charactersIgnoringModifiers: "", isARepeat: false, keyCode: code))
+            try XCTUnwrap(
+                NSEvent.keyEvent(
+                    with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0,
+                    context: nil, characters: "", charactersIgnoringModifiers: "", isARepeat: false, keyCode: code))
         }
         bar.keyDown(with: try key(124)); bar.keyDown(with: try key(124)); bar.keyDown(with: try key(124))
         XCTAssertEqual(bar.selectedSegment, 2, "→ ×3 from A stops at C")

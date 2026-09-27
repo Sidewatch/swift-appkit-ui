@@ -45,8 +45,9 @@ open class ThemedPopUpButton: NSPopUpButton {
         let f = font ?? .systemFont(ofSize: 12)
         var x: CGFloat = 8
         if let img = selectedItem?.image {
-            img.tinted(ThemedControls.palette.foreground).draw(in: NSRect(x: x, y: bounds.midY - 7, width: 14, height: 14),
-                                              from: .zero, operation: .sourceOver, fraction: 1)
+            img.tinted(ThemedControls.palette.foreground).draw(
+                in: NSRect(x: x, y: bounds.midY - 7, width: 14, height: 14),
+                from: .zero, operation: .sourceOver, fraction: 1)
             x += 18
         }
         let para = NSMutableParagraphStyle(); para.lineBreakMode = .byTruncatingTail
@@ -55,8 +56,9 @@ open class ThemedPopUpButton: NSPopUpButton {
         let h = title.size(withAttributes: attrs).height
         title.draw(in: NSRect(x: x, y: bounds.midY - h / 2, width: max(0, bounds.width - x - 22), height: h), withAttributes: attrs)
         if let chevron = NSImage.symbol("chevron.up.chevron.down", pointSize: 8, weight: .semibold) {
-            chevron.tinted(ThemedControls.palette.mutedText).draw(in: NSRect(x: bounds.maxX - 16, y: bounds.midY - 5, width: 10, height: 10),
-                                               from: .zero, operation: .sourceOver, fraction: 1)
+            chevron.tinted(ThemedControls.palette.mutedText).draw(
+                in: NSRect(x: bounds.maxX - 16, y: bounds.midY - 5, width: 10, height: 10),
+                from: .zero, operation: .sourceOver, fraction: 1)
         }
     }
 }

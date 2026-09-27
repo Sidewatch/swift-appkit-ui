@@ -36,7 +36,7 @@ final class ThemedSliderPaintTests: XCTestCase {
         defer { ThemedControls.palette = SystemPalette() }
         NotificationCenter.default.post(name: ThemedControls.paletteDidChange, object: nil)
         let slider = ThemedSlider(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
-        slider.minValue = 0; slider.maxValue = 10; slider.doubleValue = 8   // filled to 80%
+        slider.minValue = 0; slider.maxValue = 10; slider.doubleValue = 8  // filled to 80%
         slider.appearance = NSAppearance(named: .darkAqua)
         let rep = try XCTUnwrap(slider.bitmapImageRepForCachingDisplay(in: slider.bounds))
         slider.cacheDisplay(in: slider.bounds, to: rep)
@@ -49,7 +49,8 @@ final class ThemedSliderPaintTests: XCTestCase {
             if c.redComponent > 0.6, c.greenComponent < 0.35, c.blueComponent < 0.35 { reds += 1 }
         }
         XCTAssertGreaterThan(samples, 10)
-        XCTAssertGreaterThan(Double(reds) / Double(max(samples, 1)), 0.6,
-                             "\(reds)/\(samples) red pixels — the fill is not the palette accent")
+        XCTAssertGreaterThan(
+            Double(reds) / Double(max(samples, 1)), 0.6,
+            "\(reds)/\(samples) red pixels — the fill is not the palette accent")
     }
 }

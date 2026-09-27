@@ -51,7 +51,7 @@ public final class HeadsUpDisplay: NSView {
         addSubview(label)
         isHidden = true
         alphaValue = 0
-        setAccessibilityElement(false)   // announced instead, see `present`
+        setAccessibilityElement(false)  // announced instead, see `present`
     }
     @available(*, unavailable) required init?(coder: NSCoder) { fatalError() }
 
@@ -92,16 +92,22 @@ public final class HeadsUpDisplay: NSView {
         material.frame = NSRect(origin: .zero, size: NSSize(width: w, height: h))
         material.layer?.cornerRadius = h / 2
         icon.frame = NSRect(x: padX, y: (h - iconSize.height) / 2, width: iconSize.width, height: iconSize.height)
-        label.frame = NSRect(x: padX + iconSize.width + gap, y: (h - label.frame.height) / 2, width: min(label.frame.width, 480), height: label.frame.height)
+        label.frame = NSRect(
+            x: padX + iconSize.width + gap, y: (h - label.frame.height) / 2, width: min(label.frame.width, 480), height: label.frame.height)
         let layout = content.convert(window.contentLayoutRect, from: nil)
         frame = NSRect(x: (layout.midX - w / 2).rounded(), y: layout.maxY - Self.topInset - h, width: w, height: h)
         content.addSubview(self, positioned: .above, relativeTo: nil)
         isHidden = false
-        if ThemedControls.reduceMotion { alphaValue = 1 } else {
-            NSAnimationContext.runAnimationGroup { ctx in ctx.duration = Self.fadeIn; animator().alphaValue = 1 }
+        if ThemedControls.reduceMotion {
+            alphaValue = 1
+        } else {
+            NSAnimationContext.runAnimationGroup { ctx in
+                ctx.duration = Self.fadeIn; animator().alphaValue = 1
+            }
         }
-        NSAccessibility.post(element: content, notification: .announcementRequested,
-                             userInfo: [.announcement: title, .priority: NSAccessibilityPriorityLevel.medium.rawValue])
+        NSAccessibility.post(
+            element: content, notification: .announcementRequested,
+            userInfo: [.announcement: title, .priority: NSAccessibilityPriorityLevel.medium.rawValue])
         let work = DispatchWorkItem { [weak self] in self?.dismiss() }
         hideWork = work
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.dwell, execute: work)
@@ -109,9 +115,14 @@ public final class HeadsUpDisplay: NSView {
 
     private func dismiss() {
         if ThemedControls.reduceMotion { alphaValue = 0; isHidden = true; return }
-        NSAnimationContext.runAnimationGroup({ ctx in ctx.duration = Self.fadeOut; animator().alphaValue = 0 },
-                                            completionHandler: { [weak self] in
-            MainActor.assumeIsolated { guard let self, self.alphaValue == 0 else { return }; self.isHidden = true }
-        })
+        NSAnimationContext.runAnimationGroup(
+            { ctx in
+                ctx.duration = Self.fadeOut; animator().alphaValue = 0
+            },
+            completionHandler: { [weak self] in
+                MainActor.assumeIsolated {
+                    guard let self, self.alphaValue == 0 else { return }; self.isHidden = true
+                }
+            })
     }
 }

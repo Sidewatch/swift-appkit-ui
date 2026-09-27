@@ -41,7 +41,10 @@ final class ThemedSwitchTests: XCTestCase {
     /// small 26 × 17, mini 21 × 14 inside a 54 × 24 frame), at the trailing end of the footprint,
     /// centred vertically — the footprint itself is unchanged, so layouts do not move.
     func testTrackIsTheStockSwitchsVisibleSizeInsideTheFootprint() {
-        for (size, want) in [(NSControl.ControlSize.regular, NSSize(width: 32, height: 21)), (.small, NSSize(width: 26, height: 17)), (.mini, NSSize(width: 21, height: 14))] {
+        for (size, want) in [
+            (NSControl.ControlSize.regular, NSSize(width: 32, height: 21)), (.small, NSSize(width: 26, height: 17)),
+            (.mini, NSSize(width: 21, height: 14)),
+        ] {
             let sw = ThemedSwitch()
             sw.controlSize = size
             sw.frame = NSRect(origin: .zero, size: sw.intrinsicContentSize)
@@ -70,7 +73,9 @@ final class ThemedSwitchTests: XCTestCase {
         XCTAssertLessThan(small.width, regular.width)
         XCTAssertLessThan(small.height, regular.height)
         XCTAssertLessThan(mini.height, small.height)
-        XCTAssertEqual(small.height, (regular.height * 0.78).rounded(), "small is the HIG's ratio of regular; the stock switch reports one size for every controlSize")
+        XCTAssertEqual(
+            small.height, (regular.height * 0.78).rounded(),
+            "small is the HIG's ratio of regular; the stock switch reports one size for every controlSize")
         XCTAssertEqual(regular, NSSwitch().intrinsicContentSize)
         sw.controlSize = .regular
         XCTAssertEqual(sw.intrinsicContentSize, regular)
@@ -93,7 +98,8 @@ final class ThemedSwitchTests: XCTestCase {
 
     /// On screen the knob slides; under Reduce Motion it snaps.
     func testReduceMotionSnapsInsteadOfSliding() {
-        let host = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 200, height: 100), styleMask: [.titled], backing: .buffered, defer: false)
+        let host = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 200, height: 100), styleMask: [.titled], backing: .buffered, defer: false)
         let sw = ThemedSwitch()
         host.contentView?.addSubview(sw)
         let before = ThemedControls.reduceMotion
@@ -120,17 +126,20 @@ final class ThemedSwitchTests: XCTestCase {
             // Sampled along the TRACK (the paint sits at the trailing end of the footprint),
             // `side` a fraction of its width, on its centre line.
             let track = sw.trackRect
-            let y = Int((sw.bounds.maxY - track.midY) * scale)   // rep rows run top-down
-            for px in stride(from: Int((track.minX + track.width * (side - 0.08)) * scale), to: Int((track.minX + track.width * (side + 0.08)) * scale), by: 1) {
+            let y = Int((sw.bounds.maxY - track.midY) * scale)  // rep rows run top-down
+            for px in stride(
+                from: Int((track.minX + track.width * (side - 0.08)) * scale), to: Int((track.minX + track.width * (side + 0.08)) * scale),
+                by: 1)
+            {
                 guard let c = rep.colorAt(x: px, y: y)?.usingColorSpace(.sRGB) else { continue }
                 samples += 1
                 if c.redComponent > 0.6, c.greenComponent < 0.35, c.blueComponent < 0.35 { reds += 1 }
             }
             return Double(reds) / Double(max(samples, 1))
         }
-        sw.state = .on      // knob at the right → sample the LEFT of the track
+        sw.state = .on  // knob at the right → sample the LEFT of the track
         XCTAssertGreaterThan(try redShare(0.22), 0.8, "on: the track is the palette accent")
-        sw.state = .off     // knob at the left → sample the RIGHT
+        sw.state = .off  // knob at the left → sample the RIGHT
         XCTAssertLessThan(try redShare(0.78), 0.1, "off: a lifted surface, not the accent")
     }
 }

@@ -20,7 +20,7 @@ public final class InnerGridTableView: NSTableView {
     public var dividerColor: NSColor?
 
     public override func drawGrid(inClipRect clipRect: NSRect) {
-        super.drawGrid(inClipRect: clipRect)   // the horizontal lines, per the mask
+        super.drawGrid(inClipRect: clipRect)  // the horizontal lines, per the mask
         guard tableColumns.count > 1 else { return }
         (dividerColor ?? ThemedControls.palette.rowSeparator).setFill()
         for column in 0..<(tableColumns.count - 1) {

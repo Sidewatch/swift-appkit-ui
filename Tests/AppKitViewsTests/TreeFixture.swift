@@ -62,8 +62,9 @@ final class TreeNode {
     outline.dataSource = source
     outline.reloadData()
 
-    let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
-                          styleMask: [.titled], backing: .buffered, defer: false)
+    let window = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
+        styleMask: [.titled], backing: .buffered, defer: false)
     let scroll = NSScrollView(frame: window.contentView!.bounds)
     scroll.documentView = outline
     window.contentView?.addSubview(scroll)
@@ -85,7 +86,7 @@ final class TreeNode {
 
     private func nodes(_ item: Any?) -> [TreeNode] {
         guard let node = item as? TreeNode else { return roots }
-        realised.insert(ObjectIdentifier(node))   // "loaded" on first ask, as an on-demand source is
+        realised.insert(ObjectIdentifier(node))  // "loaded" on first ask, as an on-demand source is
         return node.children
     }
 
@@ -109,8 +110,9 @@ final class TreeNode {
     outline.dataSource = source
     outline.reloadData()
 
-    let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
-                          styleMask: [.titled], backing: .buffered, defer: false)
+    let window = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
+        styleMask: [.titled], backing: .buffered, defer: false)
     let scroll = NSScrollView(frame: window.contentView!.bounds)
     scroll.documentView = outline
     window.contentView?.addSubview(scroll)

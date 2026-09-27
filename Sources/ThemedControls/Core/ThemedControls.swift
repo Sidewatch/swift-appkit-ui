@@ -27,5 +27,6 @@ public enum ThemedControls {
     /// Mirror of System Settings ▸ Accessibility ▸ Display ▸ Differentiate Without Colour, kept
     /// the same way as `reduceMotion`. A host whose surfaces say something by colour alone (a
     /// git-tinted tab title) adds a second signal while it is on.
-    nonisolated(unsafe) public static var differentiateWithoutColor: Bool = NSWorkspace.shared.accessibilityDisplayShouldDifferentiateWithoutColor
+    nonisolated(unsafe) public static var differentiateWithoutColor: Bool = NSWorkspace.shared
+        .accessibilityDisplayShouldDifferentiateWithoutColor
 }

@@ -91,9 +91,11 @@ import AppKit
 
     func testReadingOrderIsLeftToRightThenTopToBottom() {
         let table = TwoColumnTable(rows: 2)
-        XCTAssertEqual(table.editableCells, [
-            CellPosition(row: 0, tag: 1), CellPosition(row: 0, tag: 2),
-            CellPosition(row: 1, tag: 1), CellPosition(row: 1, tag: 2),
-        ])
+        XCTAssertEqual(
+            table.editableCells,
+            [
+                CellPosition(row: 0, tag: 1), CellPosition(row: 0, tag: 2),
+                CellPosition(row: 1, tag: 1), CellPosition(row: 1, tag: 2),
+            ])
     }
 }

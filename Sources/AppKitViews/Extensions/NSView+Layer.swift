@@ -13,9 +13,11 @@ import AppKit
 public extension NSView {
     /// Makes the view layer-backed and styles the layer. Nil arguments leave that property as
     /// it is. Colours are resolved now, so call again when the appearance or theme changes.
-    func styleLayer(background: NSColor? = nil, cornerRadius: CGFloat? = nil,
-                    borderColor: NSColor? = nil, borderWidth: CGFloat? = nil,
-                    masksToBounds: Bool? = nil) {
+    func styleLayer(
+        background: NSColor? = nil, cornerRadius: CGFloat? = nil,
+        borderColor: NSColor? = nil, borderWidth: CGFloat? = nil,
+        masksToBounds: Bool? = nil
+    ) {
         wantsLayer = true
         guard let layer else { return }
         if let background { layer.backgroundColor = background.cgColor }

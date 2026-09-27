@@ -43,7 +43,8 @@ extension CellTabbing {
     /// inside this view.
     public func isEditing(_ position: CellPosition) -> Bool {
         guard let editor = window?.firstResponder as? NSTextView,
-              let field = editor.delegate as? NSView else { return false }
+            let field = editor.delegate as? NSView
+        else { return false }
         return field.isDescendant(of: self)
     }
 

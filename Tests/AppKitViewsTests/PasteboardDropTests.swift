@@ -95,17 +95,21 @@ import FoundationExtensions
     /// Finder writes ONE pasteboard item per dragged file. A drop that keeps only the first
     /// reads to the person as "it took the wrong file".
     func testEveryDraggedFileSurvives() {
-        board.writeObjects([URL(fileURLWithPath: "/tmp/a.txt") as NSURL,
-                            URL(fileURLWithPath: "/tmp/b.txt") as NSURL,
-                            URL(fileURLWithPath: "/tmp/c.txt") as NSURL])
+        board.writeObjects([
+            URL(fileURLWithPath: "/tmp/a.txt") as NSURL,
+            URL(fileURLWithPath: "/tmp/b.txt") as NSURL,
+            URL(fileURLWithPath: "/tmp/c.txt") as NSURL,
+        ])
         var text = ""
         XCTAssertTrue(board.readDroppedFiles { text = $0 })
         for name in ["a.txt", "b.txt", "c.txt"] { XCTAssertTrue(text.contains(name), "lost \(name) from \(text)") }
     }
 
     func testEveryLinkSurvives() {
-        board.writeObjects([URL(string: "https://one.example")! as NSURL,
-                            URL(string: "https://two.example")! as NSURL])
+        board.writeObjects([
+            URL(string: "https://one.example")! as NSURL,
+            URL(string: "https://two.example")! as NSURL,
+        ])
         var text = ""
         XCTAssertTrue(board.readDroppedFiles { text = $0 })
         XCTAssertTrue(text.contains("one.example") && text.contains("two.example"), "got \(text)")

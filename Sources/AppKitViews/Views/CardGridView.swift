@@ -45,7 +45,7 @@ public final class CardGridView: NSView {
         self.spacing = spacing
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
-        cards.forEach { addSubview($0) }   // default translatesAutoresizing = true → manually framed
+        cards.forEach { addSubview($0) }  // default translatesAutoresizing = true → manually framed
     }
     @available(*, unavailable) public required init?(coder: NSCoder) { fatalError() }
 
@@ -83,16 +83,17 @@ public final class CardGridView: NSView {
     }
 
     public override func layout() {
-        super.layout()   // frames the cards only — never invalidates or mutates a constraint
+        super.layout()  // frames the cards only — never invalidates or mutates a constraint
         let w = bounds.width
         guard w > 1, !cards.isEmpty else { return }
         let cols = gridShape(for: w).cols
         let cw = ((w - CGFloat(cols - 1) * spacing) / CGFloat(cols)).rounded(.down)
         for (i, card) in cards.enumerated() {
             let row = i / cols, col = i % cols
-            card.frame = NSRect(x: CGFloat(col) * (cw + spacing),
-                                y: CGFloat(row) * (cardHeight + spacing),
-                                width: cw, height: cardHeight)
+            card.frame = NSRect(
+                x: CGFloat(col) * (cw + spacing),
+                y: CGFloat(row) * (cardHeight + spacing),
+                width: cw, height: cardHeight)
         }
     }
 }

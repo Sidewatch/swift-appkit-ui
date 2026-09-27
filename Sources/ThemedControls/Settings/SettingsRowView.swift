@@ -82,21 +82,22 @@ public final class SettingsRowView: NSView {
                 note.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -SettingsMetrics.rowPadding),
             ]
         } else {
-            constraints.append(line.bottomAnchor.constraint(equalTo: bottomAnchor,
-                                                            constant: -SettingsMetrics.rowPadding))
+            constraints.append(
+                line.bottomAnchor.constraint(
+                    equalTo: bottomAnchor,
+                    constant: -SettingsMetrics.rowPadding))
         }
         NSLayoutConstraint.activate(constraints)
     }
 
-
-
-
     /// A row whose `content` spans the card — a list, or a button bar. `inset`
     /// and `padding` default to the card's text margins; pass 0 for content that
     /// should reach the card's edges, like a list that fills it.
-    public init(spanning content: NSView,
-         inset: CGFloat = SettingsMetrics.cardInset,
-         padding: CGFloat = SettingsMetrics.rowPadding) {
+    public init(
+        spanning content: NSView,
+        inset: CGFloat = SettingsMetrics.cardInset,
+        padding: CGFloat = SettingsMetrics.rowPadding
+    ) {
         label = nil
         super.init(frame: .zero)
 

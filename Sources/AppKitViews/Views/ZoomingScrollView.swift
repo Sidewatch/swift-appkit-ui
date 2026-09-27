@@ -28,10 +28,10 @@ public final class ZoomingScrollView: NSScrollView {
         guard deltaY != 0 else { super.scrollWheel(with: event); return }
         let factor: CGFloat
         if event.hasPreciseScrollingDeltas {
-            factor = pow(1.0015, deltaY)                                    // smooth, per-pixel
+            factor = pow(1.0015, deltaY)  // smooth, per-pixel
         } else {
             let steps = min(max(deltaY, -Self.detentLimit), Self.detentLimit)
-            factor = pow(Self.zoomPerDetent, steps)                         // chunky wheel
+            factor = pow(Self.zoomPerDetent, steps)  // chunky wheel
         }
         let wanted = magnification * factor
         let clamped = min(max(wanted, minMagnification), maxMagnification)

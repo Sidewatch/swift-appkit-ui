@@ -13,8 +13,10 @@ import AppKit
 public extension NSAlert {
     /// An alert with its text, style and buttons, first button first. The button titled `cancel`
     /// (the app's own word for "Cancel" unless given) answers Escape.
-    convenience init(message: String, information: String = "", style: NSAlert.Style = .warning,
-                     buttons: [String] = [], cancel: String = NSAlert.cancelTitle) {
+    convenience init(
+        message: String, information: String = "", style: NSAlert.Style = .warning,
+        buttons: [String] = [], cancel: String = NSAlert.cancelTitle
+    ) {
         self.init()
         messageText = message
         informativeText = information

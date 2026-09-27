@@ -28,7 +28,9 @@ final class TestLeaf: NSView {
 
     private func makeTree() -> PaneTree<TestLeaf> {
         made = 0
-        let tree = PaneTree<TestLeaf> { [self] in made += 1; return TestLeaf("leaf\(made)") }
+        let tree = PaneTree<TestLeaf> { [self] in
+            made += 1; return TestLeaf("leaf\(made)")
+        }
         tree.isLeafEmpty = { $0.contents == 0 }
         tree.container.frame = NSRect(x: 0, y: 0, width: 800, height: 600)
         return tree
@@ -81,12 +83,12 @@ final class TestLeaf: NSView {
         let tree = makeTree()
         let a = tree.createRootLeaf()
         let b = tree.split(a, .right)!
-        _ = tree.split(b, .right)                        // three across
+        _ = tree.split(b, .right)  // three across
         let parent = axis(tree)!
         // UNEVEN on purpose: with equal flexes a remove-and-reinsert would look identical, and
         // the whole point of replacing in place is that the wrapper inherits the slot's share.
         parent.setFlexes([1.5, 1.0, 0.5])
-        _ = tree.split(b, .down)                         // cross the axis on the middle member
+        _ = tree.split(b, .down)  // cross the axis on the middle member
         XCTAssertEqual(parent.members.count, 3, "the parent keeps its member count")
         XCTAssertEqual(parent.flexes, [1.5, 1.0, 0.5], "the wrapper inherits the slot's fraction")
         let wrapper = parent.members[1] as? PaneAxisView
@@ -121,7 +123,7 @@ final class TestLeaf: NSView {
         let tree = makeTree()
         let a = tree.createRootLeaf()
         _ = tree.split(a, .right)
-        axis(tree)!.setFlexes([1, 1, 1])                 // wrong count
+        axis(tree)!.setFlexes([1, 1, 1])  // wrong count
         XCTAssertEqual(axis(tree)!.flexes, [1, 1])
     }
 
@@ -141,11 +143,11 @@ final class TestLeaf: NSView {
     func testAPoppedAxisOfTheSameOrientationIsSplicedFlat() {
         let tree = makeTree()
         let a = tree.createRootLeaf()
-        let b = tree.split(a, .right)!                   // [a, b] horizontal
-        let c = tree.split(b, .down)!                    // b wrapped vertically: [a, V[b, c]]
-        let d = tree.split(c, .right)!                   // V[b, H[c, d]]
+        let b = tree.split(a, .right)!  // [a, b] horizontal
+        let c = tree.split(b, .down)!  // b wrapped vertically: [a, V[b, c]]
+        let d = tree.split(c, .right)!  // V[b, H[c, d]]
         _ = d
-        tree.remove(b)                                   // V has one member, H[c, d] — same axis as root
+        tree.remove(b)  // V has one member, H[c, d] — same axis as root
         XCTAssertEqual(axis(tree)?.orientation, .horizontal)
         XCTAssertEqual(axis(tree)?.members.count, 3, "a, c and d on one horizontal run")
         XCTAssertTrue(axis(tree)?.members.allSatisfy { $0 is TestLeaf } ?? false, "no axis left inside")
@@ -206,10 +208,12 @@ final class TestLeaf: NSView {
     func testTheCornerIsHighestThenRightmost() {
         XCTAssertEqual(PaneTree<TestLeaf>.cornerIndex(of: []), nil)
         // Non-flipped: a bigger maxY is higher on screen.
-        let grid = [NSRect(x: 0, y: 0, width: 10, height: 10),      // bottom-left
-                    NSRect(x: 20, y: 0, width: 10, height: 10),     // bottom-right
-                    NSRect(x: 0, y: 20, width: 10, height: 10),     // top-left
-                    NSRect(x: 20, y: 20, width: 10, height: 10)]    // top-right
+        let grid = [
+            NSRect(x: 0, y: 0, width: 10, height: 10),  // bottom-left
+            NSRect(x: 20, y: 0, width: 10, height: 10),  // bottom-right
+            NSRect(x: 0, y: 20, width: 10, height: 10),  // top-left
+            NSRect(x: 20, y: 20, width: 10, height: 10),
+        ]  // top-right
         XCTAssertEqual(PaneTree<TestLeaf>.cornerIndex(of: grid), 3)
         let row = [NSRect(x: 0, y: 0, width: 10, height: 10), NSRect(x: 30, y: 0, width: 10, height: 10)]
         XCTAssertEqual(PaneTree<TestLeaf>.cornerIndex(of: row), 1, "level: rightmost wins")

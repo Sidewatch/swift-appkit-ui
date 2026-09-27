@@ -24,9 +24,9 @@ extension ZoomKeyDirection {
     public init?(keyChars: String?) {
         switch keyChars {
         case "=", "+": self = .in
-        case "-":      self = .out
-        case "0":      self = .actual
-        default:       return nil
+        case "-": self = .out
+        case "0": self = .actual
+        default: return nil
         }
     }
 }

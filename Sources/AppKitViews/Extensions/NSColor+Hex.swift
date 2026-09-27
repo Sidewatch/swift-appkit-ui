@@ -23,8 +23,9 @@ public extension NSColor {
         guard s.count == 6 || s.count == 8, let v = UInt64(s, radix: 16) else { return nil }
         let rgb = s.count == 8 ? v >> 8 : v
         let alpha = s.count == 8 ? CGFloat(v & 0xFF) / 255 : 1
-        self.init(srgbRed: CGFloat((rgb >> 16) & 0xFF) / 255, green: CGFloat((rgb >> 8) & 0xFF) / 255,
-                  blue: CGFloat(rgb & 0xFF) / 255, alpha: alpha)
+        self.init(
+            srgbRed: CGFloat((rgb >> 16) & 0xFF) / 255, green: CGFloat((rgb >> 8) & 0xFF) / 255,
+            blue: CGFloat(rgb & 0xFF) / 255, alpha: alpha)
     }
 
     /// The colour as `#RRGGBB` in sRGB, alpha dropped — a colour in any space converts the same way.

@@ -71,7 +71,7 @@ import AppKit
     }
 
     /// The height must be a function of the width, or the panel clips a stacked grid.
-    func testTheIntrinsicHeightGrowsWhenTheGridStacks()  {
+    func testTheIntrinsicHeightGrowsWhenTheGridStacks() {
         let g = grid(4, width: 800)
         let wide = g.intrinsicContentSize.height
         g.setFrameSize(NSSize(width: 120, height: 400))

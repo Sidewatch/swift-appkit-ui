@@ -53,10 +53,12 @@ import AppKit
     func testPinningToALayoutGuide() {
         let host = NSView(), child = NSView(), guide = NSLayoutGuide()
         host.addLayoutGuide(guide)
-        NSLayoutConstraint.activate([guide.leadingAnchor.constraint(equalTo: host.leadingAnchor, constant: 50),
-                                     guide.trailingAnchor.constraint(equalTo: host.trailingAnchor),
-                                     guide.topAnchor.constraint(equalTo: host.topAnchor),
-                                     guide.bottomAnchor.constraint(equalTo: host.bottomAnchor)])
+        NSLayoutConstraint.activate([
+            guide.leadingAnchor.constraint(equalTo: host.leadingAnchor, constant: 50),
+            guide.trailingAnchor.constraint(equalTo: host.trailingAnchor),
+            guide.topAnchor.constraint(equalTo: host.topAnchor),
+            guide.bottomAnchor.constraint(equalTo: host.bottomAnchor),
+        ])
         host.addSubviewsForAutoLayout(child)
         child.pinEdges(to: guide)
         laidOut(host)
@@ -114,7 +116,9 @@ import AppKit
 
     func testHexParsesEveryLengthAndRejectsTheRest() throws {
         func rgba(_ hex: String) -> [Int]? {
-            NSColor(hex: hex).map { c in [c.redComponent, c.greenComponent, c.blueComponent, c.alphaComponent].map { Int(($0 * 255).rounded()) } }
+            NSColor(hex: hex).map { c in
+                [c.redComponent, c.greenComponent, c.blueComponent, c.alphaComponent].map { Int(($0 * 255).rounded()) }
+            }
         }
         XCTAssertEqual(rgba("#1E90FF"), [30, 144, 255, 255])
         XCTAssertEqual(rgba("1e90ff"), [30, 144, 255, 255], "the # is optional, case does not matter")
@@ -147,8 +151,9 @@ import AppKit
         pb.setString("stale", forType: .init("public.utf8-plain-text-other"))
         XCTAssertTrue(pb.copy("new"))
         XCTAssertEqual(pb.string(forType: .string), "new")
-        XCTAssertFalse(pb.types?.contains(.init("public.utf8-plain-text-other")) ?? true,
-                       "the other representations went with the old contents")
+        XCTAssertFalse(
+            pb.types?.contains(.init("public.utf8-plain-text-other")) ?? true,
+            "the other representations went with the old contents")
     }
 
     func testMenuAddItemTargetsGlyphsAndCarriesItsObject() {
@@ -188,8 +193,9 @@ import AppKit
     }
 
     func testVisibleToUserNeedsAShownWindowAnUnhiddenChainAndSomeArea() {
-        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 200, height: 200), styleMask: [.borderless],
-                              backing: .buffered, defer: false)
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 200, height: 200), styleMask: [.borderless],
+            backing: .buffered, defer: false)
         window.isReleasedWhenClosed = false
         let parent = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 200))
         let child = NSView(frame: NSRect(x: 10, y: 10, width: 50, height: 50))
@@ -203,9 +209,9 @@ import AppKit
         XCTAssertFalse(child.isVisibleToUser, "a hidden ancestor hides it")
         parent.isHidden = false
         // A scroll view clips: a row scrolled out of sight is not visible, though nothing is hidden.
-        let scroll = NSScrollView(frame: NSRect(x: 0, y: 100, width: 100, height: 100))   // the window's top half
+        let scroll = NSScrollView(frame: NSRect(x: 0, y: 100, width: 100, height: 100))  // the window's top half
         let doc = FlippedDocument(frame: NSRect(x: 0, y: 0, width: 100, height: 1000))
-        let row = NSView(frame: NSRect(x: 0, y: 120, width: 100, height: 50))   // below the clip, still inside the window
+        let row = NSView(frame: NSRect(x: 0, y: 120, width: 100, height: 50))  // below the clip, still inside the window
         doc.addSubview(row)
         scroll.documentView = doc
         parent.addSubview(scroll)

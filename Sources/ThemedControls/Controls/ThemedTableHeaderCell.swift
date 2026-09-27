@@ -42,17 +42,20 @@ public final class ThemedTableHeaderCell: NSTableHeaderCell {
         // face if the host installed a custom one, and returns the font unchanged when it
         // cannot go heavier.
         let font = NSFontManager.shared.convertWeight(true, of: ThemedControls.palette.smallFont)
-        return NSAttributedString(string: text, attributes: [
-            .font: font,
-            .foregroundColor: ThemedControls.palette.statusText,
-        ])
+        return NSAttributedString(
+            string: text,
+            attributes: [
+                .font: font,
+                .foregroundColor: ThemedControls.palette.statusText,
+            ])
     }
 
     public override func draw(withFrame cellFrame: NSRect, in controlView: NSView) {
         let palette = ThemedControls.palette
         // Pressed state is drawn here too: with the system background gone, a header that did
         // not react to a click would read as dead.
-        let background = isHighlighted
+        let background =
+            isHighlighted
             ? palette.statusBackground.blended(palette.isDark ? 0.10 : 0.06, toward: palette.foreground)
             : palette.statusBackground
         background.setFill()
@@ -101,7 +104,8 @@ public final class ThemedTableHeaderCell: NSTableHeaderCell {
     /// Whether this cell's column is the last one — its trailing edge is the table's edge.
     private func isLastColumn(in controlView: NSView) -> Bool {
         guard let header = controlView as? NSTableHeaderView, let table = header.tableView,
-              let index = table.tableColumns.firstIndex(where: { $0.headerCell === self }) else { return false }
+            let index = table.tableColumns.firstIndex(where: { $0.headerCell === self })
+        else { return false }
         return index == table.tableColumns.count - 1
     }
 
@@ -109,8 +113,9 @@ public final class ThemedTableHeaderCell: NSTableHeaderCell {
     /// filler strips the `.automatic` style draws at either end of the header.
     private func isColumnRect(_ frame: NSRect, in controlView: NSView) -> Bool {
         guard let header = controlView as? NSTableHeaderView,
-              let table = header.tableView,
-              let index = table.tableColumns.firstIndex(where: { $0.headerCell === self }) else { return true }
+            let table = header.tableView,
+            let index = table.tableColumns.firstIndex(where: { $0.headerCell === self })
+        else { return true }
         return header.headerRect(ofColumn: index).equalTo(frame)
     }
 
@@ -119,9 +124,10 @@ public final class ThemedTableHeaderCell: NSTableHeaderCell {
     /// which column owns it.
     func sortIndicatorAscending(in controlView: NSView) -> Bool? {
         guard let header = controlView as? NSTableHeaderView,
-              let table = header.tableView,
-              let column = table.tableColumns.first(where: { $0.headerCell === self }),
-              table.indicatorImage(in: column) != nil else { return nil }
+            let table = header.tableView,
+            let column = table.tableColumns.first(where: { $0.headerCell === self }),
+            table.indicatorImage(in: column) != nil
+        else { return nil }
         let key = column.sortDescriptorPrototype?.key
         return table.sortDescriptors.first { $0.key == key }?.ascending ?? true
     }

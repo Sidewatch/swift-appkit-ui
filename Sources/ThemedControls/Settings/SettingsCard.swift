@@ -29,8 +29,9 @@ public final class SettingsCard: NSView {
         wantsLayer = true
         layer?.cornerRadius = SettingsMetrics.cardRadius
         layer?.masksToBounds = true
-        NotificationCenter.default.addObserver(self, selector: #selector(themeChanged),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(themeChanged),
+            name: ThemedControls.paletteDidChange, object: nil)
 
         var constraints: [NSLayoutConstraint] = []
         var previous: NSView?
@@ -90,9 +91,10 @@ public final class SettingsCard: NSView {
     public override func draw(_ dirtyRect: NSRect) {
         // Inset by half the line width so the stroke lands on the card's edge
         // rather than straddling it (a straddled hairline reads as 2px, blurred).
-        let path = NSBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5),
-                                xRadius: SettingsMetrics.cardRadius,
-                                yRadius: SettingsMetrics.cardRadius)
+        let path = NSBezierPath(
+            roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5),
+            xRadius: SettingsMetrics.cardRadius,
+            yRadius: SettingsMetrics.cardRadius)
         SettingsMetrics.cardFill.setFill()
         path.fill()
         ThemedControls.palette.border.setStroke()

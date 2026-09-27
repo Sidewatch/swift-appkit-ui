@@ -107,7 +107,8 @@ public final class ThemedSegmentBar: NSControl {
                 NSRect(x: f.minX, y: f.midY - 6, width: 1, height: 12).fill()
             }
             let dimmed = !isEnabled || !isEnabled(forSegment: i)
-            let color = (selected ? Self.onAccent : ThemedControls.palette.foreground.withAlphaComponent(0.85)).withAlphaComponent(dimmed ? 0.35 : 1)
+            let color = (selected ? Self.onAccent : ThemedControls.palette.foreground.withAlphaComponent(0.85)).withAlphaComponent(
+                dimmed ? 0.35 : 1)
             let attrs: [NSAttributedString.Key: Any] = [.font: textFont, .foregroundColor: color]
             let plan = symbolsOnly ? (symbol: symbols[i], text: "") : content(for: i, width: f.width)
             let text = plan.text as NSString
@@ -168,8 +169,8 @@ public final class ThemedSegmentBar: NSControl {
     public override var acceptsFirstResponder: Bool { isEnabled }
     public override func keyDown(with event: NSEvent) {
         switch event.keyCode {
-        case 123: select(max(0, selectedSegment - 1))                  // ←
-        case 124: select(min(labels.count - 1, selectedSegment + 1))   // →
+        case 123: select(max(0, selectedSegment - 1))  // ←
+        case 124: select(min(labels.count - 1, selectedSegment + 1))  // →
         default: super.keyDown(with: event)
         }
     }

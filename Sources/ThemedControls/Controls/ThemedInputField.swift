@@ -60,15 +60,21 @@ private final class PaddedFieldCell: NSTextFieldCell {
         super.drawingRect(forBounds: textRect(rect))
     }
     // The editing rects get the same treatment, or the number jumps the moment it is clicked.
-    override func edit(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText,
-                       delegate: Any?, event: NSEvent?) {
-        super.edit(withFrame: textRect(rect), in: controlView,
-                   editor: textObj, delegate: delegate, event: event)
+    override func edit(
+        withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText,
+        delegate: Any?, event: NSEvent?
+    ) {
+        super.edit(
+            withFrame: textRect(rect), in: controlView,
+            editor: textObj, delegate: delegate, event: event)
     }
-    override func select(withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText,
-                         delegate: Any?, start: Int, length: Int) {
-        super.select(withFrame: textRect(rect), in: controlView,
-                     editor: textObj, delegate: delegate, start: start, length: length)
+    override func select(
+        withFrame rect: NSRect, in controlView: NSView, editor textObj: NSText,
+        delegate: Any?, start: Int, length: Int
+    ) {
+        super.select(
+            withFrame: textRect(rect), in: controlView,
+            editor: textObj, delegate: delegate, start: start, length: length)
     }
 }
 
@@ -88,8 +94,9 @@ open class ThemedInputField: NSTextField {
         cell = padded
         ThemedInputStyle.apply(self)
         disableSystemTextIntelligence()
-        NotificationCenter.default.addObserver(self, selector: #selector(reTheme),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(reTheme),
+            name: ThemedControls.paletteDidChange, object: nil)
     }
     deinit { NotificationCenter.default.removeObserver(self) }
     @objc private func reTheme() { ThemedInputStyle.refresh(self) }
@@ -106,8 +113,9 @@ public final class ThemedSecureInputField: NSSecureTextField {
     private func setup() {
         ThemedInputStyle.apply(self)
         disableSystemTextIntelligence()
-        NotificationCenter.default.addObserver(self, selector: #selector(reTheme),
-                                               name: ThemedControls.paletteDidChange, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(reTheme),
+            name: ThemedControls.paletteDidChange, object: nil)
     }
     deinit { NotificationCenter.default.removeObserver(self) }
     @objc private func reTheme() { ThemedInputStyle.refresh(self) }

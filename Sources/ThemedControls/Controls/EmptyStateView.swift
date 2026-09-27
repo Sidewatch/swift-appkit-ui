@@ -163,9 +163,11 @@ public final class EmptyStateView: NSView {
 
     /// Reveals the state with fresh copy, and (optionally) a call-to-action button.
     /// Omitting the button args clears any button a previous `show` set.
-    public func show(symbol: String, title: String, subtitle: String,
-              buttonTitle: String? = nil, action: (() -> Void)? = nil,
-              secondaryTitle: String? = nil, secondaryAction: (() -> Void)? = nil) {
+    public func show(
+        symbol: String, title: String, subtitle: String,
+        buttonTitle: String? = nil, action: (() -> Void)? = nil,
+        secondaryTitle: String? = nil, secondaryAction: (() -> Void)? = nil
+    ) {
         setSymbol(symbol)
         setText(title: title, subtitle: subtitle)
         setButton(title: buttonTitle, action: action)

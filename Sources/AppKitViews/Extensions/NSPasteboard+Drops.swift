@@ -59,7 +59,8 @@ extension NSPasteboard {
 
         // 2. File promises (Safari/Photos/Mail): receive into the drops folder first.
         if let receivers = readObjects(forClasses: [NSFilePromiseReceiver.self]) as? [NSFilePromiseReceiver],
-           !receivers.isEmpty {
+            !receivers.isEmpty
+        {
             guard let dir = Self.dropsDirectory(unique: true) else { return false }
             for receiver in receivers {
                 receiver.receivePromisedFiles(atDestination: dir, options: [:], operationQueue: Self.promiseQueue) { url, error in
@@ -75,9 +76,11 @@ extension NSPasteboard {
         //    of a browser): save each as PNG, then hand over the saved paths. Must walk
         //    per item: `data(forType:)` on the pasteboard reads only the FIRST item.
         let saved = (pasteboardItems ?? []).compactMap { item -> URL? in
-            let png = item.data(forType: .png) ?? item.data(forType: .tiff).flatMap {
-                NSBitmapImageRep(data: $0)?.representation(using: .png, properties: [:])
-            }
+            let png =
+                item.data(forType: .png)
+                ?? item.data(forType: .tiff).flatMap {
+                    NSBitmapImageRep(data: $0)?.representation(using: .png, properties: [:])
+                }
             return png.flatMap { Self.saveDrop(data: $0, ext: "png") }
         }
         if !saved.isEmpty { insert(Self.shellQuoted(saved)); return true }

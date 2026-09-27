@@ -17,8 +17,10 @@ public extension NSMenu {
     /// A nil or unknown `symbol` yields a text-only item rather than failing to build the menu.
     /// Returns the appended item, for callers that set state or a tag.
     @discardableResult
-    func addItem(_ title: String, action: Selector, target: AnyObject?, symbol: String? = nil,
-                 key: String = "", represented: Any? = nil) -> NSMenuItem {
+    func addItem(
+        _ title: String, action: Selector, target: AnyObject?, symbol: String? = nil,
+        key: String = "", represented: Any? = nil
+    ) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: key)
         item.target = target
         if let symbol { item.image = .menuSymbol(symbol) }

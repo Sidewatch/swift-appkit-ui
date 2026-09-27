@@ -13,11 +13,13 @@ import AppKit
 public extension NSTextField {
     /// A non-editable label with its font, colour and line handling set — the four lines every
     /// label otherwise repeats. Nil arguments keep AppKit's label defaults.
-    static func label(_ text: String,
-                      font: NSFont? = nil,
-                      color: NSColor? = nil,
-                      lineBreak: NSLineBreakMode? = nil,
-                      alignment: NSTextAlignment? = nil) -> NSTextField {
+    static func label(
+        _ text: String,
+        font: NSFont? = nil,
+        color: NSColor? = nil,
+        lineBreak: NSLineBreakMode? = nil,
+        alignment: NSTextAlignment? = nil
+    ) -> NSTextField {
         let label = NSTextField(labelWithString: text)
         if let font { label.font = font }
         if let color { label.textColor = color }

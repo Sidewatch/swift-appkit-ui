@@ -24,7 +24,7 @@ public extension NSTextView {
         isAutomaticDashSubstitutionEnabled = false
         isAutomaticTextReplacementEnabled = false
         isAutomaticSpellingCorrectionEnabled = false
-        isAutomaticTextCompletionEnabled = false   // inline predictive text rides this
+        isAutomaticTextCompletionEnabled = false  // inline predictive text rides this
         isContinuousSpellCheckingEnabled = false
         isGrammarCheckingEnabled = false
         isAutomaticDataDetectionEnabled = false

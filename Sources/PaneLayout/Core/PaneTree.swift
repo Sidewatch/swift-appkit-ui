@@ -40,8 +40,7 @@ import AppKit
     public var panes: [Leaf] {
         var out: [Leaf] = []
         func walk(_ v: NSView?) {
-            if let p = v as? Leaf { out.append(p) }
-            else if let a = v as? PaneAxisView { a.members.forEach(walk) }
+            if let p = v as? Leaf { out.append(p) } else if let a = v as? PaneAxisView { a.members.forEach(walk) }
         }
         walk(root)
         return out
@@ -75,7 +74,8 @@ import AppKit
     /// focused one, else the first.
     public func focusedPane(in window: NSWindow?) -> Leaf? {
         if let fr = window?.firstResponder as? NSView,
-           let p = panes.first(where: { fr === $0 || fr.isDescendant(of: $0) }) {
+            let p = panes.first(where: { fr === $0 || fr.isDescendant(of: $0) })
+        {
             lastFocused = p
             return p
         }
@@ -122,7 +122,7 @@ import AppKit
             axis.setMembers(direction.placesNewFirst ? [newPane, pane] : [pane, newPane])
         }
         lastFocused = newPane
-        assertTreeInvariants(allowEmptyLeaves: true)   // the new leaf is filled right after
+        assertTreeInvariants(allowEmptyLeaves: true)  // the new leaf is filled right after
         return newPane
     }
 
@@ -188,7 +188,7 @@ import AppKit
         root?.removeFromSuperview()
         root = v
         guard let v else { return }
-        v.removeFromSuperview()          // may be re-parenting out of a collapsed axis
+        v.removeFromSuperview()  // may be re-parenting out of a collapsed axis
         v.autoresizingMask = [.width, .height]
         v.frame = container.bounds
         container.addSubview(v)
@@ -198,16 +198,16 @@ import AppKit
     /// no empty leaf except mid-split.
     public func assertTreeInvariants(allowEmptyLeaves: Bool) {
         #if DEBUG
-        func walk(_ v: NSView) {
-            if let a = v as? PaneAxisView {
-                assert(a.members.count >= 2, "PaneTree: axis with fewer than 2 members")
-                a.assertInvariants()
-                a.members.forEach(walk)
-            } else if let p = v as? Leaf, let isEmpty = isLeafEmpty {
-                assert(allowEmptyLeaves || !isEmpty(p), "PaneTree: empty leaf in tree")
+            func walk(_ v: NSView) {
+                if let a = v as? PaneAxisView {
+                    assert(a.members.count >= 2, "PaneTree: axis with fewer than 2 members")
+                    a.assertInvariants()
+                    a.members.forEach(walk)
+                } else if let p = v as? Leaf, let isEmpty = isLeafEmpty {
+                    assert(allowEmptyLeaves || !isEmpty(p), "PaneTree: empty leaf in tree")
+                }
             }
-        }
-        if let root { walk(root) }
+            if let root { walk(root) }
         #endif
     }
 }

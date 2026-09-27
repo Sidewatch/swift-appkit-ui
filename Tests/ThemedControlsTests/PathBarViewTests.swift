@@ -16,9 +16,10 @@ import AppKit
     /// Builds a bar from (title, path, isDirectory) triples. Nothing touches the disk.
     private func bar(_ titles: [(String, String?, Bool)]) -> PathBarView {
         let b = PathBarView(frame: NSRect(x: 0, y: 0, width: 600, height: 24))
-        b.setPath(segments: titles.map {
-            PathSegment(title: $0.0, url: $0.1.map { URL(fileURLWithPath: $0) }, isDirectory: $0.2)
-        })
+        b.setPath(
+            segments: titles.map {
+                PathSegment(title: $0.0, url: $0.1.map { URL(fileURLWithPath: $0) }, isDirectory: $0.2)
+            })
         return b
     }
 
@@ -58,8 +59,10 @@ import AppKit
     func testSettingTheSamePathAgainDoesNotRebuild() {
         let b = bar(filePath(["a", "b"]))
         let first = b.crumbView(at: 0)
-        b.setPath(segments: [PathSegment(title: "a", url: URL(fileURLWithPath: "/a"), isDirectory: true),
-                             PathSegment(title: "b", url: URL(fileURLWithPath: "/a/b"))])
+        b.setPath(segments: [
+            PathSegment(title: "a", url: URL(fileURLWithPath: "/a"), isDirectory: true),
+            PathSegment(title: "b", url: URL(fileURLWithPath: "/a/b")),
+        ])
         XCTAssertTrue(b.crumbView(at: 0) === first, "the same views survived")
     }
 
@@ -91,8 +94,8 @@ import AppKit
     func testTheArrowsWalkTheCrumbsAndStopAtTheEnds() {
         let b = bar(filePath(["a", "b", "c"]))
         b.focus(at: 1)
-        XCTAssertEqual(b.keyAction(for: 123), .move(0))   // ←
-        XCTAssertEqual(b.keyAction(for: 124), .move(2))   // →
+        XCTAssertEqual(b.keyAction(for: 123), .move(0))  // ←
+        XCTAssertEqual(b.keyAction(for: 124), .move(2))  // →
         b.focus(at: 0)
         XCTAssertEqual(b.keyAction(for: 123), .move(0), "no wrap at the start")
         b.focus(at: 2)
@@ -181,8 +184,9 @@ import AppKit
         var listedFolders: [String] = []
         b.childrenProvider = { folder in
             listedFolders.append(folder.lastPathComponent)
-            return folder.lastPathComponent == "tmp" ? [self.entry("sub", in: "/tmp", isFolder: true)]
-                                                     : [self.entry("deep.txt", in: "/tmp/sub")]
+            return folder.lastPathComponent == "tmp"
+                ? [self.entry("sub", in: "/tmp", isFolder: true)]
+                : [self.entry("deep.txt", in: "/tmp/sub")]
         }
         let sub = b.menu(forCrumbAt: 0)?.items.first?.submenu
         XCTAssertEqual(listedFolders, ["tmp"], "the subfolder is not listed yet")
@@ -249,11 +253,15 @@ import AppKit
     func testATitleCrumbIsAskedForByItsOwnLevel() {
         let b = PathBarView(frame: .zero)
         var asked: [Int] = []
-        b.titleSegmentMenuProvider = { level in asked.append(level); return NSMenu() }
-        b.setPath(segments: [PathSegment(title: "project", url: URL(fileURLWithPath: "/project")),
-                             PathSegment(title: "main.swift", url: URL(fileURLWithPath: "/project/main.swift")),
-                             PathSegment(title: "MyType", url: nil),
-                             PathSegment(title: "method", url: nil)])
+        b.titleSegmentMenuProvider = { level in
+            asked.append(level); return NSMenu()
+        }
+        b.setPath(segments: [
+            PathSegment(title: "project", url: URL(fileURLWithPath: "/project")),
+            PathSegment(title: "main.swift", url: URL(fileURLWithPath: "/project/main.swift")),
+            PathSegment(title: "MyType", url: nil),
+            PathSegment(title: "method", url: nil),
+        ])
         _ = b.menu(forCrumbAt: 2)
         _ = b.menu(forCrumbAt: 3)
         XCTAssertEqual(asked, [0, 1])

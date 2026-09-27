@@ -111,8 +111,10 @@ open class ThemedSearchField: NSView, NSTextFieldDelegate {
     private func applyPlaceholder() {
         field.placeholderAttributedString = NSAttributedString(
             string: placeholder,
-            attributes: [.font: NSFont.systemFont(ofSize: 12),
-                         .foregroundColor: ThemedControls.palette.sidebarText.withAlphaComponent(0.45)])
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 12),
+                .foregroundColor: ThemedControls.palette.sidebarText.withAlphaComponent(0.45),
+            ])
     }
 
     open func controlTextDidChange(_ obj: Notification) {

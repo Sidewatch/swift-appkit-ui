@@ -77,12 +77,12 @@ public enum FontCatalog {
         var seen = Set<String>()
         return members.compactMap { member -> Face? in
             guard member.count > 3,
-                  let postScript = member[0] as? String,
-                  let name = member[1] as? String,
-                  let weight = member[2] as? Int,
-                  let traits = member[3] as? UInt,
-                  traits & NSFontTraitMask.italicFontMask.rawValue == 0,
-                  seen.insert(name).inserted
+                let postScript = member[0] as? String,
+                let name = member[1] as? String,
+                let weight = member[2] as? Int,
+                let traits = member[3] as? UInt,
+                traits & NSFontTraitMask.italicFontMask.rawValue == 0,
+                seen.insert(name).inserted
             else { return nil }
             return Face(name: name, postScriptName: postScript, weight: weight)
         }
@@ -105,8 +105,10 @@ public enum FontCatalog {
     /// The order is deliberate: a stale PostScript name keeps the FAMILY and drops to its default
     /// face, since the family is the bigger part of the choice; only a missing family falls back to
     /// the system font. `face` names a system weight and is read only when `family` is nil.
-    public nonisolated static func font(family: String?, postScriptName: String?, face: String? = nil,
-                                size: CGFloat) -> NSFont {
+    public nonisolated static func font(
+        family: String?, postScriptName: String?, face: String? = nil,
+        size: CGFloat
+    ) -> NSFont {
         guard let family else {
             return .mono(size, weight: systemWeight(named: face))
         }
@@ -136,11 +138,11 @@ public enum FontCatalog {
     /// array of `NSFont.Weight` would be shared mutable state to the concurrency checker.
     nonisolated private static func systemWeight(named name: String?) -> NSFont.Weight {
         switch name {
-        case "Light":    return .light
-        case "Medium":   return .medium
+        case "Light": return .light
+        case "Medium": return .medium
         case "Semibold": return .semibold
-        case "Bold":     return .bold
-        default:         return .regular
+        case "Bold": return .bold
+        default: return .regular
         }
     }
 }

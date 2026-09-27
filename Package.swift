@@ -11,13 +11,15 @@ let package = Package(
         .library(name: "PaneLayout", targets: ["PaneLayout"]),
     ],
     dependencies: [
-        .package(path: "../swift-foundation-extensions"),
+        .package(path: "../swift-foundation-extensions")
     ],
     targets: [
-        .target(name: "AppKitViews", dependencies: [.product(name: "FoundationExtensions", package: "swift-foundation-extensions")],
-                swiftSettings: [.swiftLanguageMode(.v6)]),
-        .target(name: "ThemedControls", dependencies: ["AppKitViews"], resources: [.process("Localizable.xcstrings")],
-                swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]),
+        .target(
+            name: "AppKitViews", dependencies: [.product(name: "FoundationExtensions", package: "swift-foundation-extensions")],
+            swiftSettings: [.swiftLanguageMode(.v6)]),
+        .target(
+            name: "ThemedControls", dependencies: ["AppKitViews"], resources: [.process("Localizable.xcstrings")],
+            swiftSettings: [.swiftLanguageMode(.v6), .defaultIsolation(MainActor.self)]),
         .target(name: "PaneLayout", dependencies: ["ThemedControls"], swiftSettings: [.swiftLanguageMode(.v6)]),
         .testTarget(name: "AppKitViewsTests", dependencies: ["AppKitViews"], swiftSettings: [.swiftLanguageMode(.v6)]),
         .testTarget(name: "ThemedControlsTests", dependencies: ["ThemedControls"], swiftSettings: [.swiftLanguageMode(.v6)]),

@@ -31,7 +31,8 @@ open class ZoomKeyView: NSView {
 
     open override func performKeyEquivalent(with event: NSEvent) -> Bool {
         guard event.modifierFlags.intersection([.command, .option, .control, .shift]) == .command,
-              let dir = ZoomKeyDirection(keyChars: event.charactersIgnoringModifiers) else {
+            let dir = ZoomKeyDirection(keyChars: event.charactersIgnoringModifiers)
+        else {
             return super.performKeyEquivalent(with: event)
         }
         return onZoomKey?(dir) ?? false

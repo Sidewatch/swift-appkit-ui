@@ -141,8 +141,9 @@ public final class PaneAxisView: NSView {
     /// Debug-asserts the flex vector matches the members in count and sums to that count.
     public func assertInvariants() {
         assert(flexes.count == members.count, "PaneAxisView: flex/member count mismatch")
-        assert(members.isEmpty || abs(flexes.reduce(0, +) - CGFloat(members.count)) < 0.01,
-               "PaneAxisView: flex sum drifted from member count")
+        assert(
+            members.isEmpty || abs(flexes.reduce(0, +) - CGFloat(members.count)) < 0.01,
+            "PaneAxisView: flex sum drifted from member count")
     }
 
     // MARK: - Layout (pure arithmetic — cannot loop)
@@ -156,17 +157,20 @@ public final class PaneAxisView: NSView {
         let perFlex = total / CGFloat(members.count)
         var offset: CGFloat = 0
         for (i, m) in members.enumerated() {
-            let len = (i == members.count - 1)
-                ? max(0, total - offset)                       // last member takes the remainder
+            let len =
+                (i == members.count - 1)
+                ? max(0, total - offset)  // last member takes the remainder
                 : max(0, (perFlex * flexes[i]).rounded())
-            m.frame = horizontal
+            m.frame =
+                horizontal
                 ? NSRect(x: offset, y: 0, width: len, height: cross)
                 : NSRect(x: 0, y: offset, width: cross, height: len)
             offset += len
         }
         for (i, d) in dividers.enumerated() {
             let edge = horizontal ? members[i].frame.maxX : members[i].frame.maxY
-            d.frame = horizontal
+            d.frame =
+                horizontal
                 ? NSRect(x: edge - 2.5, y: 0, width: 5, height: bounds.height)
                 : NSRect(x: 0, y: edge - 2.5, width: bounds.width, height: 5)
             window?.invalidateCursorRects(for: d)
@@ -190,7 +194,7 @@ public final class PaneAxisView: NSView {
             if e.type == .leftMouseUp { break }
             let p = convert(e.locationInWindow, from: nil)
             applyDrag(at: index, delta: horizontal ? p.x - start.x : p.y - start.y, from: startSizes)
-            layoutSubtreeIfNeeded()   // live feedback; pure arithmetic, safe synchronously
+            layoutSubtreeIfNeeded()  // live feedback; pure arithmetic, safe synchronously
         }
     }
 

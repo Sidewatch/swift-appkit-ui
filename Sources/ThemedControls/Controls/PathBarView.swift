@@ -132,10 +132,12 @@ open class PathBarView: NSView, NSMenuDelegate {
     static let chevronIdentifier = NSUserInterfaceItemIdentifier("ThemedControls.PathBar.chevron")
 
     private func crumbTitle(_ title: String, focused: Bool = false) -> NSAttributedString {
-        NSAttributedString(string: title, attributes: [
-            .font: ThemedControls.palette.smallFont,
-            .foregroundColor: focused ? ThemedControls.palette.accent : ThemedControls.palette.statusText,
-        ])
+        NSAttributedString(
+            string: title,
+            attributes: [
+                .font: ThemedControls.palette.smallFont,
+                .foregroundColor: focused ? ThemedControls.palette.accent : ThemedControls.palette.statusText,
+            ])
     }
 
     /// Re-tints the crumbs: the focused one in the accent, the rest in the status tint. A
@@ -217,10 +219,10 @@ open class PathBarView: NSView, NSMenuDelegate {
         guard !segments.isEmpty else { return .unhandled }
         let at = focusedCrumb ?? (segments.count - 1)
         switch keyCode {
-        case 123: return .move(max(0, at - 1))                        // ←
-        case 124: return .move(min(segments.count - 1, at + 1))       // →
-        case 125, 49, 36: return .open(at)                            // ↓ Space Return
-        case 53: return .dismiss                                      // Escape
+        case 123: return .move(max(0, at - 1))  // ←
+        case 124: return .move(min(segments.count - 1, at + 1))  // →
+        case 125, 49, 36: return .open(at)  // ↓ Space Return
+        case 53: return .dismiss  // Escape
         default: return .unhandled
         }
     }
@@ -265,20 +267,24 @@ open class PathBarView: NSView, NSMenuDelegate {
         }
         let entries = childrenProvider?(folder) ?? []
         if entries.isEmpty {
-            let empty = NSMenuItem(title: String(localized: "Empty folder", bundle: .module,
-                                                   comment: "Path bar folder menu: shown when the folder has no items"),
-                                   action: nil, keyEquivalent: "")
+            let empty = NSMenuItem(
+                title: String(
+                    localized: "Empty folder", bundle: .module,
+                    comment: "Path bar folder menu: shown when the folder has no items"),
+                action: nil, keyEquivalent: "")
             empty.isEnabled = false
             menu.addItem(empty)
         }
         for e in entries.prefix(Self.maxMenuEntries) {
             // A FOLDER row has no action: it opens its submenu. Giving it one would make a click
             // on the way to a file open the folder instead.
-            let item = NSMenuItem(title: e.title, action: e.isFolder ? nil : #selector(crumbItemPicked(_:)),
-                                  keyEquivalent: "")
+            let item = NSMenuItem(
+                title: e.title, action: e.isFolder ? nil : #selector(crumbItemPicked(_:)),
+                keyEquivalent: "")
             item.target = self
             item.representedObject = e.url
-            item.image = iconProvider?(e)
+            item.image =
+                iconProvider?(e)
                 ?? (e.isFolder ? NSImage(systemSymbolName: "folder", accessibilityDescription: nil) : nil)
             if let current, e.url.standardizedFileURL.path == current.standardizedFileURL.path {
                 item.state = .on
@@ -293,9 +299,11 @@ open class PathBarView: NSView, NSMenuDelegate {
             menu.addItem(item)
         }
         if entries.count > Self.maxMenuEntries {
-            let more = NSMenuItem(title: String(localized: "… \(entries.count - Self.maxMenuEntries) more", bundle: .module,
-                                                  comment: "Path bar folder menu: last row when more items exist than the menu lists"),
-                                  action: nil, keyEquivalent: "")
+            let more = NSMenuItem(
+                title: String(
+                    localized: "… \(entries.count - Self.maxMenuEntries) more", bundle: .module,
+                    comment: "Path bar folder menu: last row when more items exist than the menu lists"),
+                action: nil, keyEquivalent: "")
             more.isEnabled = false
             menu.addItem(more)
         }
