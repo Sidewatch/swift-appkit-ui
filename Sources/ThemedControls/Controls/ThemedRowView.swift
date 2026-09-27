@@ -47,6 +47,13 @@ open class ThemedSelectionRowView: ThemedRowView {
     open override var interiorBackgroundStyle: NSView.BackgroundStyle { isSelected ? .emphasized : .normal }
 }
 
+/// `ThemedRowView` that is never emphasized, selected or not. For lists whose cells colour their
+/// own text AND symbols: AppKit draws every template symbol white in an emphasized row whatever
+/// its tint, and the themed selection is a subtle fill, so a white symbol on it is lost.
+open class ThemedPlainRowView: ThemedRowView {
+    open override var interiorBackgroundStyle: NSView.BackgroundStyle { .normal }
+}
+
 /// A group header as a full-width BAND — a lift of the sidebar surface with a hairline above and
 /// below. Opaque on purpose: group rows float over scrolled content, which must not show through.
 public final class ThemedGroupRowView: NSTableRowView {
