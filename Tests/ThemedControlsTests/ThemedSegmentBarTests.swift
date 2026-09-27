@@ -5,6 +5,7 @@
 //  Tests for the segment bar's content plan: what fits in a segment of a given width.
 //
 //  Created by David Sherlock on 9/5/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

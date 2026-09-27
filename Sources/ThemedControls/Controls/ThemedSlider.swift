@@ -5,6 +5,7 @@
 //  A slider whose filled track is the palette accent instead of the system tint.
 //
 //  Created by David Sherlock on 9/18/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

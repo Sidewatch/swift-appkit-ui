@@ -5,6 +5,7 @@
 //  A palette from the system colours, so the controls work before a host installs one.
 //
 //  Created by David Sherlock on 9/5/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

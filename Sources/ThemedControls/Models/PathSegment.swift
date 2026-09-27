@@ -5,6 +5,7 @@
 //  One crumb of a path bar: a title, and the file or folder it stands for when it stands for one.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import Foundation

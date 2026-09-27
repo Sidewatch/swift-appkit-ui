@@ -5,6 +5,7 @@
 //  A centered icon + title + subtitle empty state, shared by the sidebar panels and lists.
 //
 //  Created by David Sherlock on 7/17/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

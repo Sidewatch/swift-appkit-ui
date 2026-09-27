@@ -5,6 +5,7 @@
 //  A table whose grid lines fall BETWEEN columns, never on its own outer edges.
 //
 //  Created by David Sherlock on 9/25/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

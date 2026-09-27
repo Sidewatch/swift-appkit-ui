@@ -5,6 +5,7 @@
 //  What the slider PAINTS in its filled track, not what property it set.
 //
 //  Created by David Sherlock on 9/18/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

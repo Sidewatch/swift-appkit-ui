@@ -5,6 +5,7 @@
 //  The app's text button — the composer's "Send ⏎" pill made shared.
 //
 //  Created by David Sherlock on 9/3/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

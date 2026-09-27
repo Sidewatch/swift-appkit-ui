@@ -5,6 +5,7 @@
 //  A field that READS as one thing and EDITS as another — quotes, a trailing colon, a mask.
 //
 //  Created by David Sherlock on 9/25/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import Foundation

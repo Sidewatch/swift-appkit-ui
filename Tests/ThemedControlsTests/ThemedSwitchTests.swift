@@ -6,6 +6,7 @@
 //  painted track is the palette accent when on.
 //
 //  Created by David Sherlock on 9/19/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

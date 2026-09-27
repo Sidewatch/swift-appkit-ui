@@ -5,6 +5,7 @@
 //  The themed table-row selection every list draws, in one place.
 //
 //  Created by David Sherlock on 8/5/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

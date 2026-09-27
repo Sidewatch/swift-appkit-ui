@@ -6,6 +6,7 @@
 //  palette, where the stock cell paints a system grey over it.
 //
 //  Created by David Sherlock on 9/17/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

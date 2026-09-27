@@ -5,6 +5,7 @@
 //  Enumeration for the settings pane, exact resolution for the render path, fallbacks between.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest
