@@ -11,12 +11,12 @@
 import AppKit
 import AppKitViews
 
-/// Shared theming for Settings text inputs. The system `NSTextField` / `NSSecureTextField`
-/// bezel ignores the app theme — it paints a system-tinted box that clashes with a warm
-/// palette (the "brownish field" bug) — so these fields are **borderless** and draw their
-/// own rounded `ThemedControls.palette.border` box over an elevated surface, with themed text + caret.
-/// Mirrors `ThemedSearchField`'s approach; re-tints on `.themeDidChange`.
+/// Shared theming for Settings text inputs. The system bezel paints a system-tinted box that
+/// clashes with a warm palette, so these fields are **borderless** and draw their own rounded
+/// box over an elevated surface, with themed text and caret — `ThemedSearchField`'s approach.
+/// Re-tinted on `ThemedControls.paletteDidChange`.
 private enum ThemedInputStyle {
+    /// Makes `field` borderless and layer-backed, then paints it with ``refresh(_:)``.
     public static func apply(_ field: NSTextField) {
         field.isBordered = false
         field.drawsBackground = false
@@ -26,11 +26,12 @@ private enum ThemedInputStyle {
         field.layer?.borderWidth = 1
         refresh(field)
     }
+    /// Re-reads the palette into an already styled field's box, text and appearance.
     public static func refresh(_ field: NSTextField) {
         field.layer?.backgroundColor = ThemedControls.palette.elevatedSurface(dark: 0.07, light: 0.04).cgColor
-        // `rowSeparator`, not `ThemedControls.palette.border`: these sit inside a settings card, so
-        // the recessed page-edge colour drew a near-black rectangle on a lifted
-        // surface. Same reasoning as the card's row dividers — see Theme+Surfaces.
+        // `rowSeparator`, not `ThemedControls.palette.border`: these sit inside a settings card,
+        // where the recessed page-edge colour draws a near-black rectangle on a lifted surface.
+        // Same reasoning as `SettingsSeparatorView`.
         field.layer?.borderColor = ThemedControls.palette.rowSeparator.cgColor
         field.textColor = ThemedControls.palette.foreground
         // Caret + selection follow the THEME's light/dark mode, not the system's.
@@ -38,20 +39,12 @@ private enum ThemedInputStyle {
     }
 }
 
-/// Insets the text a few points so it doesn't hug the rounded border (a right-aligned
-/// number would otherwise touch the edge), and centres the single line in the box.
-/// Drawing/editing rects only — no layout.
+/// Insets the text a few points off the rounded border and centres the single line vertically
+/// (drawing and editing rects only). A borderless scrollable cell lays its line from the TOP of
+/// a box taller than the line, so it would ride high.
 ///
-/// The vertical part matters because these fields are given an explicit height (the themed
-/// box needs one) that is taller than a line of 12pt text. A borderless, scrollable cell
-/// lays its line from the TOP of the rect it is handed, so the number sat 3.5pt above the
-/// centre of its own box — visible as soon as you look for it, and `--dump-settings` could
-/// not see it because the box's own border dominated the ink it was measuring.
-///
-/// The slack is MEASURED, never a tuned constant: `cellSize(forBounds:)` reports the line's
-/// natural height and `insetBy` takes half the remainder off each end, so the text is centred
-/// by construction at any font size or box height. (Hand-tuning that number is the mistake
-/// recorded against the status bar's "ctx" cap.)
+/// The slack is MEASURED, never a tuned constant: half of what `cellSize(forBounds:)` leaves over
+/// comes off each end, so the text centres at any font size or box height.
 private final class PaddedFieldCell: NSTextFieldCell {
     private static let dx: CGFloat = 6
 
@@ -81,6 +74,7 @@ private final class PaddedFieldCell: NSTextFieldCell {
 
 /// Theme-aware single-line text input for the Settings panes.
 open class ThemedInputField: NSTextField {
+    /// Creates an unsized field for Auto Layout.
     public convenience init() { self.init(frame: .zero) }
     public override init(frame frameRect: NSRect) { super.init(frame: frameRect); setup() }
     @available(*, unavailable) public required init?(coder: NSCoder) { fatalError() }
@@ -101,9 +95,10 @@ open class ThemedInputField: NSTextField {
     @objc private func reTheme() { ThemedInputStyle.refresh(self) }
 }
 
-/// Secure (password) counterpart — the Usage session-key field. Keeps the masking cell
+/// Secure (password) counterpart. Keeps the masking cell
 /// (`NSSecureTextFieldCell`), so no padded cell here; only the themed chrome is applied.
 public final class ThemedSecureInputField: NSSecureTextField {
+    /// Creates an unsized field for Auto Layout.
     public convenience init() { self.init(frame: .zero) }
     public override init(frame frameRect: NSRect) { super.init(frame: frameRect); setup() }
     @available(*, unavailable) public required init?(coder: NSCoder) { fatalError() }

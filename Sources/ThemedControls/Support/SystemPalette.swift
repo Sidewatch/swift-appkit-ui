@@ -13,6 +13,7 @@ import AppKitViews
 
 /// The macOS system colours as a palette: what a control looks like with nothing installed.
 public struct SystemPalette: ControlPalette {
+    /// Creates the system palette.
     public init() {}
     public var isDark: Bool { NSApp?.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua }
     public var accent: NSColor { .controlAccentColor }

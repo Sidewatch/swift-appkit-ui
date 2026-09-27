@@ -10,12 +10,9 @@
 
 import AppKit
 
-/// A theme-tinted checkbox. The stock `.switch` NSButton fills with the macOS system
-/// accent (blue) when checked, which clashes with the app palette — so this draws its
-/// own rounded box: `ThemedControls.palette.accent` fill + a white check when on, a bordered empty box
-/// when off. It draws its title too (if any), so a labelled checkbox tracks the theme
-/// as well. Toggle + target/action behave exactly like a normal `.switch` button; the
-/// cell still handles click tracking (only the drawing is overridden).
+/// A theme-tinted checkbox: the stock `.switch` button fills with the system accent, so this
+/// draws its own rounded box (accent fill and a white check when on) and its title. Only drawing
+/// is overridden; toggling, target/action and click tracking are a normal `.switch` button's.
 open class ThemedCheckbox: NSButton {
     private let boxSize: CGFloat = 15
     private let gap: CGFloat = 6

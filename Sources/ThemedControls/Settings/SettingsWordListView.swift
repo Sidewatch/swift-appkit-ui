@@ -11,23 +11,12 @@
 
 import AppKit
 
-/// An editable list of short strings: a fixed-height table, a +/− bar, and optional
-/// Restore Defaults.
+/// An editable list of short strings — one word per row, not a delimited text field: a
+/// fixed-height table, a +/− bar, and optional Restore Defaults. The inline-editing details are
+/// subtle; the comments on each piece say what breaks without it.
 ///
-/// A list rather than a comma-separated text field. One word per row is how the platform does
-/// this, and it removes the questions a delimited string forces on the reader — whether spaces
-/// matter, what happens to an empty entry, whether a word may contain a comma.
-///
-/// The inline-editing behaviour here is subtle and was learned the hard way in the skipped-
-/// directories list; the comments on each piece say what breaks without it.
-/// Vends TWO views, and they must go into two separate rows — the list spanning the card edge to
-/// edge with no inset or padding, the button bar with the card's standard inset. Putting both in
-/// one zero-padding row jams the buttons against the card's edges.
-///
-/// ```swift
-/// SettingsRowView(spanning: list.listView, inset: 0, padding: 0),
-/// SettingsRowView(spanning: list.buttonBar),
-/// ```
+/// Vends TWO views for two separate rows: `SettingsRowView(spanning: listView, inset: 0,
+/// padding: 0)` and `SettingsRowView(spanning: buttonBar)` — one zero-padding row jams the buttons.
 public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTableViewDelegate,
                                   NSTextFieldDelegate {
 
@@ -59,6 +48,7 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     /// The placeholder shown on a blank row, e.g. "word".
     private let noun: String
 
+    /// Creates an empty list whose blank rows show `noun` as a placeholder.
     public init(noun: String = "word") {
         self.noun = noun
         super.init()
@@ -174,10 +164,8 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     /// Drops `row` into inline editing, scrolling it into view first — a row below the fold has
     /// no cell view to focus.
     ///
-    /// The cell's text field is focused directly rather than through `editColumn(_:row:with:select:)`,
-    /// which by its own contract only *attempts* to make the cell view first responder and does
-    /// nothing if it declines. A silent no-op there would leave a just-added row un-editable and
-    /// then swept away by the next redisplay, so + would look broken.
+    /// Focuses the field directly: `editColumn(_:row:with:select:)` only *attempts* first responder
+    /// and silently does nothing if declined, leaving a just-added row un-editable.
     private func beginEditing(row: Int) {
         table.scrollRowToVisible(row)
         guard let cell = table.view(atColumn: 0, row: row, makeIfNecessary: true) as? NSTableCellView,

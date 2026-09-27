@@ -11,23 +11,22 @@
 import AppKit
 import AppKitViews
 
-/// A centered icon + title + subtitle empty state, shared by the sidebar panels
-/// and lists. Replaces the bare one-line labels that read as broken
-/// UI — an empty panel should explain what will appear and how to make it happen.
-/// Theme-reactive: re-tints itself on `.themeDidChange`.
+/// A centred icon + title + subtitle empty state for panels and lists, explaining what will
+/// appear and how to make it happen, with optional actions. Re-tints on `ThemedControls.paletteDidChange`.
 public final class EmptyStateView: NSView {
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
     private let subtitleLabel = NSTextField(wrappingLabelWithString: "")
     private let button = NSButton(title: "", target: nil, action: nil)
-    /// A secondary, link-style action shown under the primary button (e.g. "Clone Repository").
+    /// A secondary bordered action shown under the primary button (e.g. "Clone Repository").
     private let secondaryButton = NSButton(title: "", target: nil, action: nil)
     /// Invoked when the optional action button is clicked; nil hides the button.
     private var buttonAction: (() -> Void)?
     private var secondaryAction: (() -> Void)?
-    /// Kept so `applyTheme` can rebuild the accent-colored attributed title on a theme change.
+    /// The secondary button's title, re-applied by `applyTheme` on a palette change.
     private var secondaryTitleText: String?
 
+    /// Creates a state showing the SF Symbol `symbol` above `title` and `subtitle`.
     public init(symbol: String, title: String, subtitle: String) {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
@@ -128,9 +127,8 @@ public final class EmptyStateView: NSView {
         }
     }
 
-    /// Sets the secondary button's title. Plain rather than an accent-tinted attributed
-    /// string now that it is a bordered button — accent-on-bezel read as an error state,
-    /// which is exactly what a second way to open a folder is not.
+    /// Sets the secondary button's title, plain rather than accent-tinted: accent on a bezel
+    /// reads as an error state.
     private func applySecondaryTitle(_ title: String) {
         secondaryButton.title = title
     }
@@ -184,6 +182,6 @@ public final class EmptyStateView: NSView {
         iconView.contentTintColor = ThemedControls.palette.statusText.withAlphaComponent(0.55)
         titleLabel.textColor = ThemedControls.palette.foreground.withAlphaComponent(0.8)
         subtitleLabel.textColor = ThemedControls.palette.statusText
-        if let title = secondaryTitleText { applySecondaryTitle(title) }   // accent is per-theme
+        if let title = secondaryTitleText { applySecondaryTitle(title) }
     }
 }

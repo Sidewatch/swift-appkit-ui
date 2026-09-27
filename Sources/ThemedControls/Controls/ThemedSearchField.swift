@@ -14,10 +14,9 @@
 import AppKit
 import AppKitViews
 
-/// A theme-aware search/filter input matching the Find-in-Project field: a rounded
-/// `ThemedControls.palette.border` container over an elevated surface, holding a *borderless* text
-/// field (the system `NSSearchField` bezel ignores the app theme, so we don't use
-/// it) with a leading magnifier glyph. Fires `onChange` live on each keystroke.
+/// A theme-aware search/filter input: a rounded palette-bordered box over an elevated surface
+/// holding a *borderless* text field and a leading magnifier (the `NSSearchField` bezel ignores
+/// the palette). Fires `onChange` live on each keystroke.
 open class ThemedSearchField: NSView, NSTextFieldDelegate {
     /// Called on every edit with the current text.
     open var onChange: ((String) -> Void)?
@@ -30,16 +29,19 @@ open class ThemedSearchField: NSView, NSTextFieldDelegate {
     private let icon = NSImageView()
     private let field = NSTextField()
 
+    /// The text in the field; setting it does not fire `onChange`.
     open var stringValue: String {
         get { field.stringValue }
         set { field.stringValue = newValue }
     }
+    /// The dimmed prompt shown while the field is empty.
     open var placeholder: String = "" {
         didSet { applyPlaceholder() }
     }
 
     open override var intrinsicContentSize: NSSize { NSSize(width: NSView.noIntrinsicMetric, height: 26) }
 
+    /// Creates a field showing `placeholder` while empty.
     public init(placeholder: String = "") {
         self.placeholder = placeholder
         super.init(frame: .zero)

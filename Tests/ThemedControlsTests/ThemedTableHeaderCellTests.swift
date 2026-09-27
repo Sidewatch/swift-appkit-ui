@@ -49,7 +49,7 @@ final class ThemedTableHeaderCellTests: XCTestCase {
 
     /// A table whose FIRST column uses `cell`, laid out and rendered into a bitmap. `columns`
     /// says how many there are, because a divider is drawn between two columns and never after
-    /// the last one — with a single column there is nothing to divide (25 Sep 2026).
+    /// the last one — with a single column there is nothing to divide.
     ///
     /// `bitmapImageRepForCachingDisplay` allocates at the BACKING scale, so the rep is 2× the
     /// view on this machine and every sample below is taken in POINTS and scaled — a pixel
@@ -141,8 +141,7 @@ final class ThemedTableHeaderCellTests: XCTestCase {
     }
 
     /// A divider divides two columns. The LAST column's trailing edge is the table's own edge,
-    /// and ruling it drew a frame rather than a grid (25 Sep 2026, David of the CSV preview:
-    /// "should the furthest left one have another separator line? probably not").
+    /// and ruling it would draw a frame rather than a grid.
     func testTheLastColumnIsNotRuledOffAtItsTrailingEdge() {
         let rep = renderedHeader(cell: ThemedTableHeaderCell(title: "id"))   // one column: it IS the last
         assertSameColor(sample(rep, 199.5, 12), rendered(Loud().statusBackground),

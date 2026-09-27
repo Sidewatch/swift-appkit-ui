@@ -53,7 +53,7 @@ bar.target = self; bar.action = #selector(filterChanged)
 - `ThemedScrollView` — overlay scrollers whose knob follows the palette's appearance.
 - `EmptyStateView` — symbol, title, subtitle and up to two actions, centred.
 - `InnerGridTableView` — a table whose vertical grid lines fall between columns and never on its own leading or trailing edge. `NSTableView.solidVerticalGridLineMask` rules every boundary including the outer two, so the first column wears a line down its left where nothing is being divided. Set `gridStyleMask = [.solidHorizontalGridLineMask]` and this draws the rest.
-- `CellEditFormatter` — what a table or outline cell **draws** against what it **edits**: a string as `"nginx"`, a tree key as `image:`, a secret as `••••••••`, each typed over as the bare value. It is a `Formatter` because swapping a field's `stringValue` inside `controlTextDidBeginEditing` does NOT reach the field editor AppKit has already loaded — a shipped build quoted a value again on every double-click that way, writing to a file nobody had edited. Set `field.formatter` and `field.objectValue`, and read the edit back from `objectValue`, never `stringValue`.
+- `CellEditFormatter` — what a table or outline cell **draws** against what it **edits**: a string as `"nginx"`, a tree key as `image:`, a secret as `••••••••`, each typed over as the bare value. It is a `Formatter` because swapping a field's `stringValue` inside `controlTextDidBeginEditing` does NOT reach the field editor AppKit has already loaded, so the decoration would be edited into the value (a quoted value re-quoted on every double-click). Set `field.formatter` and `field.objectValue`, and read the edit back from `objectValue`, never `stringValue`.
 
 ## For agents
 

@@ -12,13 +12,12 @@
 
 import AppKit
 
-/// A settings text label that re-reads its `Theme` color on every
-/// `ThemedControls.paletteDidChange`, so a palette switch with the window open re-tints it even
-/// when its pane is off screen (the tab it isn't on). Three roles: `primary` for
-/// a row caption, `secondary` for a section header, `tertiary` for a footnote.
+/// A settings text label that re-reads its palette colour on every
+/// `ThemedControls.paletteDidChange`, so it re-tints even while its pane is off screen. Three
+/// roles: `primary` for a row caption, `secondary` for a section header, `tertiary` for a footnote.
 public final class SettingsLabel: NSTextField {
 
-    /// Which `Theme` text tone the label carries.
+    /// Which palette text tone the label carries.
     public enum Role { case primary, secondary, tertiary }
 
     private let role: Role

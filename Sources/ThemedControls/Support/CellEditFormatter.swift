@@ -10,26 +10,13 @@
 
 import Foundation
 
-/// The decoration a table or outline cell wears, kept out of what you type over (25 Sep 2026).
+/// The decoration a table or outline cell wears (`"nginx"`, `image:`, `••••••••`), kept out of
+/// what you type over.
 ///
-/// A cell often shows more than its value: a string reads as `"nginx"`, a tree key as `image:`,
-/// a secret as `••••••••`. The text you type over must be the bare value — and swapping the
-/// field's `stringValue` inside `controlTextDidBeginEditing` does **not** reliably reach the
-/// field editor, which AppKit has already loaded from the cell. A shipped build quoted a tree
-/// value again on every double-click for exactly that reason, writing to a file nobody had
-/// edited. A `Formatter` is the mechanism AppKit honours: `string(for:)` is what the row draws,
-/// `editingString(for:)` is what the editor loads, and the typed text comes back through the
-/// field's `objectValue` untouched.
-///
-/// ```swift
-/// field.formatter = CellEditFormatter(prefix: "\"", suffix: "\"")   // reads "nginx", edits nginx
-/// field.objectValue = value
-/// …
-/// let typed = field.objectValue as? String                          // never `stringValue`
-/// ```
-///
-/// A cell never rejects what you type: what a value MEANS is the format's decision, made where
-/// the edit is applied, not here.
+/// Must be a `Formatter`: swapping `stringValue` in `controlTextDidBeginEditing` does **not** reach
+/// the field editor AppKit has already loaded, so the decoration gets edited into the value.
+/// `string(for:)` is what the row draws, `editingString(for:)` what the editor loads; read the
+/// edit from `objectValue`, never `stringValue`. It never rejects input.
 public final class CellEditFormatter: Formatter, @unchecked Sendable {
     private let prefix: String
     private let suffix: String
@@ -56,6 +43,7 @@ public final class CellEditFormatter: Formatter, @unchecked Sendable {
         prefix = ""; suffix = ""; substitute = nil
         super.init()
     }
+    /// Not archivable; always nil.
     public nonisolated required init?(coder: NSCoder) { nil }
 
     /// What the row shows.

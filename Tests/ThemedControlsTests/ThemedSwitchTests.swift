@@ -37,7 +37,7 @@ final class ThemedSwitchTests: XCTestCase {
         @objc func toggled(_ sender: Any?) { fired += 1 }
     }
 
-    /// The paint matches the stock switch's visible track (measured 24 Sep 2026: regular 32 × 21,
+    /// The paint matches the stock switch's visible track (measured: regular 32 × 21,
     /// small 26 × 17, mini 21 × 14 inside a 54 × 24 frame), at the trailing end of the footprint,
     /// centred vertically — the footprint itself is unchanged, so layouts do not move.
     func testTrackIsTheStockSwitchsVisibleSizeInsideTheFootprint() {
@@ -58,7 +58,7 @@ final class ThemedSwitchTests: XCTestCase {
         XCTAssertEqual(ThemedSwitch().intrinsicContentSize, NSSwitch().intrinsicContentSize)
     }
 
-    /// A header strip wants the small switch (23 Sep 2026): the footprint follows the control
+    /// A header strip wants the small switch: the footprint follows the control
     /// size, as the stock switch's does, and the drawing is bounds-relative so it scales with it.
     func testTheFootprintFollowsTheControlSize() {
         let sw = ThemedSwitch(frame: .zero)
@@ -117,8 +117,8 @@ final class ThemedSwitchTests: XCTestCase {
             sw.cacheDisplay(in: sw.bounds, to: rep)
             let scale = CGFloat(rep.pixelsWide) / sw.bounds.width
             var reds = 0, samples = 0
-            // Sampled along the TRACK (the paint sits at the trailing end of the footprint since
-            // 24 Sep 2026), `side` a fraction of its width, on its centre line.
+            // Sampled along the TRACK (the paint sits at the trailing end of the footprint),
+            // `side` a fraction of its width, on its centre line.
             let track = sw.trackRect
             let y = Int((sw.bounds.maxY - track.midY) * scale)   // rep rows run top-down
             for px in stride(from: Int((track.minX + track.width * (side - 0.08)) * scale), to: Int((track.minX + track.width * (side + 0.08)) * scale), by: 1) {

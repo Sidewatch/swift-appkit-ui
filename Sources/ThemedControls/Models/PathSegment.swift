@@ -16,18 +16,18 @@ import Foundation
 /// still a button if the host offers a menu for it, and plain text otherwise — which is how a bar
 /// mixes a file's path with something that has no path at all, a symbol or "Untitled".
 public struct PathSegment: Equatable, Sendable {
+    /// What the crumb reads.
     public let title: String
+    /// The file or folder the crumb stands for; nil for a title-only crumb.
     public let url: URL?
     /// Whether this crumb is a FOLDER, which decides whether its menu lists the folder itself or
     /// the file's siblings.
     ///
-    /// The host says so; the bar does not ask the file system. Probing here would mean touching
-    /// the disk on the main thread every time a menu opens, and would make the answer depend on
-    /// whether the path happens to exist — a crumb for a file that has just been deleted, or one
-    /// built for a path that is not on this disk at all, would silently change what its menu
-    /// shows.
+    /// The host says so; the bar must not probe the disk — that is main-thread I/O on every menu,
+    /// and a just-deleted path would silently change what its menu shows.
     public let isDirectory: Bool
 
+    /// Creates a crumb.
     public init(title: String, url: URL?, isDirectory: Bool = false) {
         self.title = title
         self.url = url
@@ -35,19 +35,17 @@ public struct PathSegment: Equatable, Sendable {
     }
 }
 
-/// One row of a folder crumb's menu, as the host lists it.
-///
-/// The HOST does the listing, not the bar. That keeps the bar free of file-system code and of any
-/// opinion about hidden files, ignore rules or ordering — all of which belong to whatever is
-/// already showing that same tree elsewhere in the app, and which would otherwise be decided
-/// twice and drift.
+/// One row of a folder crumb's menu, as the host lists it — the bar holds no opinion on hidden
+/// files, ignore rules or ordering.
 public struct PathBarEntry: Equatable, Sendable {
+    /// The file or folder the row picks.
     public let url: URL
     /// What the row reads. Usually the last path component.
     public let title: String
     /// A folder gets a submenu, filled only when it is opened.
     public let isFolder: Bool
 
+    /// Creates a row.
     public init(url: URL, title: String, isFolder: Bool) {
         self.url = url
         self.title = title

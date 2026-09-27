@@ -12,19 +12,16 @@
 import AppKit
 import AppKitViews
 
-/// A themed replacement for `NSSegmentedControl`: a rounded bar of segments with the
-/// accent on the selected one. The stock control paints a system bezel and selection
-/// that ignore the palette (`selectedSegmentBezelColor` tints the selection but the
-/// bezel, dividers and text stay system), so the Usage range and the Library filter
-/// read as foreign controls. Same API shape as the stock one where it matters —
-/// `selectedSegment`, `target`/`action` — so a swap is a type change.
+/// A themed replacement for `NSSegmentedControl`: a rounded bar of segments with the accent on
+/// the selected one. The stock control's bezel, dividers and text stay system-coloured whatever
+/// the tint. Same `selectedSegment` and `target`/`action` as the stock one, so a swap is a type change.
 public final class ThemedSegmentBar: NSControl {
     private let labels: [String]
     private let symbols: [String?]
     /// Selected index; setting it repaints without firing the action.
     public var selectedSegment: Int = 0 { didSet { needsDisplay = true } }
-    /// Momentary (22 Sep 2026, the +/− list controls): no segment stays selected, every click
-    /// fires the action, and `clickedSegment` says which — the stock control's `.momentary`.
+    /// Momentary (e.g. a +/− pair under a list): no segment stays selected, every click fires the
+    /// action, and `clickedSegment` says which — the stock control's `.momentary`.
     public var isMomentary = false { didSet { needsDisplay = true } }
     /// The segment of the last click or press; -1 before any.
     public private(set) var clickedSegment = -1
@@ -36,21 +33,24 @@ public final class ThemedSegmentBar: NSControl {
         if enabled { disabledSegments.remove(i) } else { disabledSegments.insert(i) }
         needsDisplay = true
     }
+    /// Whether segment `i` accepts clicks (see ``setEnabled(_:forSegment:)``).
     public func isEnabled(forSegment i: Int) -> Bool { !disabledSegments.contains(i) }
     public override var isEnabled: Bool { didSet { needsDisplay = true } }
-    /// Equal-width segments across the whole width (Library) instead of hugging (Usage).
+    /// Equal-width segments across the whole width instead of each hugging its label.
     public var fillsWidth = false { didSet { invalidateIntrinsicContentSize(); needsDisplay = true } }
+    /// The bar's intrinsic height in points.
     public var barHeight: CGFloat = 24 { didSet { invalidateIntrinsicContentSize() } }
+    /// How many segments the bar has.
     public var segmentCount: Int { labels.count }
 
+    /// Creates a bar of `labels`, each optionally led by the SF Symbol at the same index.
     public init(labels: [String], symbols: [String?] = []) {
         self.labels = labels
         self.symbols = symbols.count == labels.count ? symbols : labels.map { _ in nil }
         super.init(frame: .zero)
         wantsLayer = true
         // Redraw on every resize. A layer-backed view is otherwise free to STRETCH its last
-        // bitmap while the sidebar divider is dragged, which squeezed the labels into each
-        // other (5 Sep 2026) until something else triggered a repaint.
+        // bitmap during a live resize, squeezing the labels into each other.
         layerContentsRedrawPolicy = .duringViewResize
         translatesAutoresizingMaskIntoConstraints = false
         NotificationCenter.default.addObserver(self, selector: #selector(reTheme), name: ThemedControls.paletteDidChange, object: nil)

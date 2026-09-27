@@ -12,13 +12,11 @@
 import AppKit
 import AppKitViews
 
-/// An `NSPopUpButton` that keeps the native MENU and loses the system bezel: a rounded
-/// themed box, the selected title (and its image) in the foreground colour, a quiet
-/// chevron. The stock control on a dark warm palette drew a system-grey lozenge with a
-/// blue chevron (Library's category filter, every Settings popup). Only drawing changes
-/// — items, selection, target/action and the pop-up itself are the superclass's.
-/// Not `final`: subclasses add their own menu on top.
+/// An `NSPopUpButton` that keeps the native MENU and loses the system bezel (a grey lozenge with
+/// a blue chevron): a rounded themed box, the selected title and image in the foreground colour,
+/// a quiet chevron. Only drawing changes; items, selection and target/action are the superclass's.
 open class ThemedPopUpButton: NSPopUpButton {
+    /// Creates an unsized pop-up (not pull-down) for Auto Layout.
     public convenience init() { self.init(frame: .zero, pullsDown: false) }
     public override init(frame: NSRect, pullsDown: Bool) {
         super.init(frame: frame, pullsDown: pullsDown)

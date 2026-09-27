@@ -22,6 +22,7 @@ public struct SettingsSection {
     /// group rather than to one row.
     public let footnote: String?
 
+    /// Creates a section.
     public init(header: String? = nil, rows: [NSView], footnote: String? = nil) {
         self.header = header
         self.rows = rows

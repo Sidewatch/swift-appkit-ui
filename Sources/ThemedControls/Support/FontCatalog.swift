@@ -12,23 +12,12 @@
 import AppKit
 import AppKitViews
 
-/// The font choices Settings offers, and the one place a stored choice is turned back into an
-/// `NSFont`.
+/// The font choices Settings offers, and the one place a stored choice becomes an `NSFont`.
 ///
-/// Two settings panes used to reach into a terminal type for this — the terminal answering the
-/// editor's question — and each resolved its own font from a family descriptor.
-/// That was fine while a family was the whole choice. Weight makes it two decisions that have to
-/// agree about what a family *contains*, so enumeration and resolution live together here.
-///
-/// **The split between the two halves of this type is load-bearing.** Enumeration
-/// (``monospacedFamilies()``, ``faces(inFamily:)``, ``postScriptName(inFamily:face:)``) goes
-/// through `NSFontManager`, which walks a family's members — fine in Settings, ruinous anywhere
-/// else: a host's editor-font accessor is called once per line number while a gutter draws, and resolving
-/// a family through the font system there cost 349 ms in a sampled stall (3 Sep 2026). So the
-/// panes resolve a chosen weight to its PostScript name ONCE, at the moment it is chosen, and the
-/// render path ``font(family:postScriptName:size:)`` only ever does an exact
-/// `NSFont(name:)` — no enumeration, and `nonisolated`, which it has to be to serve a render
-/// path's background callers at all.
+/// **The split between the two halves is load-bearing.** Enumeration walks a family's members
+/// through `NSFontManager` — fine in Settings, ruinous in a render path (349 ms in a sampled
+/// gutter stall). So a pane resolves a chosen weight to its PostScript name ONCE, when picked, and
+/// ``font(family:postScriptName:size:)`` only does an exact `NSFont(name:)`, `nonisolated`.
 public enum FontCatalog {
 
     /// One selectable weight within a family: the face name shown in the popup ("SemiBold"), the
@@ -40,6 +29,7 @@ public enum FontCatalog {
         public let postScriptName: String
         /// AppKit's 0…15 weight, for ordering.
         public let weight: Int
+        /// Creates a face record.
         public init(name: String, postScriptName: String, weight: Int) {
             self.name = name
             self.postScriptName = postScriptName
@@ -56,9 +46,6 @@ public enum FontCatalog {
     /// Monospaced font families offered for the editor and terminal. Proportional families are
     /// excluded: a terminal grid assumes one advance width, and the column arithmetic misaligns
     /// with anything else.
-    ///
-    /// Moved here from `TerminalSettings` (13 Sep 2026) when the editor's weight popup needed it
-    /// too — it was never terminal-specific, it just lived where it was first needed.
     public static func monospacedFamilies() -> [String] {
         let manager = NSFontManager.shared
         return manager.availableFontFamilies.filter { family in
@@ -70,19 +57,11 @@ public enum FontCatalog {
         }
     }
 
-    /// The upright weights `family` offers, lightest first. `nil` = the system monospaced font.
+    /// The upright weights `family` offers, lightest first; `nil` means the system monospaced font.
     ///
-    /// Italic faces are filtered out on purpose, and their absence is not a gap. Weight here is
-    /// the *base* the editor draws with; italic and bold are traits syntax highlighting derives
-    /// from that base at render time (comments italic, keywords bold), so offering "Bold Italic"
-    /// as a starting point would only give every rendered italic something to derive from twice.
-    /// Picking Light still gets Light Italic comments, through the family's real Light Italic
-    /// face — which is why the bundled JetBrains Mono ships an italic for every weight it offers.
-    ///
-    /// A family with one upright face returns one entry, which the panes use to hide the popup —
-    /// Monaco and Andale Mono ship exactly one, and a one-item popup is furniture. (Menlo and
-    /// PT Mono have two, Regular and Bold, so they DO get the row; the counts here are measured,
-    /// and `--selftest-fonts` pins them.)
+    /// Italics are excluded on purpose: the weight is the *base*, and syntax highlighting derives
+    /// italic and bold from it at render time (Light still gets Light Italic comments). A family
+    /// with one upright face (Monaco) returns one entry, which a pane uses to hide the popup.
     public static func faces(inFamily family: String?) -> [Face] {
         guard let family else {
             return systemFaceNames.enumerated().map { index, name in
@@ -110,12 +89,10 @@ public enum FontCatalog {
         .sorted { $0.weight < $1.weight }
     }
 
-    /// The PostScript name for a chosen weight, to be persisted alongside the family and handed
-    /// to ``font(family:postScriptName:size:)`` at render time.
-    ///
-    /// `nil` for the family's default face, for a face name the family doesn't have (which is
-    /// what a switch from JetBrains Mono's "SemiBold" to Menlo leaves behind), and for the system
-    /// font — each of which the render path already handles by falling back.
+    /// The PostScript name for a chosen weight, persisted beside the family for
+    /// ``font(family:postScriptName:size:)``. `nil` for the default face, a face the family lacks
+    /// (left over after switching family), or the system font — each of which the render path
+    /// handles by falling back.
     public static func postScriptName(inFamily family: String?, face: String?) -> String? {
         guard let family, let face else { return nil }
         return faces(inFamily: family).first { $0.name == face }?.postScriptName
@@ -125,12 +102,9 @@ public enum FontCatalog {
 
     /// Resolves a persisted choice to a font, falling back rather than failing at every step.
     ///
-    /// The fallback order is deliberate: a PostScript name that no longer resolves keeps the
-    /// FAMILY the user chose and drops to its default face, because the family is much the bigger
-    /// part of the decision. Only a missing family falls all the way back to the system font.
-    ///
-    /// `postScriptName` is what the panes stored via ``postScriptName(inFamily:face:)``; `face` is
-    /// consulted only when `family` is nil, where it names a system weight.
+    /// The order is deliberate: a stale PostScript name keeps the FAMILY and drops to its default
+    /// face, since the family is the bigger part of the choice; only a missing family falls back to
+    /// the system font. `face` names a system weight and is read only when `family` is nil.
     public nonisolated static func font(family: String?, postScriptName: String?, face: String? = nil,
                                 size: CGFloat) -> NSFont {
         guard let family else {
@@ -158,7 +132,7 @@ public enum FontCatalog {
     /// popup matches what the font is called everywhere else.
     private static let systemFaceNames = ["Light", "Regular", "Medium", "Semibold", "Bold"]
 
-    /// A table, not stored state — `Theme.editorFont` reads this off the main actor, and a static
+    /// A table, not stored state — render paths read this off the main actor, and a static
     /// array of `NSFont.Weight` would be shared mutable state to the concurrency checker.
     nonisolated private static func systemWeight(named name: String?) -> NSFont.Weight {
         switch name {

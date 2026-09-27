@@ -10,23 +10,13 @@
 
 import AppKit
 
-/// A file's path as clickable crumbs, the way VS Code's breadcrumbs work: clicking a folder crumb
-/// drops that folder's contents — subfolders as submenus filled only when opened, files as items,
-/// the one on the current path ticked — and clicking the file crumb lists its siblings, so you can
-/// move sideways without a sidebar.
+/// A file's path as clickable crumbs, like VS Code's breadcrumbs: a folder crumb drops its
+/// contents (subfolders as lazily filled submenus), the file crumb lists its siblings.
 ///
-/// **The host supplies the listing and the icons**, through `childrenProvider` and `iconProvider`.
-/// The bar reads no directories itself, which keeps hidden files, ignore rules and sort order as
-/// ONE decision made wherever the app already shows that tree, rather than a second one here that
-/// drifts from it.
-///
-/// Keyboard: focusing the bar highlights a crumb, then ← and → move between them, ↓ / Space /
-/// Return open the focused crumb's menu, and Escape hands focus back through `onDismissFocus`.
-/// `keyAction(for:)` is the decision separated from the act, so it can be tested without popping a
-/// menu — a menu's tracking loop would hold any test that opened one.
-///
-/// Subclass it to add accessory buttons. The bar lays its crumbs from the leading edge and leaves
-/// the trailing edge alone.
+/// **The host supplies the listing and icons** (`childrenProvider`, `iconProvider`); the bar reads
+/// no directories, so hidden files, ignore rules and sort order stay one decision in the host.
+/// Keyboard: ←/→ move, ↓/Space/Return open, Escape calls `onDismissFocus`. Subclasses may add
+/// accessory buttons at the trailing edge; crumbs lay out from the leading edge.
 open class PathBarView: NSView, NSMenuDelegate {
 
     // MARK: - Host hooks
@@ -59,6 +49,7 @@ open class PathBarView: NSView, NSMenuDelegate {
 
     /// The crumb strip. A subclass constrains it and puts its own controls beside it.
     public let crumbStack = NSStackView()
+    /// The crumbs currently shown, leading first.
     private(set) public var segments: [PathSegment] = []
     /// Submenus waiting for their folder to be listed, keyed by menu identity — filled the first
     /// time AppKit asks, so a deep tree costs nothing until it is opened.
@@ -199,6 +190,7 @@ open class PathBarView: NSView, NSMenuDelegate {
 
     open override var acceptsFirstResponder: Bool { !segments.isEmpty }
 
+    /// Takes keyboard focus with the crumb at `index` highlighted; out-of-range is ignored.
     public func focus(at index: Int) {
         guard segments.indices.contains(index) else { return }
         focusedCrumb = index
@@ -319,6 +311,8 @@ open class PathBarView: NSView, NSMenuDelegate {
 
     // MARK: - For tests and harnesses
 
+    /// Every crumb's title, leading first.
     public var crumbTitlesForTesting: [String] { segments.map(\.title) }
+    /// Every crumb's URL, leading first; nil for a title-only crumb.
     public var crumbURLsForTesting: [URL?] { segments.map(\.url) }
 }

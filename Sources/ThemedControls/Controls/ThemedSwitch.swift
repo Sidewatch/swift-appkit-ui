@@ -11,12 +11,10 @@
 import AppKit
 import AppKitViews
 
-/// A theme-tinted on/off switch. `NSSwitch` fills with the macOS accent when on and offers no
-/// API to change that, so on a gold or teal theme every switch in Settings was the one blue
-/// thing on the page. This one draws its own track and knob from the palette (accent on, a
-/// lifted surface off), slides the knob over 0.18 s, toggles on click and Space, dims when
-/// disabled, and reads to VoiceOver as a switch. Same shape as `NSSwitch` where a host touches
-/// it — `state`, `target`/`action`, `isEnabled`, the same footprint — so a swap is a type change.
+/// A theme-tinted on/off switch: `NSSwitch` fills with the macOS accent and has no tint API.
+/// Draws its track and knob from the palette (accent on, a lifted surface off), slides over
+/// 0.18 s, toggles on click and Space, and reads to VoiceOver as a switch. Same `state`,
+/// `target`/`action`, `isEnabled` and footprint as `NSSwitch`, so a swap is a type change.
 open class ThemedSwitch: NSControl {
     /// `.on` or `.off`. Setting it repaints (sliding while on screen) without firing the action.
     public var state: NSControl.StateValue = .off {
@@ -29,8 +27,8 @@ open class ThemedSwitch: NSControl {
     /// The stock switch's footprint, read once so the rows keep their geometry on every macOS.
     private static let footprint: NSSize = NSSwitch().intrinsicContentSize
     /// `.small` and `.mini` are the regular footprint scaled — `NSSwitch` reports ONE intrinsic
-    /// size whatever its `controlSize` (measured 23 Sep 2026: 54 × 24 for all three), so there is
-    /// nothing to read; the ratios are the HIG's small and mini against regular, rounded.
+    /// size (54 × 24) whatever its `controlSize`, so there is nothing to read; the ratios are the
+    /// HIG's small and mini against regular, rounded.
     private static func footprint(for size: NSControl.ControlSize) -> NSSize {
         let scale: CGFloat
         switch size {
@@ -63,13 +61,10 @@ open class ThemedSwitch: NSControl {
 
     open override var intrinsicContentSize: NSSize { Self.footprint(for: controlSize) }
 
-    /// The VISIBLE track of the stock switch, measured 24 Sep 2026 by rendering `NSSwitch` at
-    /// each size and taking the ink bounds: regular 32 × 21, small 26 × 17, mini 21 × 14 —
-    /// inside a frame it reports as 54 × 24 whatever the size. This switch painted its whole
-    /// footprint until then, so it stood two-thirds wider than the system's beside the same
-    /// popups (David: "is this toggle the default size? feels a bit wide"). The footprint stays
-    /// (layout and hit area unchanged); the paint sits in the trailing end of it, 2 pt from the
-    /// edge and centred vertically, as the stock one sits in its frame.
+    /// The VISIBLE track of the stock switch (its rendered ink bounds): regular 32 × 21, small
+    /// 26 × 17, mini 21 × 14, inside a 54 × 24 footprint. Must not paint the whole footprint —
+    /// that stands two-thirds wider than the system's. The paint sits at the trailing end, 2 pt
+    /// in and centred vertically, as the stock one does; layout and hit area keep the footprint.
     static func trackSize(for size: NSControl.ControlSize) -> NSSize {
         switch size {
         case .small: return NSSize(width: 26, height: 17)

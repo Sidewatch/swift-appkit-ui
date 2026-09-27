@@ -11,21 +11,19 @@
 
 import AppKit
 
-/// A brief pill at the top centre of a window confirming what just happened — "Copied
-/// SHA-256", "Copied 3 paths" — for actions where nothing else on screen changes to show they
-/// worked. A capsule of window material with a soft shadow, an SF Symbol in the palette's
-/// accent beside 13-pt text in its foreground, fading in over 0.12 s, staying 1.3 s, fading
-/// out over 0.2 s. ONE per window, reused — a new show restarts the dwell; it takes no clicks
-/// (`hitTest` → nil), sits in the window's content view above everything just under the title
-/// strip (`contentLayoutRect`), and posts a VoiceOver announcement. `ThemedControls.reduceMotion`
-/// drops the fades. Moved here from Sidewatch on 24 Sep 2026 (another app's heads-up display,
-/// in AppKit).
+/// A brief capsule at the top centre of a window confirming an action nothing else on screen
+/// shows ("Copied 3 paths"): an accent SF Symbol beside 13-pt text, fading in, staying ``dwell``,
+/// fading out (no fades under `ThemedControls.reduceMotion`). ONE per window, reused — a new
+/// show restarts the dwell; it sits just under the title strip, takes no clicks, and posts a
+/// VoiceOver announcement.
 public final class HeadsUpDisplay: NSView {
     /// How long the capsule stays before fading.
     public static let dwell: TimeInterval = 1.3
     private static let fadeIn: TimeInterval = 0.12, fadeOut: TimeInterval = 0.2
     private static let topInset: CGFloat = 12
+    /// The message, in the palette foreground.
     public let label = NSTextField(labelWithString: "")
+    /// The SF Symbol beside the message, in the palette accent.
     public let icon = NSImageView()
     private let material = NSVisualEffectView()
     private var hideWork: DispatchWorkItem?

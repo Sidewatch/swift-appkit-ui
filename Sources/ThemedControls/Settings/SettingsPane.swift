@@ -12,9 +12,8 @@
 
 import AppKit
 
-/// One section of the Settings window. Panes own their controls and write
-/// straight through to the setting stores (`ThemeManager`, `ScanSettings`,
-/// `TerminalSettings`) — every edit applies live, so there is no OK/Apply.
+/// One page of a Settings window. Panes own their controls and write straight through to the
+/// host's setting stores — every edit applies live, so there is no OK/Apply.
 public protocol SettingsPane: NSViewController {
     /// The sidebar row's title (and the page's heading).
     var paneTitle: String { get }
@@ -25,6 +24,7 @@ public protocol SettingsPane: NSViewController {
     func syncFromSettings()
 }
 
+/// The grouped-form building blocks every pane lays itself out with.
 extension SettingsPane {
 
     /// Lays the pane out as grouped-form sections down the page: caption, card,
@@ -32,11 +32,8 @@ extension SettingsPane {
     /// size, so a short pane leaves the rest of the window empty rather than
     /// stretching its rows apart.
     public func buildPane(_ sections: [SettingsSection]) {
-        // The window is a fixed size, but a tall pane (e.g. Terminal, which keeps
-        // growing new toggles) would clip its last rows off the bottom. So the sections
-        // live in a flipped documentView inside a borderless, background-less scroll view:
-        // content that fits shows exactly as before, content that overflows scrolls
-        // instead of being cut off.
+        // The window is a fixed size, so the sections live in a flipped documentView inside a
+        // borderless, background-less scroll view: a tall pane scrolls instead of being clipped.
         let content = SettingsScrollContent()   // isFlipped → lays out top-down
         content.translatesAutoresizingMaskIntoConstraints = false
         let scroll = NSScrollView()
@@ -45,10 +42,9 @@ extension SettingsPane {
         scroll.hasVerticalScroller = true
         scroll.hasHorizontalScroller = false
         scroll.autohidesScrollers = true
-        // Legacy, not overlay (22 Sep 2026, "see how it's not scrollable"): an overlay scroller
-        // shows only while scrolling, so a page cut off at the window's bottom looked like a
-        // clipped page. A legacy scroller stands there whenever the page overflows, and hides
-        // (autohides) when it fits — the image preview's rule. The window's appearance styles it.
+        // Legacy, not overlay: an overlay scroller shows only while scrolling, so an overflowing
+        // page looks clipped rather than scrollable. A legacy scroller stands whenever the page
+        // overflows and autohides when it fits. The window's appearance styles it.
         scroll.scrollerStyle = .legacy
         scroll.documentView = content
         view.addSubview(scroll)
@@ -101,13 +97,10 @@ extension SettingsPane {
         pinPaneSize()
     }
 
-    /// The height this pane's content actually needs.
+    /// The height this pane's content actually needs, at least ``SettingsMetrics/paneMinHeight``.
     ///
-    /// NOT `view.fittingSize`. Every pane's content lives inside an `NSScrollView`, and a scroll
-    /// view reports a MINIMAL fitting size rather than its document's — so measuring the pane
-    /// view returned roughly the same small number for every pane, and the window opened too
-    /// short for the tall ones, which is why Settings still scrolled after being told not to.
-    /// The document view is the thing with a real height, so ask it.
+    /// Measured on the document view, NOT `view.fittingSize`: a scroll view reports a MINIMAL
+    /// fitting size rather than its document's.
     public var contentHeight: CGFloat {
         func findContent(_ v: NSView) -> SettingsScrollContent? {
             if let c = v as? SettingsScrollContent { return c }
@@ -144,15 +137,11 @@ extension SettingsPane {
         return stack
     }
 
-    /// Pins the pane's width — shared by every pane, so switching tabs doesn't
-    /// resize the window under the pointer.
+    /// Pins the pane's width — shared by every pane, so switching pages doesn't resize the
+    /// window under the pointer.
     ///
-    /// Height is deliberately NOT pinned. It used to be a hard
-    /// `equalToConstant: paneHeight`, which fought the tab view's fill once the
-    /// window became resizable: dragging the window taller left the pane at its
-    /// old height, so the extra space did nothing and tall panes stayed clipped.
-    /// A low-priority floor keeps the pane from collapsing while letting the tab
-    /// view's fill win and hand the growth to the scroll view.
+    /// Height must NOT be pinned: a fixed height fights the container's fill when the window is
+    /// resized. A low-priority floor stops the pane collapsing and lets the scroll view take growth.
     public func pinPaneSize() {
         let floor = view.heightAnchor.constraint(greaterThanOrEqualToConstant: SettingsMetrics.paneMinHeight)
         floor.priority = .defaultLow

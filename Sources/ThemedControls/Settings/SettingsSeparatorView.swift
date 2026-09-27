@@ -15,10 +15,8 @@ import AppKit
 /// reads as a divider between rows rather than a cut across the card.
 public final class SettingsSeparatorView: NSView {
 
-    /// Opting out of autoresizing constraints belongs here rather than at the
-    /// call site: the card pins every separator, and a separator that kept them
-    /// would contribute a zero-height frame constraint that Auto Layout resolves
-    /// by breaking the card's row chain — collapsing the card to its first row.
+    /// Creates a separator already opted out of autoresizing constraints: a kept zero-height frame
+    /// constraint breaks the card's row chain and collapses the card to its first row.
     public init() {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +33,7 @@ public final class SettingsSeparatorView: NSView {
         let inset = SettingsMetrics.cardInset
         // `rowSeparator`, not `ThemedControls.palette.border` — the border colour is tuned to sit on
         // the page background and would land darker than the card fill it's drawn
-        // over, reading as a crack rather than a divider. See Theme+Surfaces.
+        // over, reading as a crack rather than a divider.
         ThemedControls.palette.rowSeparator.setFill()
         NSRect(x: inset, y: 0, width: max(0, bounds.width - inset * 2), height: bounds.height).fill()
     }

@@ -14,11 +14,9 @@ import AppKit
 /// A grouped-form card: the rounded, hairline-bordered container a section's
 /// rows sit in, proud of the recessed page behind it.
 ///
-/// The fill and border are drawn rather than set as layer colors: `Theme` colors
-/// change on `ThemedControls.paletteDidChange` (a new palette, not only a light/dark flip), and a
-/// `CGColor` snapshotted into a layer would freeze at the palette it was taken
-/// under. Drawing re-reads `Theme` on every pass, and the card redraws on both a
-/// theme change and an appearance flip.
+/// The fill and border are drawn rather than set as layer colours: a `CGColor` snapshotted into
+/// a layer freezes at the palette it was taken under. Drawing re-reads the palette, and the card
+/// redraws on `ThemedControls.paletteDidChange` and on an appearance flip.
 public final class SettingsCard: NSView {
 
     /// Stacks `rows` top to bottom, separated by hairlines, and takes its height
@@ -42,10 +40,8 @@ public final class SettingsCard: NSView {
                 let separator = SettingsSeparatorView()
                 addSubview(separator)
                 constraints += span(separator, under: previous)
-                // A true hairline. `1` here is one *point* — two device pixels on
-                // Retina, i.e. double a native separator, which made the old
-                // too-dark fill twice as loud. The card's border already accounts
-                // for this (see its `insetBy(dx: 0.5)`); this never did.
+                // A true hairline: `1` would be one *point* — two device pixels on Retina,
+                // double a native separator.
                 constraints.append(separator.heightAnchor.constraint(equalToConstant: SettingsMetrics.hairline))
                 previous = separator
             }
@@ -54,7 +50,7 @@ public final class SettingsCard: NSView {
             constraints += span(row, under: previous)
 
             // A hidden row must give back its height and take its separator with it, or the card
-            // keeps a blank band where it used to be. The zero-height constraint stays inactive
+            // keeps a blank band in its place. The zero-height constraint stays inactive
             // while the row is visible so it never fights the row's real content.
             if let settingsRow = row as? SettingsRowView {
                 let collapse = settingsRow.heightAnchor.constraint(equalToConstant: 0)

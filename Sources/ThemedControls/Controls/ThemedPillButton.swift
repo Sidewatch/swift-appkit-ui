@@ -10,16 +10,14 @@
 
 import AppKit
 
-/// The app's text button — the composer's "Send ⏎" pill made shared. A stock `NSButton`
-/// paints the system bezel, which ignores the palette: a grey lozenge on a warm dark
-/// theme (Replace All, Run, Browse…, Restore Defaults all shipped that way). This one is
-/// borderless and draws its own soft tinted pill — accent for the row's main action,
-/// foreground-neutral for secondary ones — and re-tints on `.themeDidChange`.
-/// Not `final`: `ActionButton` (the tools) adds a closure on top.
+/// A text button drawn as a soft tinted pill — accent for a row's main action, foreground-neutral
+/// for secondary ones — where a stock `NSButton`'s system bezel ignores the palette. Re-tints on
+/// `ThemedControls.paletteDidChange`; open so a subclass can add a closure action.
 open class ThemedPillButton: NSButton {
     /// Accent tint for the main action of a row; neutral for the rest.
     open var prominent = true { didSet { applyTheme() } }
 
+    /// Creates a pill titled `title` that sends `action` to `target`.
     public convenience init(title: String, target: AnyObject? = nil, action: Selector? = nil) {
         self.init(frame: .zero)
         self.title = title
@@ -47,8 +45,7 @@ open class ThemedPillButton: NSButton {
     }
 
     open override var title: String { didSet { applyTheme() } }
-    /// A disabled pill dims to 40% — the stock bezel greys out, and a pill that stays bright
-    /// reads as clickable ("+ Row" in the database view is disabled until a table can take one).
+    /// A disabled pill dims to 40%, as the stock bezel greys out; a bright one reads as clickable.
     open override var isEnabled: Bool { didSet { applyTheme() } }
     private var enabledAlpha: CGFloat { isEnabled ? 1 : 0.4 }
     private var restingFillAlpha: CGFloat { (ThemedControls.palette.isDark ? 0.16 : 0.12) * enabledAlpha }
@@ -60,6 +57,7 @@ open class ThemedPillButton: NSButton {
 
     private var tint: NSColor { prominent ? ThemedControls.palette.accent : ThemedControls.palette.foreground }
 
+    /// Repaints title, fill and border from the palette; subclasses call super.
     @objc open func applyTheme() {
         let para = NSMutableParagraphStyle(); para.alignment = .center
         attributedTitle = NSAttributedString(string: title, attributes: [

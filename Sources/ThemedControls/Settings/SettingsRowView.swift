@@ -20,29 +20,19 @@ public final class SettingsRowView: NSView {
     /// The row's caption, for the label/control form. Nil for a spanning row.
     private let label: SettingsLabel?
 
-    /// Set by ``SettingsCard`` so hiding a row also collapses the space it occupied.
-    ///
-    /// `isHidden` stops a view drawing but leaves its constraints intact, so a hidden row left
-    /// an empty band and a stray separator in the middle of the card — visible as a gap under
-    /// Size when the font size was not Custom.
+    /// Set by ``SettingsCard`` so hiding a row also collapses its space and separator —
+    /// `isHidden` alone leaves the constraints, and so an empty band, in place.
     public var onHiddenChanged: ((Bool) -> Void)?
 
     public override var isHidden: Bool {
         didSet { if oldValue != isHidden { onHiddenChanged?(isHidden) } }
     }
 
-    /// A caption/control row, with optional tertiary copy beneath.
+    /// A caption/control row, with optional tertiary copy beneath, spanning the row so it wraps
+    /// at the card's text width.
     ///
-    /// The footnote spans the row rather than tucking under the caption, so it
-    /// wraps at the card's text width — the one width the panes can state
-    /// exactly.
-    ///
-    /// Footnotes are kept to about a line and say what you must know to choose correctly — a
-    /// prerequisite, a caveat, the thing that makes the setting look broken if you do not know
-    /// it. Longer explanations of how a setting works internally are deliberately absent rather
-    /// than hidden behind a tooltip: a tooltip is only read by someone who already suspects
-    /// there is more to find, so it is the wrong place for anything that matters and dead weight
-    /// for anything that does not.
+    /// Keep a footnote to about a line: what you must know to choose correctly (a prerequisite,
+    /// a caveat), never an explanation of internals — and never in a tooltip instead.
     public init(_ title: String, control: NSView, footnote: String? = nil) {
         let caption = SettingsLabel(role: .primary)
         caption.stringValue = title
@@ -58,7 +48,7 @@ public final class SettingsRowView: NSView {
         addSubview(caption)
         addSubview(control)
         // VoiceOver: a switch, slider, popup or field in a row is named by the row's caption —
-        // without it a switch reads as "switch, on" with no subject (19 Sep 2026). A text button
+        // without it a switch reads as "switch, on" with no subject. A text button
         // already says what it does ("Browse…") and keeps its own title.
         let keepsOwnName = (control as? NSButton).map { !$0.title.isEmpty && !($0 is NSPopUpButton) } ?? false
         if !keepsOwnName { control.setAccessibilityLabel(title) }

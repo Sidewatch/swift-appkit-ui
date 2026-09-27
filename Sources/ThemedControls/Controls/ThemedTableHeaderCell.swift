@@ -14,25 +14,17 @@ import AppKitViews
 
 /// A column header drawn entirely from the palette.
 ///
-/// `ThemedTableHeaderView` fills the palette's status background, but `NSTableHeaderCell` then
-/// paints its OWN system background, separator and bottom border over the top of it — so the
-/// header still read as a strip of a different app. Measured off a screenshot of the database
-/// viewer: the header band came out `#404041` and its separators `#626261`, both neutral system
-/// greys, above rows at `#363A42` and a sidebar at `#2D3138` (17 Sep 2026).
-///
-/// The cell therefore paints everything itself. The one thing a naive `draw(withFrame:in:)`
-/// override loses is the sort-indicator arrow — the table still sorts, but nothing says so,
-/// which reads as "clicking the header does nothing" — so the indicator is drawn back
-/// explicitly from the table's own indicator state.
+/// `NSTableHeaderCell` paints its OWN system-grey background, separator and bottom border over
+/// ``ThemedTableHeaderView``'s fill, so this cell paints everything itself — including the
+/// sort-indicator arrow, which a plain `draw(withFrame:in:)` override loses, read back from the
+/// table's own indicator state.
 public final class ThemedTableHeaderCell: NSTableHeaderCell {
 
     /// Extra leading padding for the title, on top of the inset `NSTableHeaderCell` applies.
     ///
-    /// A header cell and a row's cell view inset their text by different amounts, so a title
-    /// sits left of the column it labels unless the host says by how much: the database grid's
-    /// cells start their text 6pt further in than the header does, which read as a wonky grid
-    /// (David, 17 Sep 2026). `--dump-header-paint` in Sidewatch measures both and prints the
-    /// gap, so the number is checked rather than guessed.
+    /// A header cell and a row's cell view inset their text differently, so a title sits left of
+    /// its column unless the host supplies the gap — measure it (Sidewatch's `--dump-header-paint`)
+    /// rather than guess.
     public var titleInset: CGFloat = 0
 
     /// A header cell whose title is already in the palette's colours.
@@ -75,7 +67,7 @@ public final class ThemedTableHeaderCell: NSTableHeaderCell {
         // style AppKit draws this same cell for the 10pt inset strips at either end, and a
         // divider there is a hairline floating in empty space.
         // …and never after the LAST column: that edge is the table's, not a boundary between
-        // two titles (25 Sep 2026, with the body's grid).
+        // two titles (matching `InnerGridTableView`'s body).
         if isColumnRect(cellFrame, in: controlView), !isLastColumn(in: controlView) {
             palette.rowSeparator.setFill()
             NSRect(x: cellFrame.maxX - 1, y: cellFrame.minY + 5, width: 1, height: max(0, cellFrame.height - 11)).fill()
@@ -89,11 +81,8 @@ public final class ThemedTableHeaderCell: NSTableHeaderCell {
             drawSortIndicator(withFrame: rect, in: controlView, ascending: ascending, priority: 0)
             interior.size.width = max(0, rect.minX - interior.minX)
         }
-        // Centre the title ourselves. Handed the whole cell, `drawInterior` pins the text to
-        // the TOP — the stock `draw(withFrame:in:)` centres it before calling through, and
-        // that step is lost with the override. Measured: in a 28pt header the title's ink sat
-        // centred on 6.5pt where the stock cell's sat on 13.5pt, i.e. a title riding high in
-        // its band with empty space beneath it (David, 17 Sep 2026).
+        // Centre the title here. Handed the whole cell, `drawInterior` pins the text to the
+        // TOP — the stock `draw(withFrame:in:)` centres it first, and the override loses that.
         let titleHeight = ceil(attributedStringValue.size().height)
         if titleHeight > 0, titleHeight < interior.height {
             interior.origin.y += ((interior.height - titleHeight) / 2).rounded(.down)

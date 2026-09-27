@@ -10,15 +10,11 @@
 
 import AppKit
 
-/// A table whose vertical grid lines are dividers, not a frame (25 Sep 2026, David, of the CSV
-/// preview: "should the furthest left one have another separator line? probably not").
+/// A table whose vertical grid lines are dividers between columns, not a frame around them.
 ///
-/// `NSTableView.solidVerticalGridLineMask` rules every column boundary, the table's leading and
-/// trailing edges included, so the first column wore a line down its left where nothing was being
-/// divided — the same mistake as painting an outer edge with an inner-divider colour. This draws
-/// the vertical lines itself, one on the trailing edge of every column BUT the last, matching
-/// `ThemedTableHeaderCell`'s dividers above them. Horizontal lines stay AppKit's: set
-/// `gridStyleMask = [.solidHorizontalGridLineMask]` and leave the vertical mask off.
+/// `solidVerticalGridLineMask` also rules the table's outer edges, where nothing is divided. This
+/// draws one line on the trailing edge of every column BUT the last, matching
+/// `ThemedTableHeaderCell`'s dividers. Set `gridStyleMask = [.solidHorizontalGridLineMask]` only.
 public final class InnerGridTableView: NSTableView {
     /// The colour of the vertical dividers; the palette's row separator by default.
     public var dividerColor: NSColor?

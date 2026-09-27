@@ -11,24 +11,15 @@
 import AppKit
 import AppKitViews
 
-/// A table row that paints the app's selection style.
-///
-/// Nine lists had written this by hand, and the copies had already drifted three ways with
-/// no design intent recorded for most of it: the leading accent bar was 3pt in some, 2pt in
-/// one (deliberately — 22pt rows), and absent in five; and `interiorBackgroundStyle` was
-/// overridden in some but not others, which decides whether AppKit inverts the row's text
-/// on selection. The result was that visually identical lists selected differently.
-///
-/// Not `final`: `GitChangeRowView` extends it with hover tracking.
+/// A table row that paints the palette's selection style, with an optional leading accent bar,
+/// so every list selects the same way. Open for subclasses that add behaviour (hover tracking).
 open class ThemedRowView: NSTableRowView {
 
-    /// Width of the leading accent bar; 0 draws none.
-    ///
-    /// A parameter rather than a constant because the one intentional difference among the
-    /// copies was real: the outline's 22pt rows use 2pt so the bar stays proportionate,
-    /// where the taller list rows use 3pt.
+    /// Width of the leading accent bar; 0 draws none. 22-pt outline rows use 2 pt so the bar stays
+    /// proportionate, taller list rows 3 pt.
     public let accentBar: CGFloat
 
+    /// Creates a row with a leading accent bar `accentBar` points wide (0 for none).
     public init(accentBar: CGFloat = 0) {
         self.accentBar = accentBar
         super.init(frame: .zero)
@@ -45,28 +36,19 @@ open class ThemedRowView: NSTableRowView {
         NSRect(x: 0, y: 0, width: accentBar, height: bounds.height).fill()
     }
 
-    /// Selected rows keep emphasized interior styling so their labels invert consistently.
-    /// Previously set on some copies and not others, which is why the same-looking lists
-    /// rendered selected text differently.
+    /// Always emphasized, so every list built on this inverts its labels the same way.
     open override var interiorBackgroundStyle: NSView.BackgroundStyle { .emphasized }
 }
 
-/// `ThemedRowView` that reports emphasized interior styling only while SELECTED.
-/// For lists whose cells set explicit theme colors on their labels: macOS 26's
-/// AppKit forces such labels white under unconditional emphasis (the file tree
-/// shipped that bug for an evening). The base class keeps the unconditional
-/// behavior for the lists built against it.
+/// `ThemedRowView` that reports emphasized interior styling only while SELECTED. For lists whose
+/// cells set explicit theme colours on their labels: macOS 26 forces such labels white under
+/// unconditional emphasis.
 open class ThemedSelectionRowView: ThemedRowView {
     open override var interiorBackgroundStyle: NSView.BackgroundStyle { isSelected ? .emphasized : .normal }
 }
 
-/// A section-header row painted with the theme's sidebar surface. Opaque on
-/// purpose: group rows float over scrolled content, and a clear background
-/// would let entry text bleed through the floating header. (Born in the Skills
-/// pane; survives it in the Library.)
-/// A group header as a full-width BAND — VS Code's section-header look — rather than a
-/// caption floating in the list: a lift of the sidebar surface with a hairline above
-/// and below, so a group reads as a shelf the rows sit under.
+/// A group header as a full-width BAND — a lift of the sidebar surface with a hairline above and
+/// below. Opaque on purpose: group rows float over scrolled content, which must not show through.
 public final class ThemedGroupRowView: NSTableRowView {
     public override func drawBackground(in dirtyRect: NSRect) {
         ThemedControls.palette.sidebarBackground.setFill()
