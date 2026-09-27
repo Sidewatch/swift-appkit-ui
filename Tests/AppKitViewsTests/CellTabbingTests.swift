@@ -5,6 +5,7 @@
 //  Tab and ⇧Tab walking a table's editable cells, and stopping at the ends.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

@@ -5,6 +5,7 @@
 //  The container answers the zoom keys before the menu, and never leaks a right-click.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

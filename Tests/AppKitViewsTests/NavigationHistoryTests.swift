@@ -5,6 +5,7 @@
 //  Two stacks, not a cursor: a new jump branches, and Back is an undo for where you chose to go.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

@@ -5,6 +5,7 @@
 //  The column count reflows with the width, and the height changes only at those breakpoints.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

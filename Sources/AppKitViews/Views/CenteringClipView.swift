@@ -5,6 +5,7 @@
 //  A clip view that keeps the document centred while it is smaller than the viewport.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

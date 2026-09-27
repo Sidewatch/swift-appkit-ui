@@ -5,6 +5,7 @@
 //  A scroll view whose mouse wheel zooms instead of scrolls, anchored at the pointer.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

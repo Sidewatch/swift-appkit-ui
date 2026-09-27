@@ -5,6 +5,7 @@
 //  The wheel zooms on every device, at the pointer, within the magnification range.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest

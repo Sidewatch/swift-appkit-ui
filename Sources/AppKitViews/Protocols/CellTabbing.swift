@@ -5,6 +5,7 @@
 //  Tab and ⇧Tab walk a table's editable cells, so an edit never needs the mouse.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit
