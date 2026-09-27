@@ -3,7 +3,7 @@
 A split tree of panes and axes for AppKit, with no `NSSplitView` and no Auto Layout beneath it.
 Module `PaneLayout`; `swift test` is the whole check.
 
-- Swift 6 language mode, tools 6.2, macOS 14+, AppKit. One dependency, `swift-themed-controls`, for the divider's colour.
+- Swift 6 language mode, tools 6.2, macOS 14+, AppKit. One dependency, `ThemedControls`, for the divider's colour.
 - Part of the Sidewatch package family; every package follows the same layout and PR rules.
 
 ## Usage

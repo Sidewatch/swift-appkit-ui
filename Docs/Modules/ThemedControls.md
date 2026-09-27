@@ -17,7 +17,7 @@ AppKit controls that draw from **your app's palette** instead of the system's: a
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/Sidewatch/swift-themed-controls.git", from: "0.1.0")
+    .package(url: "https://github.com/Sidewatch/swift-appkit-ui.git", from: "0.1.0")
 ]
 ```
 
