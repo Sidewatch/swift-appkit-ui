@@ -5,6 +5,7 @@
 //  A split tree of leaves and axes: the structural mutations, with layout left to the axes.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import AppKit

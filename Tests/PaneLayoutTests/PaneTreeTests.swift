@@ -5,6 +5,7 @@
 //  The four structural rules: insert on the same axis, wrap across it, reset flexes, collapse.
 //
 //  Created by David Sherlock on 9/26/26.
+//  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
 
 import XCTest
