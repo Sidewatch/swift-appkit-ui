@@ -54,8 +54,8 @@ import AppKit
         XCTAssertLessThan(scroll.magnification, 1)
     }
 
-    /// The bug this class exists to fix: precise deltas used to be passed to `super`, so on a
-    /// trackpad or Magic Mouse scrolling just scrolled and nothing zoomed but pinch.
+    /// Precise deltas must zoom too, not pass to `super`: otherwise a trackpad or Magic Mouse
+    /// only scrolls and nothing zooms but pinch.
     func testPreciseTrackpadDeltasZoomToo() {
         let scroll = makeScroll()
         scroll.scrollWheel(with: wheel(40, precise: true))

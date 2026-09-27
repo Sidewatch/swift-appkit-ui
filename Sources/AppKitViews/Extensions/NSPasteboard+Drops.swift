@@ -12,10 +12,9 @@
 import AppKit
 import FoundationExtensions
 
-/// The shared "hand the agent a file" pasteboard flow: turns dragged or pasted
-/// local files, raw image bytes, file promises, and links into shell-ready path
-/// text. Used by the terminal (drag-drop AND ⌘V image paste) and by the Agent
-/// Composer's input drop target, so both surfaces behave identically.
+/// The shared drop flow: turns dragged or pasted local files, raw image bytes, file promises
+/// and links into shell-ready path text, so every drop target (a terminal's drag-drop and ⌘V
+/// image paste, a text input) behaves identically.
 extension NSPasteboard {
 
     /// Every pasteboard type the drop flow can consume — what a drop target
@@ -42,21 +41,13 @@ extension NSPasteboard {
             || data(forType: .png) != nil || data(forType: .tiff) != nil
     }
 
-    /// Resolves the pasteboard into ready-to-insert text and hands it to `insert`
-    /// on the main queue: local files become shell-quoted paths (trailing space);
-    /// raw image bytes are saved into the drops folder first; file promises are
-    /// received into the drops folder and delivered as they land (so `insert` may
-    /// run more than once, asynchronously); plain links insert their URL strings.
-    /// Every branch hands over EVERY item — Finder writes one pasteboard item per
-    /// dragged file, and a drop that keeps only the first reads as "the agent got
-    /// the wrong image".
-    /// Returns `false` when the pasteboard holds nothing this flow can use.
-    /// `insert` may run MORE THAN ONCE and asynchronously: a file promise is received off the
-    /// main thread and delivered as it lands, so a drop of three promised files calls back three
-    /// times. Every call arrives on the MAIN ACTOR, which is why the closure is declared
-    /// `@MainActor` rather than `@Sendable` — a caller inserting into a view can then capture
-    /// and mutate its own state normally, instead of having to make a thread-safe sink for a
-    /// callback that was always going to arrive on main anyway.
+    /// Resolves the pasteboard into ready-to-insert text and hands it to `insert`: local files
+    /// become shell-quoted paths (trailing space), raw image bytes and file promises are saved
+    /// into the drops folder first, plain links insert their URL strings. Every item is handed
+    /// over, since Finder writes one pasteboard item per dragged file.
+    ///
+    /// `insert` may run more than once, asynchronously (one call per promised file as it lands),
+    /// always on the main actor. Returns `false` when there is nothing this flow can use.
     @discardableResult
     @MainActor
     public func readDroppedFiles(insert: @escaping @MainActor (String) -> Void) -> Bool {
@@ -81,9 +72,8 @@ extension NSPasteboard {
         }
 
         // 3. Raw image bytes with no backing file (screenshots, images copied out
-        //    of a browser): save each as PNG, then hand over the saved paths. Walked
-        //    PER ITEM — `data(forType:)` on the pasteboard is the FIRST item's data, so
-        //    a multi-image drop used to save one file and drop the rest silently.
+        //    of a browser): save each as PNG, then hand over the saved paths. Must walk
+        //    per item: `data(forType:)` on the pasteboard reads only the FIRST item.
         let saved = (pasteboardItems ?? []).compactMap { item -> URL? in
             let png = item.data(forType: .png) ?? item.data(forType: .tiff).flatMap {
                 NSBitmapImageRep(data: $0)?.representation(using: .png, properties: [:])

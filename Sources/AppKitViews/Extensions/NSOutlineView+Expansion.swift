@@ -11,20 +11,12 @@
 import AppKit
 
 extension NSOutlineView {
-    /// Opens every node of the outline, however deep.
+    /// Opens every node of the outline, however deep, in one batched call.
     ///
-    /// ONE call does it. The obvious worry is a lazily-built tree — that `expandChildren` would
-    /// only walk what the data source had already been asked about — and it was written here as
-    /// a sweep repeated until the row count settled. Tested (26 Sep 2026), that is not how it
-    /// behaves: AppKit queries each newly opened node as it goes, so any source that answers its
-    /// children when asked is fully reached in one pass, and a source that answers zero on the
-    /// first ask is not opened by repeating either. The loop was defensive code for a case that
-    /// does not exist, and no test could be written that it fixed.
-    ///
-    /// The batching is the part that matters, and it was MEASURED rather than assumed: a walk
-    /// that collapses or expands row by row re-sets the row map per call, which is quadratic —
-    /// 0.39 s to open and 0.71 s to close a 22,000-row document, a visible stall on a menu item,
-    /// against 0.21 s and 0.24 s batched with the animations off.
+    /// One `expandChildren` pass reaches a lazily built tree too: AppKit asks each newly opened
+    /// node for its children as it goes, so no repeat-until-settled sweep is needed. Batching
+    /// matters: a row-by-row walk resets the row map per call, which is quadratic (0.39 s vs
+    /// 0.21 s to open a 22,000-row document).
     public func expandEveryNode() {
         withoutRowAnimation { expandItem(nil, expandChildren: true) }
     }

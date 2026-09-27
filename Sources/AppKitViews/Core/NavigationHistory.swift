@@ -12,21 +12,11 @@ import Foundation
 
 /// Back/forward jump history, plus a last-edit anchor.
 ///
-/// A **browser two-stack model**, not a cursor into one list: `back` holds where you came
-/// from, `forward` holds what you've backed out of, and any NEW jump clears `forward`
-/// because you've branched off the old path. The single-list-with-an-index alternative
-/// reads simpler and then gets subtly wrong the moment a jump happens mid-history — the
-/// entries after the index have to be dropped anyway, so the stacks say the real shape.
-///
-/// **Only EXPLICIT jumps should be recorded, and that is the host's job:** a
-/// go-to-definition, a quick-open pick, a go-to-line, a search hit, an outline click.
-/// Scrolling, typing, arrow keys and tab switches deliberately must not, because a history
-/// that records where you DRIFTED stops being an undo for where you CHOSE to go, which is
-/// the only thing Back is useful for. This is the line VS Code draws, and the reason its
-/// Back key is worth muscle memory.
-///
-/// Positions are captured at jump time and never revalidated — a file edited or deleted
-/// since is handled at restore (clamped / skipped), not by trying to keep the stack live.
+/// A browser-style two-stack model: `back` holds where you came from, `forward` what you've
+/// backed out of, and any new jump clears `forward`. The host records only explicit jumps
+/// (go-to-definition, quick open, search hits), never scrolling or typing, so Back undoes
+/// where you chose to go. Positions are not revalidated; a stale one is clamped or skipped
+/// at restore.
 @MainActor public final class NavigationHistory {
 
     /// - Parameter cap: How many positions to keep. The default is far past the depth anyone
@@ -45,7 +35,9 @@ import Foundation
     /// the depth anyone navigates back through and costs nothing.
     public let cap: Int
 
+    /// Whether Back has somewhere to go, for enabling the menu item.
     public var canGoBack: Bool { !back.isEmpty }
+    /// Whether Forward has somewhere to go, for enabling the menu item.
     public var canGoForward: Bool { !forward.isEmpty }
 
     /// Records `from` as somewhere worth returning to and branches the forward path.

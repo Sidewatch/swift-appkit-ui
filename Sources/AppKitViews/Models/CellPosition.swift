@@ -20,6 +20,7 @@ public struct CellPosition: Equatable, Hashable, Sendable {
     /// Which field of that row, by the field's `tag`.
     public let tag: Int
 
+    /// A position from a displayed row index and a field tag.
     public init(row: Int, tag: Int) {
         self.row = row
         self.tag = tag

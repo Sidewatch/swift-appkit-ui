@@ -21,11 +21,13 @@ public struct DocumentLocation: Equatable, Sendable {
     /// The range within it, in UTF-16 units.
     public let range: NSRange
 
+    /// A location from a file URL and a UTF-16 range within it.
     public init(url: URL, range: NSRange) {
         self.url = url
         self.range = range
     }
 
+    /// Equal when the file and the range both match.
     public static func == (a: DocumentLocation, b: DocumentLocation) -> Bool {
         a.url == b.url && NSEqualRanges(a.range, b.range)
     }

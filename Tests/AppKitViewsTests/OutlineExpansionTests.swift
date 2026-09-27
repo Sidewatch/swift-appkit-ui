@@ -33,8 +33,7 @@ import AppKit
     }
 
     /// One pass reaches every level, for an eager source and for one that loads a level when
-    /// it is asked. This is the test that retired the repeat loop: it passes either way, and no
-    /// source could be built that the loop rescued.
+    /// it is asked, so no repeat-until-settled loop is needed.
     func testOnePassReachesEveryLevelOfALazilyLoadedTree() {
         let (outline, _, window) = makeLazyOutline(roots: TreeNode.uniform(breadth: 3, depth: 3))
         outline.expandEveryNode()

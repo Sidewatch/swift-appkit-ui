@@ -13,16 +13,10 @@ import AppKit
 /// A grid of fixed-height cards that **reflows** its column count to fit its width: four across
 /// a wide panel, stacking down to one when narrow, so a card's contents never clip.
 ///
-/// It frames each card itself in `layout()`; the cards carry no size of their own.
-///
-/// **The height is reported through `intrinsicContentSize` and re-invalidated from
-/// `setFrameSize`, and that is not a style choice.** A width-to-height view that invalidates
-/// from inside `layout()` re-dirties itself mid-pass, and during a continuous resize or zoom
-/// that never converges — AppKit aborts with "more layout passes than there are views". Doing
-/// it in the sizing phase folds the new height into the SAME solve. The other half of the rule
-/// is that the height must change at a few DISCRETE breakpoints: this one re-invalidates only
-/// when the column count changes, so a continuous drag crosses a handful of them rather than
-/// reporting a new height every pixel.
+/// It frames each card itself in `layout()`. The height is reported through
+/// `intrinsicContentSize` and re-invalidated from `setFrameSize`, only when the column count
+/// changes: invalidating from `layout()` never converges during a live resize and AppKit aborts
+/// with "more layout passes than there are views".
 public final class CardGridView: NSView {
     /// The cards, in order.
     public let cards: [NSView]
@@ -32,9 +26,8 @@ public final class CardGridView: NSView {
     public let spacing: CGFloat
     /// Every card is this tall; the grid's height is a function of the row count alone.
     public let cardHeight: CGFloat
-    /// Column count last reported through `intrinsicContentSize`. The grid's height only
-    /// changes when the column count does, so we re-invalidate on that — from `setFrameSize`,
-    /// never from `layout()`.
+    /// Column count last reported through `intrinsicContentSize`; the height is re-invalidated
+    /// only when this changes.
     private var reportedColumns = -1
 
     /// Top-left origin so row 0 sits at the top.
@@ -63,6 +56,7 @@ public final class CardGridView: NSView {
         return (cols, (cards.count + cols - 1) / cols)
     }
 
+    /// The grid's height for `rows` rows of cards and the gaps between them.
     public func height(rows: Int) -> CGFloat {
         CGFloat(rows) * cardHeight + CGFloat(max(0, rows - 1)) * spacing
     }
@@ -75,11 +69,9 @@ public final class CardGridView: NSView {
         return NSSize(width: NSView.noIntrinsicMetric, height: height(rows: gridShape(for: w).rows))
     }
 
-    /// Re-invalidate the intrinsic (height) ONLY when the width crosses a column-count
-    /// boundary, and do it from `setFrameSize` — the sizing phase, before `layout()`.
-    /// Invalidating from inside `layout()` re-dirties the view mid-pass; during a continuous
-    /// resize/zoom animation that never converges and trips AppKit's "more layout passes than
-    /// views" abort (the Usage crash). setFrameSize folds the new height into the SAME solve.
+    /// Re-invalidates the height only when the width crosses a column-count boundary, from the
+    /// sizing phase so the new height joins the same solve. Must not move into `layout()` (see
+    /// the type doc).
     public override func setFrameSize(_ newSize: NSSize) {
         super.setFrameSize(newSize)
         guard !cards.isEmpty else { return }

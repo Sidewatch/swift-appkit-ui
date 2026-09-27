@@ -10,20 +10,12 @@
 
 import AppKit
 
-/// A scroll view whose mouse wheel zooms instead of scrolls: precise trackpad deltas scale
-/// smoothly per pixel, wheel detents step by a fixed factor. The zoom is anchored at the
-/// POINTER — zooming to the view's centre while inspecting a corner is the thing to avoid.
+/// A scroll view whose mouse wheel zooms, anchored at the pointer, instead of scrolling (panning
+/// is a drag, see `PannableImageView`). Trackpad deltas scale smoothly per pixel and wheel
+/// detents step by a fixed factor, each tuned to feel the same; a positive delta zooms in.
 ///
-/// Scroll is free to mean zoom because panning is a drag (see `PannableImageView`), which is
-/// what people reach for on an image. An earlier version zoomed only a DETENTED wheel and
-/// passed precise deltas straight to `super`, so on a trackpad or a Magic Mouse scroll just
-/// scrolled and nothing zoomed but pinch. Precise deltas are pixel-scale and continuous, a
-/// wheel's are line-scale and chunky, so each is scaled to a factor that feels the same in the
-/// hand; a positive delta zooms in.
-///
-/// Set `minMagnification` and `maxMagnification` as usual; `allowsMagnification` governs
-/// PROGRAMMATIC magnification too, and with it false a `magnification` assignment is silently
-/// ignored — so a host that means to fit its content by magnifying must turn it on.
+/// `allowsMagnification` governs programmatic magnification too: with it false, a
+/// `magnification` assignment is silently ignored, so a host that fits by magnifying must set it.
 public final class ZoomingScrollView: NSScrollView {
     /// Zoom step per wheel detent. Multiplicative, so each detent moves the same visual
     /// proportion at any magnification.

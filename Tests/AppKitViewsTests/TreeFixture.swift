@@ -49,12 +49,10 @@ final class TreeNode {
 
 /// The outline, its data source, and the window holding it.
 ///
-/// **The window is load-bearing, and it is the whole reason these tests are trustworthy.** An
-/// `NSOutlineView` with no window takes a pathological path through its row bookkeeping:
-/// measured 26 Sep 2026 on the same 22,764-row tree and the same code, expanding cost 0.696 s
-/// and collapsing 4.846 s detached, against 0.030 s and 0.019 s hosted — a 250× difference in
-/// the rig, none of it in the thing under test. A detached measurement would have condemned
-/// correct code, and a bound loose enough to pass detached would never catch a real regression.
+/// The window is load-bearing: an `NSOutlineView` with no window takes a pathological path
+/// through its row bookkeeping (on a 22,764-row tree, 0.696 s to expand and 4.846 s to collapse
+/// detached, against 0.030 s and 0.019 s hosted), so a detached timing measures the rig, not
+/// the code under test.
 @MainActor func makeOutline(roots: [TreeNode]) -> (NSOutlineView, TreeSource, NSWindow) {
     let outline = NSOutlineView(frame: NSRect(x: 0, y: 0, width: 300, height: 400))
     let column = NSTableColumn(identifier: .init("name"))

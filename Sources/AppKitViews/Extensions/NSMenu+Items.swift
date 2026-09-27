@@ -11,19 +11,11 @@
 import AppKit
 
 public extension NSMenu {
-    /// Appends an item targeting `target`, with an optional SF Symbol glyph at the menu size.
+    /// Appends an item targeting `target` (not retained), with an optional SF Symbol glyph at
+    /// the menu size, key equivalent and `representedObject`.
     ///
-    /// A nil or unknown `symbol` yields no image, so a typo degrades to a text-only item rather
-    /// than failing to build the menu.
-    ///
-    /// - Parameters:
-    ///   - title: Item title.
-    ///   - action: Selector sent to `target`.
-    ///   - target: Receiver; menu items do not retain it.
-    ///   - symbol: SF Symbol name for the glyph.
-    ///   - key: Key equivalent, empty for none.
-    ///   - represented: Stored on `representedObject`, usually the row or model the action needs.
-    /// - Returns: The appended item, for callers that set state or a tag.
+    /// A nil or unknown `symbol` yields a text-only item rather than failing to build the menu.
+    /// Returns the appended item, for callers that set state or a tag.
     @discardableResult
     func addItem(_ title: String, action: Selector, target: AnyObject?, symbol: String? = nil,
                  key: String = "", represented: Any? = nil) -> NSMenuItem {
