@@ -265,7 +265,9 @@ open class PathBarView: NSView, NSMenuDelegate {
         }
         let entries = childrenProvider?(folder) ?? []
         if entries.isEmpty {
-            let empty = NSMenuItem(title: "Empty folder", action: nil, keyEquivalent: "")
+            let empty = NSMenuItem(title: String(localized: "Empty folder", bundle: .module,
+                                                   comment: "Path bar folder menu: shown when the folder has no items"),
+                                   action: nil, keyEquivalent: "")
             empty.isEnabled = false
             menu.addItem(empty)
         }
@@ -291,7 +293,9 @@ open class PathBarView: NSView, NSMenuDelegate {
             menu.addItem(item)
         }
         if entries.count > Self.maxMenuEntries {
-            let more = NSMenuItem(title: "… \(entries.count - Self.maxMenuEntries) more", action: nil, keyEquivalent: "")
+            let more = NSMenuItem(title: String(localized: "… \(entries.count - Self.maxMenuEntries) more", bundle: .module,
+                                                  comment: "Path bar folder menu: last row when more items exist than the menu lists"),
+                                  action: nil, keyEquivalent: "")
             more.isEnabled = false
             menu.addItem(more)
         }

@@ -34,8 +34,13 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     public let buttonBar = NSView()
 
     private let table = NSTableView()
-    private let addRemoveControl = ThemedSegmentBar(labels: ["Add", "Remove"], symbols: ["plus", "minus"])   // themed +/−, momentary
-    private let restoreButton = ThemedPillButton(title: "Restore Defaults", target: nil, action: nil)
+    private let addRemoveControl = ThemedSegmentBar(
+        labels: [String(localized: "Add", bundle: .module,
+                        comment: "Word list: accessibility name of the + button that adds a word"),
+                 String(localized: "Remove", bundle: .module,
+                        comment: "Word list: accessibility name of the − button that removes the selected words")],
+        symbols: ["plus", "minus"])   // themed +/−, momentary
+    private let restoreButton = ThemedPillButton(title: String(localized: "Restore Defaults", bundle: .module), target: nil, action: nil)
     private let columnID = NSUserInterfaceItemIdentifier("WordListItem")
 
     /// The list as displayed — sorted, and the only place a not-yet-committed new row exists.
@@ -49,8 +54,9 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     private let noun: String
 
     /// Creates an empty list whose blank rows show `noun` as a placeholder.
-    public init(noun: String = "word") {
-        self.noun = noun
+    public init(noun: String? = nil) {
+        self.noun = noun ?? String(localized: "word", bundle: .module,
+                                   comment: "Word list: placeholder shown on a new, blank row")
         super.init()
         buildUI()
     }
@@ -88,7 +94,7 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
         addRemoveControl.isMomentary = true
         addRemoveControl.symbolsOnly = true
         addRemoveControl.barHeight = 22
-        addRemoveControl.setAccessibilityLabel("Add or remove words")
+        addRemoveControl.setAccessibilityLabel(String(localized: "Add or remove words", bundle: .module))
         addRemoveControl.target = self
         addRemoveControl.action = #selector(addRemoveClicked)
 
