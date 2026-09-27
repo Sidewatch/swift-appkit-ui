@@ -112,6 +112,12 @@ import AppKit
         XCTAssertEqual(NSAlert(message: "x").alertStyle, NSAlert().alertStyle, "the default style is AppKit's own")
     }
 
+    func testAlertGivesEscapeToTheTranslatedCancelButton() {
+        let a = NSAlert(message: "M", buttons: ["Löschen", "Abbrechen"], cancel: "Abbrechen")
+        XCTAssertEqual(a.buttons[1].keyEquivalent, "\u{1b}", "the app's Cancel answers Escape in any language")
+        XCTAssertNotEqual(a.buttons[0].keyEquivalent, "\u{1b}")
+    }
+
     func testPasteboardCopyReplacesTheContents() {
         let pb = NSPasteboard(name: .init("appkitviews-test-\(UUID())"))
         defer { pb.releaseGlobally() }
