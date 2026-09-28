@@ -49,6 +49,25 @@ final class FlowLayoutTests: XCTestCase {
     }
 }
 
+extension FlowLayoutTests {
+    /// An item wider than the line is narrowed without fighting its own constraints: a view that
+    /// insists on its width (required compression resistance, as a pill button does) ends up at
+    /// the line's width after an Auto Layout pass.
+    @MainActor func testANarrowedItemDoesNotInsistOnItsWidth() {
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 100, height: 100), styleMask: [.titled], backing: .buffered, defer: false)
+        let flow = FlowView(frame: NSRect(x: 0, y: 0, width: 100, height: 100))
+        window.contentView?.addSubview(flow)
+        let wide = FixedSizeView(size: CGSize(width: 500, height: 22))
+        wide.setContentCompressionResistancePriority(.required, for: .horizontal)
+        flow.setArrangedViews([wide])
+        window.contentView?.layoutSubtreeIfNeeded()
+        XCTAssertEqual(wide.frame.width, 100)
+        XCTAssertFalse(wide.hasAmbiguousLayout)
+        XCTAssertLessThan(wide.contentCompressionResistancePriority(for: .horizontal), .required)
+    }
+}
+
 private final class FixedSizeView: NSView {
     let size: CGSize
     init(size: CGSize) { self.size = size; super.init(frame: .zero) }

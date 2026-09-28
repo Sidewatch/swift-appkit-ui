@@ -26,7 +26,10 @@ open class FlowView: NSView {
     public func setArrangedViews(_ views: [NSView]) {
         subviews.forEach { $0.removeFromSuperview() }
         for view in views {
+            // Placed by frame, and narrowed when wider than a line: an item may not insist on its
+            // full width, or the narrowed frame contradicts its own content-size constraint.
             view.translatesAutoresizingMaskIntoConstraints = true
+            view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             addSubview(view)
         }
         needsLayout = true
