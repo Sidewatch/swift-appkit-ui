@@ -160,13 +160,12 @@ open class ThemedSwitch: NSControl {
         anim.animationBlockingMode = .nonblocking
         // The animation ticks on the main run loop (non-blocking mode) but is not itself
         // main-actor; the tick hops back explicitly, the house idiom for AppKit callbacks.
-        nonisolated(unsafe) weak var me: ThemedSwitch? = self
-        anim.onTick = { progress in
+        anim.onTick = { [weak self] progress in
             MainActor.assumeIsolated {
-                guard let me else { return }
-                me.knobProgress = from + (target - from) * CGFloat(progress)
-                me.needsDisplay = true
-                if progress >= 1 { me.animation = nil }
+                guard let self else { return }
+                self.knobProgress = from + (target - from) * CGFloat(progress)
+                self.needsDisplay = true
+                if progress >= 1 { self.animation = nil }
             }
         }
         animation = anim

@@ -33,7 +33,7 @@ extension CellTabbing {
     public func beginEditingWhenReady(_ position: CellPosition, attemptsLeft: Int = 2) {
         DispatchQueue.main.async { [self] in
             beginEditing(position)
-            guard attemptsLeft > 1, !isEditing(position) else { return }
+            guard attemptsLeft > 1, !isEditingAField() else { return }
             beginEditingWhenReady(position, attemptsLeft: attemptsLeft - 1)
         }
     }
@@ -41,7 +41,7 @@ extension CellTabbing {
     /// Whether a field of this table currently holds the keyboard. The window lends one field
     /// editor to whichever field is being edited, so the test is whether that editor's field is
     /// inside this view.
-    public func isEditing(_ position: CellPosition) -> Bool {
+    public func isEditingAField() -> Bool {
         guard let editor = window?.firstResponder as? NSTextView,
             let field = editor.delegate as? NSView
         else { return false }
