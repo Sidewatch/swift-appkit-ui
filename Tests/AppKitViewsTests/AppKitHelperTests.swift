@@ -66,6 +66,16 @@ import AppKit
         XCTAssertEqual(child.frame.width, 150)
     }
 
+    func testTextWidthFitsTheWholeTextWhateverTheFrame() {
+        let label = NSTextField.label("sample.assembly.s", font: .systemFont(ofSize: 12), lineBreak: .byTruncatingTail)
+        label.frame = NSRect(x: 0, y: 0, width: 8, height: 16)
+        let needed = label.textWidth
+        label.frame.size.width = needed
+        XCTAssertGreaterThanOrEqual(needed, label.cell!.cellSize.width, "the cell draws untruncated at this width")
+        label.stringValue = "a"
+        XCTAssertLessThan(label.textWidth, needed, "it follows the text, not the last frame")
+    }
+
     func testLabelAppliesOnlyWhatItIsGiven() {
         let plain = NSTextField.label("a"), stock = NSTextField(labelWithString: "a")
         XCTAssertEqual(plain.font, stock.font)

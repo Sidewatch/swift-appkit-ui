@@ -27,4 +27,9 @@ public extension NSTextField {
         if let alignment { label.alignment = alignment }
         return label
     }
+
+    /// The width this label needs to show its whole text on one line: the text measured in its own
+    /// font, plus the cell's 2 pt of padding on each side. For laying a label out by hand, where a
+    /// recycled cell must not trust a size computed for its previous text.
+    var textWidth: CGFloat { ceil(attributedStringValue.size().width) + 4 }
 }
