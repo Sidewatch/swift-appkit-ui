@@ -134,6 +134,9 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     /// Vends one editable cell. An `NSTableCellView` rather than a bare text field for its
     /// `textField` outlet: it is what editing focuses, and what the table recolors to stay
     /// legible on a selected row.
+    /// The theme's selection, not AppKit's accent blue.
+    public func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? { ThemedPlainRowView(accentBar: 0) }
+
     public func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         let cell =
             (tableView.makeView(withIdentifier: columnID, owner: self) as? NSTableCellView)
