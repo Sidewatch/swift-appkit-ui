@@ -18,13 +18,14 @@ public final class EmptyStateView: NSView {
     private let titleLabel = NSTextField(labelWithString: "")
     private let subtitleLabel = NSTextField(wrappingLabelWithString: "")
     private let button = NSButton(title: "", target: nil, action: nil)
-    /// A secondary bordered action shown under the primary button (e.g. "Clone Repository").
-    private let secondaryButton = NSButton(title: "", target: nil, action: nil)
+    /// The secondary bordered actions shown under the primary button, in order (e.g. "New
+    /// Project", "Clone Repository"). Built on demand; the unused ones are hidden.
+    private var secondaryButtons: [NSButton] = []
+    private let stack = NSStackView()
     /// Invoked when the optional action button is clicked; nil hides the button.
     private var buttonAction: (() -> Void)?
-    private var secondaryAction: (() -> Void)?
-    /// The secondary button's title, re-applied by `applyTheme` on a palette change.
-    private var secondaryTitleText: String?
+    /// One handler per visible secondary button, by position.
+    private var secondaryActions: [() -> Void] = []
 
     /// Creates a state showing the SF Symbol `symbol` above `title` and `subtitle`.
     public init(symbol: String, title: String, subtitle: String) {
@@ -57,23 +58,7 @@ public final class EmptyStateView: NSView {
         button.isHidden = true
         button.translatesAutoresizingMaskIntoConstraints = false
 
-        // A real bordered button, matching the primary. It was a borderless `.inline`
-        // link, whose intrinsic width does not defend itself: the stack squeezed it to
-        // "C…" and no amount of resizing helped, because the truncation was priority-driven
-        // rather than space-driven. Compression resistance is set explicitly for the same
-        // reason — the sibling subtitle lowers its own, so the default left this the most
-        // squeezable view in the stack.
-        secondaryButton.isBordered = true
-        secondaryButton.bezelStyle = .rounded
-        secondaryButton.controlSize = .small
-        secondaryButton.font = ThemedControls.palette.smallFont
-        secondaryButton.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        secondaryButton.target = self
-        secondaryButton.action = #selector(secondaryClicked)
-        secondaryButton.isHidden = true
-        secondaryButton.translatesAutoresizingMaskIntoConstraints = false
-
-        let stack = NSStackView(views: [iconView, titleLabel, subtitleLabel, button, secondaryButton])
+        for view in [iconView, titleLabel, subtitleLabel, button] { stack.addArrangedSubview(view) }
         stack.orientation = .vertical
         stack.alignment = .centerX
         stack.spacing = 6
@@ -99,7 +84,27 @@ public final class EmptyStateView: NSView {
     deinit { NotificationCenter.default.removeObserver(self) }
 
     @objc private func buttonClicked() { buttonAction?() }
-    @objc private func secondaryClicked() { secondaryAction?() }
+    @objc private func secondaryClicked(_ sender: NSButton) {
+        guard let index = secondaryButtons.firstIndex(of: sender), secondaryActions.indices.contains(index) else { return }
+        secondaryActions[index]()
+    }
+
+    /// A secondary action's button: a real bordered button, matching the primary. A borderless
+    /// `.inline` link's intrinsic width does not defend itself — the stack squeezed it to "C…",
+    /// because the truncation was priority-driven rather than space-driven. Compression
+    /// resistance is set explicitly for the same reason: the sibling subtitle lowers its own, so
+    /// the default left this the most squeezable view in the stack.
+    private func makeSecondaryButton() -> NSButton {
+        let b = NSButton(title: "", target: self, action: #selector(secondaryClicked(_:)))
+        b.isBordered = true
+        b.bezelStyle = .rounded
+        b.controlSize = .small
+        b.font = ThemedControls.palette.smallFont
+        b.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        b.isHidden = true
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }
 
     /// Sets (or clears) the optional call-to-action button under the copy. Pass nil
     /// for either argument to hide it.
@@ -114,23 +119,27 @@ public final class EmptyStateView: NSView {
         }
     }
 
-    /// Sets (or clears) the secondary link-style action shown beneath the primary button.
+    /// Sets (or clears) the one secondary action shown beneath the primary button.
     public func setSecondaryButton(title: String?, action: (() -> Void)?) {
-        secondaryTitleText = (action == nil) ? nil : title
-        if let title, let action {
-            applySecondaryTitle(title)
-            secondaryButton.isHidden = false
-            secondaryAction = action
-        } else {
-            secondaryButton.isHidden = true
-            secondaryAction = nil
-        }
+        if let title, let action { setSecondaryButtons([(title, action)]) } else { setSecondaryButtons([]) }
     }
 
-    /// Sets the secondary button's title, plain rather than accent-tinted: accent on a bezel
-    /// reads as an error state.
-    private func applySecondaryTitle(_ title: String) {
-        secondaryButton.title = title
+    /// Sets the secondary actions shown beneath the primary button, top to bottom; an empty list
+    /// hides them all. Titles stay plain rather than accent-tinted: accent on a bezel reads as an
+    /// error state.
+    public func setSecondaryButtons(_ actions: [(title: String, action: () -> Void)]) {
+        while secondaryButtons.count < actions.count {
+            let b = makeSecondaryButton()
+            let previous: NSView = secondaryButtons.last ?? button
+            stack.setCustomSpacing(8, after: previous)
+            stack.addArrangedSubview(b)
+            secondaryButtons.append(b)
+        }
+        for (index, b) in secondaryButtons.enumerated() {
+            b.isHidden = index >= actions.count
+            if index < actions.count { b.title = actions[index].title }
+        }
+        secondaryActions = actions.map(\.action)
     }
 
     /// Swaps the explanatory copy (e.g. "no folder open" vs "no session").
@@ -168,10 +177,22 @@ public final class EmptyStateView: NSView {
         buttonTitle: String? = nil, action: (() -> Void)? = nil,
         secondaryTitle: String? = nil, secondaryAction: (() -> Void)? = nil
     ) {
+        var secondary: [(title: String, action: () -> Void)] = []
+        if let secondaryTitle, let secondaryAction { secondary.append((secondaryTitle, secondaryAction)) }
+        show(symbol: symbol, title: title, subtitle: subtitle, buttonTitle: buttonTitle, action: action, secondary: secondary)
+    }
+
+    /// Reveals the state with fresh copy, an optional call-to-action button, and the secondary
+    /// actions beneath it, top to bottom.
+    public func show(
+        symbol: String, title: String, subtitle: String,
+        buttonTitle: String?, action: (() -> Void)?,
+        secondary: [(title: String, action: () -> Void)]
+    ) {
         setSymbol(symbol)
         setText(title: title, subtitle: subtitle)
         setButton(title: buttonTitle, action: action)
-        setSecondaryButton(title: secondaryTitle, action: secondaryAction)
+        setSecondaryButtons(secondary)
         isHidden = false
     }
 
@@ -184,6 +205,5 @@ public final class EmptyStateView: NSView {
         iconView.contentTintColor = ThemedControls.palette.statusText.withAlphaComponent(0.55)
         titleLabel.textColor = ThemedControls.palette.foreground.withAlphaComponent(0.8)
         subtitleLabel.textColor = ThemedControls.palette.statusText
-        if let title = secondaryTitleText { applySecondaryTitle(title) }
     }
 }
