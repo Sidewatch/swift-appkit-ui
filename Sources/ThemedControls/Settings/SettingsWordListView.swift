@@ -10,6 +10,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// An editable list of short strings — one word per row, not a delimited text field: a
 /// fixed-height table, a +/− bar, and optional Restore Defaults. The inline-editing details are
@@ -135,7 +136,9 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     /// `textField` outlet: it is what editing focuses, and what the table recolors to stay
     /// legible on a selected row.
     /// The theme's selection, not AppKit's accent blue.
-    public func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? { ThemedPlainRowView(accentBar: 0) }
+    public func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
+        tableView.reusableView { ThemedPlainRowView(accentBar: 0) }
+    }
 
     public func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         let cell =

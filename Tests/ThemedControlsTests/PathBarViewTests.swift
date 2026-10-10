@@ -54,6 +54,40 @@ import AppKit
         XCTAssertNotNil(b.crumbView(at: 0) as? NSButton)
     }
 
+    /// Every path change reuses the strip's crumb views: a view added to a stack leaves records
+    /// on it that only the stack's end releases, so building new ones per path grew the bar for
+    /// as long as the window lived. Fails against a strip that builds afresh.
+    func testChangingThePathReusesTheCrumbViews() {
+        let b = bar(filePath(["project", "src", "main.swift"]))
+        var seen = Set<ObjectIdentifier>()
+        for i in 0..<100 {
+            let names = i % 2 == 0 ? ["project", "docs", "guide\(i).md"] : ["project", "Sources", "App", "File\(i).swift"]
+            b.setPath(
+                segments: filePath(names).map { PathSegment(title: $0.0, url: $0.1.map { URL(fileURLWithPath: $0) }, isDirectory: $0.2) })
+            for view in b.crumbStack.arrangedSubviews { seen.insert(ObjectIdentifier(view)) }
+        }
+        XCTAssertEqual(b.crumbTitlesForTesting.last, "File99.swift", "the last path is shown")
+        XCTAssertLessThanOrEqual(seen.count, 7, "crumb views built over 100 path changes: \(seen.count) (the longest path has 7)")
+    }
+
+    /// A reused crumb shows its new path in full: title, tooltip, tag and the kind of view.
+    func testAReusedCrumbShowsItsNewPath() {
+        let b = bar(filePath(["project", "src", "main.swift"]))
+        b.setPath(segments: [PathSegment(title: "Untitled", url: nil)])
+        b.setPath(
+            segments: filePath(["work", "notes.md"]).map {
+                PathSegment(title: $0.0, url: $0.1.map { URL(fileURLWithPath: $0) }, isDirectory: $0.2)
+            })
+        XCTAssertEqual(b.crumbTitlesForTesting, ["work", "notes.md"])
+        let last = b.crumbView(at: 1) as? NSButton
+        XCTAssertEqual(last?.toolTip, "/work/notes.md")
+        XCTAssertEqual(last?.title, "notes.md")
+        b.setPath(segments: [PathSegment(title: "Scratch", url: nil)])
+        XCTAssertNotNil(b.crumbView(at: 0) as? NSTextField)
+        XCTAssertNil(b.crumbView(at: 0) as? NSButton, "a segment with no URL is plain text again")
+        XCTAssertEqual((b.crumbView(at: 0) as? NSTextField)?.stringValue, "Scratch")
+    }
+
     /// Rebuilding the strip would drop the focus under the keyboard, so an unchanged path is a
     /// no-op. The status bar refreshes on a timer, which is what makes this matter.
     func testSettingTheSamePathAgainDoesNotRebuild() {

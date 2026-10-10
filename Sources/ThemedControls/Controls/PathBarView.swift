@@ -71,29 +71,54 @@ open class PathBarView: NSView, NSMenuDelegate {
 
     /// Sets the crumbs. A no-op when they have not changed, so a status refresh that runs on a
     /// timer does not rebuild the strip and lose the focus under the keyboard.
+    ///
+    /// The strip reuses its crumb views rather than building new ones per path: every view ever
+    /// added to a stack leaves dependency records on it (`_effectiveSemanticContext` and its
+    /// kin) that AppKit drops only with the stack, so a bar that rebuilt from scratch on each tab
+    /// switch gathered about three records per crumb and chevron for as long as the window lived.
     open func setPath(segments new: [PathSegment]) {
         guard new != segments else { return }
         segments = new
-        for v in crumbStack.arrangedSubviews {
-            crumbStack.removeArrangedSubview(v)
-            v.removeFromSuperview()
-        }
+        retireCrumbs()
         for (i, seg) in new.enumerated() {
-            if i > 0 { crumbStack.addArrangedSubview(makeChevron()) }
+            if i > 0 { crumbStack.addArrangedSubview(chevron()) }
             if seg.url != nil || titleSegmentMenuProvider != nil {
-                crumbStack.addArrangedSubview(makeCrumbButton(seg, at: i))
+                crumbStack.addArrangedSubview(crumbButton(seg, at: i))
             } else {
-                crumbStack.addArrangedSubview(makeCrumbLabel(seg, at: i))
+                crumbStack.addArrangedSubview(crumbLabel(seg, at: i))
             }
         }
     }
 
-    private func makeChevron() -> NSView {
-        let chevron = NSTextField(labelWithString: "›")
+    /// Crumb views off the strip, kept for the next path (see ``setPath(segments:)``).
+    private var spareChevrons: [NSTextField] = []
+    private var spareButtons: [NSButton] = []
+    private var spareLabels: [NSTextField] = []
+
+    /// Takes every crumb off the strip into the spares.
+    private func retireCrumbs() {
+        for v in crumbStack.arrangedSubviews {
+            crumbStack.removeArrangedSubview(v)
+            v.removeFromSuperview()
+            if let button = v as? NSButton {
+                spareButtons.append(button)
+            } else if let field = v as? NSTextField {
+                if v.identifier == Self.chevronIdentifier { spareChevrons.append(field) } else { spareLabels.append(field) }
+            }
+        }
+    }
+
+    private func chevron() -> NSTextField {
+        let chevron =
+            spareChevrons.popLast()
+            ?? {
+                let made = NSTextField(labelWithString: "›")
+                made.setContentCompressionResistancePriority(.required, for: .horizontal)
+                made.identifier = Self.chevronIdentifier
+                return made
+            }()
         chevron.font = ThemedControls.palette.smallFont
         chevron.textColor = ThemedControls.palette.statusText
-        chevron.setContentCompressionResistancePriority(.required, for: .horizontal)
-        chevron.identifier = Self.chevronIdentifier
         return chevron
     }
 
@@ -104,24 +129,35 @@ open class PathBarView: NSView, NSMenuDelegate {
         NSLayoutConstraint.Priority(rawValue: 260 + Float(index))
     }
 
-    private func makeCrumbButton(_ seg: PathSegment, at index: Int) -> NSButton {
-        let b = NSButton(title: seg.title, target: self, action: #selector(crumbTapped(_:)))
-        b.isBordered = false
+    private func crumbButton(_ seg: PathSegment, at index: Int) -> NSButton {
+        let b =
+            spareButtons.popLast()
+            ?? {
+                let made = NSButton(title: "", target: self, action: #selector(crumbTapped(_:)))
+                made.isBordered = false
+                made.lineBreakMode = .byTruncatingMiddle
+                made.setContentHuggingPriority(.required, for: .horizontal)
+                return made
+            }()
         b.attributedTitle = crumbTitle(seg.title)
-        b.lineBreakMode = .byTruncatingMiddle
         b.tag = index
         b.toolTip = seg.url?.path
         b.setAccessibilityLabel(seg.title)
         b.setContentCompressionResistancePriority(squeezePriority(at: index), for: .horizontal)
-        b.setContentHuggingPriority(.required, for: .horizontal)
         return b
     }
 
-    private func makeCrumbLabel(_ seg: PathSegment, at index: Int) -> NSTextField {
-        let l = NSTextField(labelWithString: seg.title)
+    private func crumbLabel(_ seg: PathSegment, at index: Int) -> NSTextField {
+        let l =
+            spareLabels.popLast()
+            ?? {
+                let made = NSTextField(labelWithString: "")
+                made.lineBreakMode = .byTruncatingMiddle
+                return made
+            }()
+        l.stringValue = seg.title
         l.font = ThemedControls.palette.smallFont
         l.textColor = ThemedControls.palette.statusText
-        l.lineBreakMode = .byTruncatingMiddle
         l.tag = index
         l.setContentCompressionResistancePriority(squeezePriority(at: index), for: .horizontal)
         return l

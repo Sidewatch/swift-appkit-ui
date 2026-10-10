@@ -42,6 +42,30 @@ walks them. Two rules are deliberate: the walk **stops at both ends** rather tha
 held Tab cannot silently start over at the top; and `beginEditingWhenReady` retries once, because
 committing an edit usually rebuilds the rows and throws away the view the move was aimed at.
 
+```swift
+func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
+    tableView.reusableView { MyRowView() }             // variant: "header" for a second kind
+}
+let outline = RecyclingOutlineView()                  // or subclass it
+```
+
+Return every custom row view through `reusableView`. A row view built afresh on each call is
+never released after it scrolls off screen: the table parks it in its row-view purgatory, and only
+a row handed back out of `makeView(withIdentifier:owner:)` and returned again leaves it. Measured
+on a 400-row list scrolled 300 times, 6,874 of 6,897 fresh row views were still alive; through the
+helper, 23 were built. A reload is not the leak, scrolling is (`scrollRowToVisible` included).
+Dequeuing the parked row and dropping it does not release it either.
+
+Cells that are replaced while their row stays (a scroll that reuses the row, a
+`reloadData(forRowIndexes:columnIndexes:)`) come through `reusableView` too: each cell a row ever
+hosted leaves three dependency records on the row that nothing removes while the row lives, about
+300 of each per row after 300 placements of fresh cells against one with reused cells.
+
+Every outline is a `RecyclingOutlineView`. A plain `NSOutlineView` builds a new disclosure button
+for each expandable row it places after a reload and keeps the old ones: 200 reloads of a tree with
+8 expandable rows left 1,608 buttons alive. The subclass answers AppKit's request for a button with
+one it handed out before that is no longer in a row (16 built for the same run).
+
 ### Images
 
 ```swift
