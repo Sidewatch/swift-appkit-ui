@@ -97,6 +97,7 @@ The idioms every AppKit screen otherwise spells out, one extension each:
 | `NSPasteboard.copy(_:)` | `clearContents()` + `setString(_:forType:)` |
 | `NSMenu.addItem(_:action:target:symbol:key:represented:)` | building, targeting and glyphing a menu item |
 | `NSColor.blended(_:toward:)`, `NSImage.tinted(_:)` | lifting a surface off a background; painting a template |
+| `NSColor.contrastRatio(with:)`, `relativeLuminance` | WCAG contrast: whether a colour would vanish against a background |
 | `disableSystemTextIntelligence()`, `FieldEditorPolicy` | Writing Tools, autocorrect and predictions off, per view and per window |
 
 ## Notes worth knowing
