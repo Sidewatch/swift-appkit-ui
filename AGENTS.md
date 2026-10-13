@@ -14,8 +14,8 @@ AppKit building blocks for a themed, keyboard-first Mac app: small view behaviou
 - `Enums/` — ZoomKeyDirection (⌘= / ⌘- / ⌘0 → in / out / actual; `nil` for any other key, so a caller can hand the event straight on)
 - `Models/` — CellPosition; DocumentLocation (a file and a range, captured at jump time and never revalidated) (a row and a field tag; a POSITION rather than a view, because committing an edit usually rebuilds the rows)
 - `Protocols/` — ExpandableTree (a view whose content is a tree, so one command can act on whichever is in front); CellTabbing (a table whose editable cells Tab walks; the extension carries the walk, the retry and the first-responder test)
-- `Extensions/` — NSPasteboard+Drops (one drop flow for files, raw image bytes, file promises and links; the callback is `@MainActor` and may run more than once); NSOutlineView+Expansion (autoExpand / expandEveryNode / collapseEveryNode, all batched with the row animation off)
-- `Views/` — ZoomingScrollView (the wheel zooms at the pointer on every device), CenteringClipView (a small document sits centred), PannableImageView (drag-to-pan with the hand cursor), CardGridView (reflows its column count with its width); ZoomKeyView (answers the zoom keys before the menu; `open`, since a host may subclass it)
+- `Extensions/` — NSPasteboard+Drops (one drop flow for files, raw image bytes, file promises and links; the callback is `@MainActor` and may run more than once); NSOutlineView+Expansion (autoExpand / expandEveryNode / collapseEveryNode, all batched with the row animation off); NSTableView+ReusableView (`reusableView(variant:_:)`: every row-view factory returns through it, because a row view built afresh per call stays in the table's row-view purgatory for good once it scrolls off screen; a cell replaced while its row stays comes through it too, or the row keeps three AppKit dependency records per cell it ever hosted)
+- `Views/` — ZoomingScrollView (the wheel zooms at the pointer on every device), CenteringClipView (a small document sits centred), PannableImageView (drag-to-pan with the hand cursor), CardGridView (reflows its column count with its width); ZoomKeyView (answers the zoom keys before the menu; `open`, since a host may subclass it); RecyclingOutlineView (`open`: every outline uses it, because a plain `NSOutlineView` keeps every disclosure button it builds, one per expandable row per reload)
 
 ### Rules of this module
 - **Measure an outline IN A WINDOW.** Detached, `NSOutlineView` takes a pathological path through
@@ -50,7 +50,7 @@ AppKit building blocks for a themed, keyboard-first Mac app: small view behaviou
 ### Module map
 - `Protocols/` — protocols the module exposes: ControlPalette (what a control reads from the theme)
 - `Core/` — the engine: ThemedControls (the installed palette and the paletteDidChange notification)
-- `Controls/` — one control per file: PathBarView (a path as crumbs, each dropping its folder; the HOST supplies the listing and the icons, so hidden files, ignore rules and sort order stay one decision made wherever the app already shows that tree), ThemedSegmentBar, ThemedPillButton, ThemedSlider, ThemedSwitch (`controlSize` sizes it like the stock switch), ThemedCheckbox, ThemedSearchField, ThemedInputField, ThemedRowView, ThemedScrollView, EmptyStateView, ThemedPopUpButton, ThemedTableHeaderView, ThemedTableHeaderCell, InnerGridTableView (vertical grid lines BETWEEN columns only — the stock mask rules the table's outer edges too, which frames it rather than dividing it) (secondary types alongside: ThemedInputStyle, PaddedFieldCell, ThemedSecureInputField, ThemedSelectionRowView, ThemedGroupRowView)
+- `Controls/` — one control per file: PathBarView (a path as crumbs, each dropping its folder; the HOST supplies the listing and the icons, so hidden files, ignore rules and sort order stay one decision made wherever the app already shows that tree), ThemedSegmentBar, ThemedPillButton, ThemedIconButton (a bar's SF Symbol button: clear at rest, a soft fill under the pointer, the accent while on), ThemedSlider, ThemedSwitch (`controlSize` sizes it like the stock switch), ThemedCheckbox, ThemedSearchField, ThemedInputField, ThemedRowView, ThemedScrollView, EmptyStateView, ThemedPopUpButton, ThemedTableHeaderView, ThemedTableHeaderCell, InnerGridTableView (vertical grid lines BETWEEN columns only — the stock mask rules the table's outer edges too, which frames it rather than dividing it) (secondary types alongside: ThemedInputStyle, PaddedFieldCell, ThemedSecureInputField, ThemedSelectionRowView, ThemedGroupRowView)
 - `Support/` — pure helpers: SystemPalette (the macOS system colours as a palette); CellEditFormatter (what a cell DRAWS against what it EDITS — quotes, a trailing colon, a `••••••••` mask; a `Formatter`, because swapping a field's `stringValue` in `controlTextDidBeginEditing` does NOT reach the field editor AppKit has already loaded, and the edit is read from `objectValue`)
 - AppKit helpers (`NSColor.blended`, `NSImage.tinted`, the text-intelligence policy) come from AppKitViews.
 
@@ -110,4 +110,6 @@ AppKit building blocks for a themed, keyboard-first Mac app: small view behaviou
 
 ## Rules
 
-Read `CONTRIBUTING.md` before changing anything: it is the layout and PR rulebook for this package.
+Read `CONTRIBUTING.md` for the folder layout and the pull-request rules.
+
+@CONTRIBUTING.md
