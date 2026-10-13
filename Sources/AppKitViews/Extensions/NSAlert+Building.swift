@@ -38,13 +38,4 @@ public extension NSAlert {
     func runConfirmed() -> Bool {
         runModal() == .alertFirstButtonReturn
     }
-
-    /// Shows the alert as a sheet on `window`, or modally with no window, and hands the
-    /// completion whether the first button was chosen.
-    func beginConfirmed(on window: NSWindow?, _ completion: @escaping @MainActor (Bool) -> Void) {
-        guard let window else { completion(runConfirmed()); return }
-        beginSheetModal(for: window) { response in
-            MainActor.assumeIsolated { completion(response == .alertFirstButtonReturn) }
-        }
-    }
 }

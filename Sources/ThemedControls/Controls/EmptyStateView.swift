@@ -119,11 +119,6 @@ public final class EmptyStateView: NSView {
         }
     }
 
-    /// Sets (or clears) the one secondary action shown beneath the primary button.
-    public func setSecondaryButton(title: String?, action: (() -> Void)?) {
-        if let title, let action { setSecondaryButtons([(title, action)]) } else { setSecondaryButtons([]) }
-    }
-
     /// Sets the secondary actions shown beneath the primary button, top to bottom; an empty list
     /// hides them all. Titles stay plain rather than accent-tinted: accent on a bezel reads as an
     /// error state.

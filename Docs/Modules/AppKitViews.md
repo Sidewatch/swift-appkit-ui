@@ -93,7 +93,7 @@ The idioms every AppKit screen otherwise spells out, one extension each:
 | `NSImage.symbol(_:pointSize:weight:description:)`, `menuSymbol(_:)` | a symbol and its configuration; the 14-pt menu glyph |
 | `NSFont.mono(_:weight:)`, `monoDigits(_:weight:)` | `monospacedSystemFont(ofSize:weight:)` and its digit twin |
 | `styleLayer(background:cornerRadius:borderColor:borderWidth:masksToBounds:)` | `wantsLayer` and the layer properties |
-| `NSAlert(message:information:style:buttons:)`, `runConfirmed()`, `beginConfirmed(on:_:)` | building an alert line by line and comparing its response |
+| `NSAlert(message:information:style:buttons:)`, `runConfirmed()` | building an alert line by line and comparing its response |
 | `NSPasteboard.copy(_:)` | `clearContents()` + `setString(_:forType:)` |
 | `NSMenu.addItem(_:action:target:symbol:key:represented:)` | building, targeting and glyphing a menu item |
 | `NSColor.blended(_:toward:)`, `NSImage.tinted(_:)` | lifting a surface off a background; painting a template |

@@ -210,20 +210,6 @@ open class PathBarView: NSView, NSMenuDelegate {
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: view.bounds.height + 4), in: view)
     }
 
-    /// Focuses the last crumb and drops its menu.
-    public func openLastCrumbMenu() {
-        guard !segments.isEmpty else { return }
-        let index = segments.count - 1
-        focus(at: index)
-        openCrumbMenu(at: index)
-    }
-
-    /// Focuses the last crumb with its menu closed, ready for ← → ↓.
-    public func focusLastCrumb() {
-        guard !segments.isEmpty else { return }
-        focus(at: segments.count - 1)
-    }
-
     // MARK: - Keyboard
 
     open override var acceptsFirstResponder: Bool { !segments.isEmpty }
@@ -361,6 +347,4 @@ open class PathBarView: NSView, NSMenuDelegate {
 
     /// Every crumb's title, leading first.
     public var crumbTitlesForTesting: [String] { segments.map(\.title) }
-    /// Every crumb's URL, leading first; nil for a title-only crumb.
-    public var crumbURLsForTesting: [URL?] { segments.map(\.url) }
 }
