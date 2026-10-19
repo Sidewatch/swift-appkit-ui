@@ -108,3 +108,4 @@ the same app. 73 tests now.
   branch's own delivery is the one line that differs.
 - 27 Sep 2026 — the one-call helpers above arrived from the Sidewatch app and swift-themed-controls
   (which now depends on this package); 14 tests, eight mutants each failing its own test.
+- 20 Oct 2026 — `CardGridView` and its tests removed: its only caller, Sidewatch's Usage dashboard, was removed. `ThemedSecureInputField` (ThemedControls) went the same way with the dashboard's Settings section.

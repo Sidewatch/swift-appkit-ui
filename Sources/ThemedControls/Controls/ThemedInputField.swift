@@ -101,22 +101,3 @@ open class ThemedInputField: NSTextField {
     deinit { NotificationCenter.default.removeObserver(self) }
     @objc private func reTheme() { ThemedInputStyle.refresh(self) }
 }
-
-/// Secure (password) counterpart. Keeps the masking cell
-/// (`NSSecureTextFieldCell`), so no padded cell here; only the themed chrome is applied.
-public final class ThemedSecureInputField: NSSecureTextField {
-    /// Creates an unsized field for Auto Layout.
-    public convenience init() { self.init(frame: .zero) }
-    public override init(frame frameRect: NSRect) { super.init(frame: frameRect); setup() }
-    @available(*, unavailable) public required init?(coder: NSCoder) { fatalError() }
-
-    private func setup() {
-        ThemedInputStyle.apply(self)
-        disableSystemTextIntelligence()
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(reTheme),
-            name: ThemedControls.paletteDidChange, object: nil)
-    }
-    deinit { NotificationCenter.default.removeObserver(self) }
-    @objc private func reTheme() { ThemedInputStyle.refresh(self) }
-}
