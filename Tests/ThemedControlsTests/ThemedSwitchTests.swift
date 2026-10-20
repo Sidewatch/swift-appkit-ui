@@ -2,7 +2,7 @@
 //  ThemedSwitchTests.swift
 //  ThemedControlsTests
 //
-//  The switch's contract: the stock footprint, toggle fires once, a set state is silent, the
+//  The switch's contract: the stock track and knob, toggle fires once, a set state is silent, the
 //  painted track is the palette accent when on.
 //
 //  Created by David Sherlock on 9/19/26.
@@ -37,46 +37,47 @@ final class ThemedSwitchTests: XCTestCase {
         @objc func toggled(_ sender: Any?) { fired += 1 }
     }
 
-    /// The paint matches the stock switch's visible track (measured: regular 32 × 21,
-    /// small 26 × 17, mini 21 × 14 inside a 54 × 24 frame), at the trailing end of the footprint,
-    /// centred vertically — the footprint itself is unchanged, so layouts do not move.
-    func testTrackIsTheStockSwitchsVisibleSizeInsideTheFootprint() {
-        for (size, want) in [
-            (NSControl.ControlSize.regular, NSSize(width: 32, height: 21)), (.small, NSSize(width: 26, height: 17)),
-            (.mini, NSSize(width: 21, height: 14)),
+    /// The paint is the stock switch's, measured from its rendering: the track regular 54 × 24,
+    /// small 44 × 20, mini 36 × 17; a capsule knob 32 × 20, 26 × 16, 21 × 13, inset evenly and at
+    /// the leading end off, the trailing end on. The footprint is the track.
+    func testTrackAndKnobAreTheStockSwitchs() {
+        for (size, track, knob) in [
+            (NSControl.ControlSize.regular, NSSize(width: 54, height: 24), NSSize(width: 32, height: 20)),
+            (.small, NSSize(width: 44, height: 20), NSSize(width: 26, height: 16)),
+            (.mini, NSSize(width: 36, height: 17), NSSize(width: 21, height: 13)),
         ] {
             let sw = ThemedSwitch()
             sw.controlSize = size
+            XCTAssertEqual(sw.intrinsicContentSize, track, "\(size): the footprint is the track")
             sw.frame = NSRect(origin: .zero, size: sw.intrinsicContentSize)
-            let track = sw.trackRect
-            XCTAssertEqual(track.size, want, "\(size)")
-            XCTAssertEqual(track.maxX, sw.bounds.maxX - 2, accuracy: 0.01, "\(size): trailing edge")
-            XCTAssertEqual(track.midY, sw.bounds.midY, accuracy: 0.5, "\(size): centred")
-            XCTAssertTrue(sw.bounds.contains(track), "\(size): inside the footprint")
+            XCTAssertEqual(sw.trackRect, sw.bounds, "\(size): the track fills the footprint")
+            XCTAssertEqual(sw.knobRect.size, knob, "\(size): the knob")
+            let inset = (track.height - knob.height) / 2
+            XCTAssertEqual(sw.knobRect.minX, inset, accuracy: 0.01, "\(size): off, the knob at the leading end")
+            XCTAssertEqual(sw.knobRect.midY, sw.bounds.midY, accuracy: 0.01, "\(size): centred")
+            sw.state = .on  // off screen: no slide
+            XCTAssertEqual(sw.knobRect.maxX, track.width - inset, accuracy: 0.01, "\(size): on, the trailing end")
         }
-        XCTAssertEqual(ThemedSwitch().intrinsicContentSize, NSSwitch().intrinsicContentSize, "the footprint is still the stock one")
+        XCTAssertEqual(ThemedSwitch().intrinsicContentSize, NSSwitch().intrinsicContentSize, "regular is the stock footprint")
     }
 
-    func testTheFootprintIsTheStockSwitchs() {
-        XCTAssertEqual(ThemedSwitch().intrinsicContentSize, NSSwitch().intrinsicContentSize)
+    /// A frame larger than the footprint keeps the stock-sized track, centred, instead of stretching it.
+    func testALargerFrameKeepsTheTrackSizeCentred() {
+        let sw = ThemedSwitch(frame: NSRect(x: 0, y: 0, width: 80, height: 40))
+        XCTAssertEqual(sw.trackRect.size, NSSize(width: 54, height: 24))
+        XCTAssertEqual(sw.trackRect.midX, 40, accuracy: 0.01)
+        XCTAssertEqual(sw.trackRect.midY, 20, accuracy: 0.01)
     }
 
-    /// A header strip wants the small switch: the footprint follows the control
-    /// size, as the stock switch's does, and the drawing is bounds-relative so it scales with it.
+    /// A header strip wants the small switch: the footprint follows the control size and returns
+    /// with it.
     func testTheFootprintFollowsTheControlSize() {
         let sw = ThemedSwitch(frame: .zero)
         let regular = sw.intrinsicContentSize
         sw.controlSize = .small
-        let small = sw.intrinsicContentSize
+        XCTAssertEqual(sw.intrinsicContentSize, NSSize(width: 44, height: 20))
         sw.controlSize = .mini
-        let mini = sw.intrinsicContentSize
-        XCTAssertLessThan(small.width, regular.width)
-        XCTAssertLessThan(small.height, regular.height)
-        XCTAssertLessThan(mini.height, small.height)
-        XCTAssertEqual(
-            small.height, (regular.height * 0.78).rounded(),
-            "small is the HIG's ratio of regular; the stock switch reports one size for every controlSize")
-        XCTAssertEqual(regular, NSSwitch().intrinsicContentSize)
+        XCTAssertEqual(sw.intrinsicContentSize, NSSize(width: 36, height: 17))
         sw.controlSize = .regular
         XCTAssertEqual(sw.intrinsicContentSize, regular)
     }
@@ -123,7 +124,7 @@ final class ThemedSwitchTests: XCTestCase {
             sw.cacheDisplay(in: sw.bounds, to: rep)
             let scale = CGFloat(rep.pixelsWide) / sw.bounds.width
             var reds = 0, samples = 0
-            // Sampled along the TRACK (the paint sits at the trailing end of the footprint),
+            // Sampled along the TRACK,
             // `side` a fraction of its width, on its centre line.
             let track = sw.trackRect
             let y = Int((sw.bounds.maxY - track.midY) * scale)  // rep rows run top-down

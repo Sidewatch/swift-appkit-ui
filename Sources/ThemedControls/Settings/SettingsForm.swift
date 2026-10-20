@@ -19,6 +19,13 @@ public enum SettingsMetrics {
     /// the pointer, so panes share a width and shorter ones leave the rest of the
     /// page empty.
     public static let paneWidth: CGFloat = 620  // fills the sidebar window's content column without dead margins
+    /// Room beside the page for its vertical scroller: a legacy scroller's width, read from the
+    /// system (17 pt on macOS 26/27; it has changed between releases). The pane's view is
+    /// ``columnWidth`` wide and the page keeps ``paneWidth`` inside it, so a page that scrolls
+    /// lays out exactly like one that does not.
+    @MainActor public static var scrollerGutter: CGFloat { NSScroller.scrollerWidth(for: .regular, scrollerStyle: .legacy) }
+    /// The pane's view: the page plus its scroller's gutter on the trailing side.
+    @MainActor public static var columnWidth: CGFloat { paneWidth + scrollerGutter }
     /// The floor a pane's height can reach, so a page never collapses to a sliver.
     public static let paneMinHeight: CGFloat = 360
     /// The window: ONE size for every page, a tall page scrolling inside it rather than the

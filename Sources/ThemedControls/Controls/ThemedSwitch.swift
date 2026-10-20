@@ -24,20 +24,8 @@ open class ThemedSwitch: NSControl {
     /// True while the knob is mid-slide (never under Reduce Motion, or off screen).
     public var isSliding: Bool { animation != nil }
 
-    /// The stock switch's footprint, read once so the rows keep their geometry on every macOS.
+    /// The stock switch's regular footprint, read once so the rows keep their geometry on every macOS.
     private static let footprint: NSSize = NSSwitch().intrinsicContentSize
-    /// `.small` and `.mini` are the regular footprint scaled — `NSSwitch` reports ONE intrinsic
-    /// size (54 × 24) whatever its `controlSize`, so there is nothing to read; the ratios are the
-    /// HIG's small and mini against regular, rounded.
-    private static func footprint(for size: NSControl.ControlSize) -> NSSize {
-        let scale: CGFloat
-        switch size {
-        case .small: scale = 0.78
-        case .mini: scale = 0.62
-        default: return footprint
-        }
-        return NSSize(width: (footprint.width * scale).rounded(), height: (footprint.height * scale).rounded())
-    }
     /// The size class follows the stock switch's: the footprint and the drawing scale with it.
     open override var controlSize: NSControl.ControlSize {
         didSet { invalidateIntrinsicContentSize(); needsDisplay = true }
@@ -60,23 +48,41 @@ open class ThemedSwitch: NSControl {
 
     @objc private func themeChanged() { needsDisplay = true }
 
-    open override var intrinsicContentSize: NSSize { Self.footprint(for: controlSize) }
+    /// The track's size: the footprint, so a row lays out exactly what is drawn.
+    open override var intrinsicContentSize: NSSize { Self.trackSize(for: controlSize) }
 
-    /// The VISIBLE track of the stock switch (its rendered ink bounds): regular 32 × 21, small
-    /// 26 × 17, mini 21 × 14, inside a 54 × 24 footprint. Must not paint the whole footprint —
-    /// that stands two-thirds wider than the system's. The paint sits at the trailing end, 2 pt
-    /// in and centred vertically, as the stock one does; layout and hit area keep the footprint.
+    /// The stock switch's track, measured from its rendering (macOS 26/27): regular 54 × 24, the
+    /// whole of its footprint; small 44 × 20 and mini 36 × 17, which `NSSwitch` draws centred in
+    /// that same 54 × 24 (it reports one intrinsic size whatever its `controlSize`).
     static func trackSize(for size: NSControl.ControlSize) -> NSSize {
         switch size {
-        case .small: return NSSize(width: 26, height: 17)
-        case .mini: return NSSize(width: 21, height: 14)
-        default: return NSSize(width: 32, height: 21)
+        case .small: return NSSize(width: 44, height: 20)
+        case .mini: return NSSize(width: 36, height: 17)
+        default: return footprint
         }
     }
-    /// Where the track is painted within `bounds`.
+    /// The stock knob: a capsule, not a circle — regular 32 × 20, small 26 × 16, mini 21 × 13 —
+    /// inset evenly from the track's ends and edges.
+    static func knobSize(for size: NSControl.ControlSize) -> NSSize {
+        switch size {
+        case .small: return NSSize(width: 26, height: 16)
+        case .mini: return NSSize(width: 21, height: 13)
+        default: return NSSize(width: 32, height: 20)
+        }
+    }
+    /// Where the track is painted: centred in `bounds`, so a frame larger than the footprint
+    /// (a stretched cell) keeps the stock size rather than a stretched pill.
     var trackRect: NSRect {
         let size = Self.trackSize(for: controlSize)
-        return NSRect(x: bounds.maxX - 2 - size.width, y: bounds.midY - size.height / 2, width: size.width, height: size.height)
+        return NSRect(x: bounds.midX - size.width / 2, y: bounds.midY - size.height / 2, width: size.width, height: size.height)
+    }
+    /// Where the knob is painted: at the track's leading end when off, the trailing end when on.
+    var knobRect: NSRect {
+        let track = trackRect
+        let size = Self.knobSize(for: controlSize)
+        let inset = (track.height - size.height) / 2
+        let x = track.minX + inset + (track.width - 2 * inset - size.width) * knobProgress
+        return NSRect(x: x, y: track.minY + inset, width: size.width, height: size.height)
     }
     open override var allowsVibrancy: Bool { false }
     open override var acceptsFirstResponder: Bool { isEnabled }
@@ -94,10 +100,7 @@ open class ThemedSwitch: NSControl {
         track.setFill()
         NSBezierPath(roundedRect: r, xRadius: r.height / 2, yRadius: r.height / 2).fill()
 
-        let inset: CGFloat = 2
-        let d = r.height - 2 * inset
-        let x = r.minX + inset + (r.width - 2 * inset - d) * knobProgress
-        let knob = NSRect(x: x, y: r.minY + inset, width: d, height: d)
+        let knob = knobRect
         NSGraphicsContext.saveGraphicsState()
         let shadow = NSShadow()
         shadow.shadowBlurRadius = 1.5
@@ -105,7 +108,7 @@ open class ThemedSwitch: NSControl {
         shadow.shadowColor = NSColor.black.withAlphaComponent(0.3)
         shadow.set()
         NSColor.white.withAlphaComponent(isEnabled ? 1 : 0.7).setFill()
-        NSBezierPath(ovalIn: knob).fill()
+        NSBezierPath(roundedRect: knob, xRadius: knob.height / 2, yRadius: knob.height / 2).fill()
         NSGraphicsContext.restoreGraphicsState()
     }
 

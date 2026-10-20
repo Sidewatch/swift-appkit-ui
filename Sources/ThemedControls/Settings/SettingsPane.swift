@@ -83,8 +83,9 @@ extension SettingsPane {
                 place(SettingsRowView.footnote(footnote), gap: 6, inset: SettingsMetrics.cardInset)
             }
         }
-        // The last element sets the scrolling content's height (+ a bottom margin); the
-        // content's width tracks the clip view so nothing ever scrolls horizontally.
+        // The last element sets the scrolling content's height (+ a bottom margin). The content
+        // is the page's width, not the clip view's: the view is a scroller's gutter wider, so a
+        // scroller appearing never narrows the cards or moves their controls.
         if let previous {
             constraints.append(
                 content.bottomAnchor.constraint(
@@ -92,7 +93,7 @@ extension SettingsPane {
                     constant: SettingsMetrics.margin))
         }
         constraints += [
-            content.widthAnchor.constraint(equalTo: scroll.contentView.widthAnchor),
+            content.widthAnchor.constraint(equalToConstant: SettingsMetrics.paneWidth),
             scroll.topAnchor.constraint(equalTo: view.topAnchor),
             scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -142,8 +143,9 @@ extension SettingsPane {
         return stack
     }
 
-    /// Pins the pane's width — shared by every pane, so switching pages doesn't resize the
-    /// window under the pointer.
+    /// Pins the pane's width (``SettingsMetrics/columnWidth``: the page and its scroller's
+    /// gutter) — shared by every pane, so switching pages doesn't resize the window under the
+    /// pointer, and a page that scrolls keeps the cards where one that fits has them.
     ///
     /// Height must NOT be pinned: a fixed height fights the container's fill when the window is
     /// resized. A low-priority floor stops the pane collapsing and lets the scroll view take growth.
@@ -151,7 +153,7 @@ extension SettingsPane {
         let floor = view.heightAnchor.constraint(greaterThanOrEqualToConstant: SettingsMetrics.paneMinHeight)
         floor.priority = .defaultLow
         NSLayoutConstraint.activate([
-            view.widthAnchor.constraint(equalToConstant: SettingsMetrics.paneWidth),
+            view.widthAnchor.constraint(equalToConstant: SettingsMetrics.columnWidth),
             floor,
         ])
     }
