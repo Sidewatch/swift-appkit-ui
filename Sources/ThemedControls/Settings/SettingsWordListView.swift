@@ -50,7 +50,7 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     private let columnID = NSUserInterfaceItemIdentifier("WordListItem")
 
     /// The list as displayed — sorted, and the only place a not-yet-committed new row exists.
-    private var words: [String] = []
+    private(set) var words: [String] = []
 
     /// The row editor in flight, if any. Held to tell a live edit from one that has already
     /// ended: the end-editing notification arrives for both.
@@ -68,6 +68,16 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
                 comment: "Word list: placeholder shown on a new, blank row")
         super.init()
         buildUI()
+    }
+
+    /// Shows `list` (canonicalized: trimmed, blanks dropped, de-duplicated case-insensitively, sorted),
+    /// discarding any half-typed row — for loading the list from its setting, and re-showing it when the
+    /// setting changed elsewhere. Does NOT call ``onChange``: the caller already has this list.
+    public func setWords(_ list: [String]) {
+        endRowEditing()
+        words = canonical(list)
+        table.reloadData()
+        updateButtonState()
     }
 
     // MARK: - Layout
