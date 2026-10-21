@@ -159,6 +159,59 @@
         }
       }
     },
+    "Nothing in this list. Add one with +." : {
+      "comment" : "Word list: shown while the list is empty",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Diese Liste ist leer. Füge mit + einen Eintrag hinzu."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Esta lista está vacía. Añade uno con +."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Cette liste est vide. Ajoutez-en un avec +."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "このリストは空です。+ で追加できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "이 목록은 비어 있습니다. +로 추가하세요."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Esta lista está vazia. Adicione um com +."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Список пуст. Добавьте элемент кнопкой +."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "此列表为空。用 + 添加一项。"
+          }
+        }
+      }
+    },
     "Pane divider" : {
       "localizations" : {
         "de" : {

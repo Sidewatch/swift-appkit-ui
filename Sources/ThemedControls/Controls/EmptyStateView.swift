@@ -194,6 +194,11 @@ public final class EmptyStateView: NSView {
     /// Hides the state (the list has rows again).
     public func hide() { isHidden = true }
 
+    /// The title it reads now, for a host's checks.
+    public var titleForTesting: String { titleLabel.stringValue }
+    /// The subtitle it reads now, for a host's checks.
+    public var subtitleForTesting: String { subtitleLabel.stringValue }
+
     @objc private func themeChanged() { applyTheme() }
 
     private func applyTheme() {

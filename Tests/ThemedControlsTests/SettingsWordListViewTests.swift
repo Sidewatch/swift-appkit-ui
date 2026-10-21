@@ -24,4 +24,16 @@ final class SettingsWordListViewTests: XCTestCase {
         let table = list.listView.documentView as? NSTableView
         XCTAssertEqual(table.map { list.numberOfRows(in: $0) }, 3)
     }
+
+    /// An emptied list says so instead of showing a blank box, and the text goes once there is a word.
+    func testAnEmptyListSaysSo() {
+        let list = SettingsWordListView()
+        list.emptyText = "No skipped folders."
+        list.setWords([])
+        XCTAssertTrue(list.showsEmptyTextForTesting)
+        list.setWords(["node_modules"])
+        XCTAssertFalse(list.showsEmptyTextForTesting)
+        list.setWords([" ", ""])
+        XCTAssertTrue(list.showsEmptyTextForTesting, "blanks are no words")
+    }
 }

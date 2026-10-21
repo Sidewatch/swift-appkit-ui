@@ -58,6 +58,19 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
 
     /// The placeholder shown on a blank row, e.g. "word".
     private let noun: String
+    /// Centred in the list while it holds no words, so an emptied list says so instead of showing a
+    /// blank box. A host words it for its list (``emptyText``).
+    private let emptyLabel = NSTextField(labelWithString: "")
+
+    /// What the list says while it is empty ("No skipped folders. Add one with +.").
+    public var emptyText = String(
+        localized: "Nothing in this list. Add one with +.", bundle: .module, comment: "Word list: shown while the list is empty")
+    {
+        didSet { emptyLabel.stringValue = emptyText }
+    }
+
+    /// Whether the empty-list text shows, for a host's checks.
+    public var showsEmptyTextForTesting: Bool { !emptyLabel.isHidden }
 
     /// Creates an empty list whose blank rows show `noun` as a placeholder.
     public init(noun: String? = nil) {
@@ -108,6 +121,17 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
         listView.drawsBackground = false
         listView.translatesAutoresizingMaskIntoConstraints = false
         listView.heightAnchor.constraint(equalToConstant: SettingsMetrics.listHeight).isActive = true
+        emptyLabel.stringValue = emptyText
+        emptyLabel.font = ThemedControls.palette.smallFont
+        emptyLabel.textColor = ThemedControls.palette.mutedText
+        emptyLabel.alignment = .center
+        emptyLabel.translatesAutoresizingMaskIntoConstraints = false
+        listView.addSubview(emptyLabel)
+        NSLayoutConstraint.activate([
+            emptyLabel.centerXAnchor.constraint(equalTo: listView.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: listView.centerYAnchor),
+            emptyLabel.leadingAnchor.constraint(greaterThanOrEqualTo: listView.leadingAnchor, constant: 8),
+        ])
 
         addRemoveControl.isMomentary = true
         addRemoveControl.symbolsOnly = true
@@ -247,8 +271,9 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     }
 
     /// Remove is only live with a selection; Restore Defaults dims once the list already is the
-    /// shipped one.
+    /// shipped one; the empty-list text shows while there are no words.
     private func updateButtonState() {
+        emptyLabel.isHidden = !words.isEmpty
         addRemoveControl.setEnabled(!table.selectedRowIndexes.isEmpty, forSegment: 1)
         if let defaultWords { restoreButton.isEnabled = words != canonical(defaultWords) }
     }
