@@ -99,6 +99,10 @@ The idioms every AppKit screen otherwise spells out, one extension each:
 | `NSColor.blended(_:toward:)`, `NSImage.tinted(_:)` | lifting a surface off a background; painting a template |
 | `NSColor.contrastRatio(with:)`, `relativeLuminance` | WCAG contrast: whether a colour would vanish against a background |
 | `disableSystemTextIntelligence()`, `FieldEditorPolicy` | Writing Tools, autocorrect and predictions off, per view and per window |
+| `containsKeyboardFocus` | `window?.firstResponder as? NSView` and an `isDescendant(of:)` test |
+| `stepMagnification(_:)`, `fitMagnification(to:allowEnlarge:)` | zoom steps, and a ⌘0 fit that measures the area the scrollers leave instead of the clip view |
+| `TabStripLayout` | a tab strip's origins, hit test, drop slot while dragging, and reveal scroll |
+| `EdgeDrag` | a pane's size while its edge is dragged (by direction, clamped) |
 
 ## Notes worth knowing
 

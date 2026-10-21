@@ -9,6 +9,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// A split tree whose `root` is a single leaf or an axis of leaves and axes, mounted in
 /// `container`; generic over the leaf so `panes` gives back the host's own type.
@@ -73,9 +74,7 @@ import AppKit
     /// The leaf a split, close or send targets: whichever holds first responder, else the last
     /// focused one, else the first.
     public func focusedPane(in window: NSWindow?) -> Leaf? {
-        if let fr = window?.firstResponder as? NSView,
-            let p = panes.first(where: { fr === $0 || fr.isDescendant(of: $0) })
-        {
+        if let p = panes.first(where: { $0.window === window && $0.containsKeyboardFocus }) {
             lastFocused = p
             return p
         }

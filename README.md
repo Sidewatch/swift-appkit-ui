@@ -51,6 +51,10 @@ NotificationCenter.default.post(name: ThemedControls.paletteDidChange, object: n
 let bar = ThemedSegmentBar(labels: ["All", "Prompts", "Commands"], symbols: ["square.grid.2x2", "text.bubble", "terminal"])
 bar.fillsWidth = true
 bar.target = self; bar.action = #selector(filterChanged)
+
+// A Settings value slider and the fixed-width readout beside it.
+sizeSlider.configureAsSettingsValue(min: 8, max: 36, ticks: 8, target: self, action: #selector(sizeChanged))
+sizeLabel.styleAsSliderReadout(width: 40)          // "8 pt" … "36 pt" never shuffles the slider
 ```
 
 ### PaneLayout
