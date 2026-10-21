@@ -110,12 +110,16 @@ public final class PaneAxisView: NSView {
         return out
     }
 
-    /// Restores a persisted flex vector (already validated by the caller).
-    public func setFlexes(_ f: [CGFloat]) {
-        guard f.count == members.count else { return }
+    /// Restores a persisted flex vector. One that is not valid for the current members
+    /// (``FlexVector/isValid(_:count:)``: the count, every share positive, the sum) is refused and the
+    /// members keep their shares; the result says which.
+    @discardableResult
+    public func setFlexes(_ f: [CGFloat]) -> Bool {
+        guard FlexVector.isValid(f, count: members.count) else { return false }
         flexes = f
         needsLayout = true
         assertInvariants()
+        return true
     }
 
     /// Double-click a divider: every member back to an equal share.
@@ -142,7 +146,7 @@ public final class PaneAxisView: NSView {
     public func assertInvariants() {
         assert(flexes.count == members.count, "PaneAxisView: flex/member count mismatch")
         assert(
-            members.isEmpty || abs(flexes.reduce(0, +) - CGFloat(members.count)) < 0.01,
+            members.isEmpty || abs(flexes.reduce(0, +) - CGFloat(members.count)) < FlexVector.tolerance,
             "PaneAxisView: flex sum drifted from member count")
     }
 

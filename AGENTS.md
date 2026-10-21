@@ -10,7 +10,7 @@ AppKit building blocks for a themed, keyboard-first Mac app: small view behaviou
 ## AppKitViews — `Sources/AppKitViews`
 
 ### Module map
-- `Core/` — NavigationHistory (two stacks, not a cursor: a new jump BRANCHES, so the forward path is cleared rather than silently rejoinable)
+- `Core/` — NavigationHistory (two stacks, not a cursor: a new jump BRANCHES, so the forward path is cleared rather than silently rejoinable), RecentOrder (most-recently-used by a STABLE id — never an object address, which is reused), TabSelection (the selected index through a move and a close; the successor is a policy: right neighbour, or most recent else left)
 - `Enums/` — ZoomKeyDirection (⌘= / ⌘- / ⌘0 → in / out / actual; `nil` for any other key, so a caller can hand the event straight on)
 - `Models/` — CellPosition; DocumentLocation (a file and a range, captured at jump time and never revalidated) (a row and a field tag; a POSITION rather than a view, because committing an edit usually rebuilds the rows)
 - `Protocols/` — ExpandableTree (a view whose content is a tree, so one command can act on whichever is in front); CellTabbing (a table whose editable cells Tab walks; the extension carries the walk, the retry and the first-responder test)
@@ -86,6 +86,7 @@ AppKit building blocks for a themed, keyboard-first Mac app: small view behaviou
 ## PaneLayout — `Sources/PaneLayout`
 
 ### Module map
+- `Support/` — FlexVector (`isValid`: count, every share positive, the sum; `keeping`: survivors of dropped members keep their proportions). `setFlexes` validates and refuses an invalid vector.
 - `Enums/` — PaneOrientation; PaneSplitDirection (carries BOTH decisions a split needs, the axis and the side, so a caller cannot get one of them backwards)
 - `Core/` — PaneTree<Leaf: NSView>: the structural mutations (split, remove, collapse), the focus target, the corner
 - `Views/` — PaneAxisView (one axis node; the flex vector is the only size truth and layout is arithmetic); PaneDividerView (a 5-pt hit strip drawing a 1-pt hairline; drag resizes, double-click equalises)
