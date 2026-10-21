@@ -9,6 +9,7 @@
 //
 
 import AppKit
+import AppKitViews
 
 /// What a themed control needs to know about the current theme. The host installs one as
 /// `ThemedControls.palette` and posts `ThemedControls.paletteDidChange` when it changes;
@@ -55,4 +56,6 @@ extension ControlPalette {
     public var pageBackground: NSColor { statusBackground }
     /// Defaults to the sidebar surface; see `pageBackground`.
     public var cardBackground: NSColor { sidebarBackground }
+    /// Text and symbols drawn ON the accent (a selected row's fill): the accent's `textOnTop`.
+    public var onAccent: NSColor { accent.textOnTop }
 }

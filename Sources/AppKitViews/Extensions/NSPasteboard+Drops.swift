@@ -115,8 +115,9 @@ extension NSPasteboard {
     nonisolated(unsafe) public static var dropsFolderName = "AppKitViewsDrops"
 
     /// `<tmp>/<dropsFolderName>[/<uuid>]` — created on demand; `unique` adds a fresh subfolder so
-    /// same-named promised files from separate drops cannot collide.
-    nonisolated private static func dropsDirectory(unique: Bool) -> URL? {
+    /// same-named promised files from separate drops cannot collide. Nil when it cannot be created. A
+    /// host writing files of its own beside dropped ones (an annotated copy) asks here for the folder.
+    nonisolated public static func dropsDirectory(unique: Bool = false) -> URL? {
         var dir = FileManager.default.temporaryDirectory.appendingPathComponent(dropsFolderName)
         if unique { dir.appendPathComponent(UUID().uuidString.prefix(8).description) }
         return (try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)) != nil ? dir : nil

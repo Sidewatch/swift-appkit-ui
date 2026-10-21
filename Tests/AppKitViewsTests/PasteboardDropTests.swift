@@ -153,4 +153,18 @@ import FoundationExtensions
         XCTAssertFalse(quoted.contains("\" "), "no double quoting")
         XCTAssertTrue(quoted.hasPrefix("'") && quoted.hasSuffix("'"))
     }
+
+    /// The drops folder is the one the host named, made on demand; `unique` adds a fresh subfolder.
+    func testTheDropsFolderIsTheHostsAndIsCreated() throws {
+        let saved = NSPasteboard.dropsFolderName
+        defer { NSPasteboard.dropsFolderName = saved }
+        NSPasteboard.dropsFolderName = "DropsTest-\(UUID().uuidString)"
+        let dir = try XCTUnwrap(NSPasteboard.dropsDirectory())
+        defer { try? FileManager.default.removeItem(at: dir) }
+        XCTAssertEqual(dir.lastPathComponent, NSPasteboard.dropsFolderName)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: dir.path))
+        let unique = try XCTUnwrap(NSPasteboard.dropsDirectory(unique: true))
+        XCTAssertEqual(unique.deletingLastPathComponent().lastPathComponent, NSPasteboard.dropsFolderName)
+        XCTAssertNotEqual(unique, try XCTUnwrap(NSPasteboard.dropsDirectory(unique: true)), "a fresh one each time")
+    }
 }

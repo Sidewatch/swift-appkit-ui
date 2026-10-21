@@ -72,6 +72,13 @@ tree.remove(second!)                          // collapses the tree around it
 
 Each module's full guide is `Docs/Modules/<Module>.md`.
 
+```swift
+// A settings window's page list, and the text colour that reads on the accent.
+let sidebar = SettingsSidebarView(pages: [("General", "gearshape"), ("Editor", "doc.text")])
+sidebar.onSelect = { page in show(page) }
+let onAccent = ThemedControls.palette.onAccent
+```
+
 ## Notes
 
 The modules were separate packages until 27 September 2026 (`swift-appkit-views`, `swift-themed-controls`, `swift-pane-layout`); their commits are kept here, so `git log --follow` traces any file back through them.

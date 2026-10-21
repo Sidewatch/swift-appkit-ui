@@ -25,4 +25,12 @@ public extension NSColor {
         guard let a = relativeLuminance, let b = other.relativeLuminance else { return 1 }
         return (max(a, b) + 0.05) / (min(a, b) + 0.05)
     }
+
+    /// Text that reads ON this colour as a fill: a soft black on a light colour (luminance over 0.6,
+    /// sRGB-weighted), white on anything darker or anything that cannot be read in sRGB.
+    var textOnTop: NSColor {
+        guard let c = usingColorSpace(.sRGB) else { return .white }
+        let luminance = 0.2126 * c.redComponent + 0.7152 * c.greenComponent + 0.0722 * c.blueComponent
+        return luminance > 0.6 ? NSColor.black.withAlphaComponent(0.85) : .white
+    }
 }
