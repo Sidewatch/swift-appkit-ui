@@ -81,6 +81,18 @@ bottom-left corner, and the image view pans under a drag with the hand cursor. `
 container that answers ⌘= / ⌘- / ⌘0 before the main menu, so its content zooms while it is on
 screen and a menu item bound to the same keys keeps working when it is not.
 
+### Tooltips
+
+`LateToolTip` covers a view's bounds with a tooltip whose words are asked for only when AppKit is
+about to show it, so a list can offer text that costs a process or a file read without paying for it
+on every row it lays out. It follows the view as it resizes and touches only its own rectangle.
+AppKit does not retain a tooltip's owner, so the caller keeps it:
+
+```swift
+lateTip?.remove()
+lateTip = dimmed ? LateToolTip(on: cell) { ignoreReason(for: item) } : nil
+```
+
 ## One-call helpers
 
 The idioms every AppKit screen otherwise spells out, one extension each:
