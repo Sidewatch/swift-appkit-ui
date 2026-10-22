@@ -52,6 +52,16 @@ final class LoadingStateViewTests: XCTestCase {
         XCTAssertFalse(state.isHidden, "0.2 s after the first begin: the first wait stood")
     }
 
+    func testItCoversItsHostCentredAndStartsHidden() {
+        let parent = NSView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
+        let host = NSView(frame: parent.bounds)
+        parent.addSubview(host)
+        let state = LoadingStateView(caption: "Loading changes…")
+        state.install(over: host)
+        XCTAssertTrue(state.superview === parent && state.isHidden, "a sibling above the host, hidden until a load outlasts the delay")
+        XCTAssertEqual(parent.subviews.last, state, "above the host")
+    }
+
     func testTheCaptionCanChange() {
         let state = LoadingStateView(caption: "Loading changes…")
         state.caption = "Reading session…"

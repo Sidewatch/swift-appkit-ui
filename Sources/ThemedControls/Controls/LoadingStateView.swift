@@ -64,6 +64,10 @@ public final class LoadingStateView: NSView {
     @available(*, unavailable) public required init?(coder: NSCoder) { fatalError() }
     deinit { NotificationCenter.default.removeObserver(self) }
 
+    /// Pins this state centred over `host` (a scroll view or table area) in `host`'s own
+    /// superview, starting hidden, as ``EmptyStateView/install(over:)`` does.
+    public func install(over host: NSView) { coverCentred(over: host) }
+
     /// The caption under the spinner.
     public var caption: String {
         get { captionLabel.stringValue }

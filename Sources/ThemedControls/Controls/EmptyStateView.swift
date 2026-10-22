@@ -154,16 +154,7 @@ public final class EmptyStateView: NSView {
     /// Pins this state centered over `host` (a scroll view / table area) in `host`'s
     /// own superview, starting hidden. The host keeps its layout untouched — an
     /// empty state only ever covers it, so revealing one can't reflow the panel.
-    public func install(over host: NSView) {
-        guard let parent = host.superview else { return }
-        isHidden = true
-        parent.addSubview(self, positioned: .above, relativeTo: host)
-        NSLayoutConstraint.activate([
-            leadingAnchor.constraint(equalTo: host.leadingAnchor, constant: 20),
-            trailingAnchor.constraint(equalTo: host.trailingAnchor, constant: -20),
-            centerYAnchor.constraint(equalTo: host.centerYAnchor),
-        ])
-    }
+    public func install(over host: NSView) { coverCentred(over: host) }
 
     /// Reveals the state with fresh copy, and (optionally) a call-to-action button.
     /// Omitting the button args clears any button a previous `show` set.
