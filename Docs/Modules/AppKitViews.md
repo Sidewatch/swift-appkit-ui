@@ -81,6 +81,22 @@ bottom-left corner, and the image view pans under a drag with the hand cursor. `
 container that answers ⌘= / ⌘- / ⌘0 before the main menu, so its content zooms while it is on
 screen and a menu item bound to the same keys keeps working when it is not.
 
+### Comparing two pictures
+
+`ImageComparisonView` shows two versions of a picture three ways: side by side with captions, swiped (both in one
+frame, a divider the pointer drags or ←/→ moves), or the changes (the after dimmed, the changed pixels in a
+colour from a white-on-black mask such as swift-media-kit's ImageCompare makes). Pictures keep their shape, small
+ones are enlarged up to 16× without smoothing so pixels stay square, and a checkerboard shows through clear
+pixels. Either side may be nil (an added or deleted file). The host gives the colours and the words:
+
+```swift
+let view = ImageComparisonView(colors: ImageComparisonColors(
+    background: bg, checkerLight: light, checkerDark: dark, divider: accent, change: removed, caption: muted))
+view.oldImage = before; view.newImage = after; view.changeMask = difference.mask
+view.captions = ("HEAD · 64×64 · 4 KB", "Working tree · 64×64 · 3 KB")
+view.mode = .swipe
+```
+
 ### Tooltips
 
 `LateToolTip` covers a view's bounds with a tooltip whose words are asked for only when AppKit is
