@@ -13,7 +13,7 @@ import AppKitViews
 
 /// A guide of ``StepFlowStep`` pages shown one at a time: the page's symbol on an accent tile
 /// beside its heading and line, the page's view below, and a footer of `‹ Back`, a dot per step
-/// (the current one drawn long), `Skip` and the accent `Continue ›` (`Done ✓` on the last page).
+/// (the current one drawn long), `Skip` and the accent `Continue` (`Done` on the last page).
 /// Return continues; Escape skips.
 ///
 /// Every page is optional by construction: a page's controls show the current settings, so
@@ -42,6 +42,10 @@ public final class StepFlowView: NSView {
 
     private static let tileSide: CGFloat = 46
 
+    /// The heading's leading edge: past the symbol's tile, or at the margin for a page without one.
+    private var headingBesideTile: NSLayoutConstraint!
+    private var headingAtMargin: NSLayoutConstraint!
+
     private let tileHost = NSView()
     private let titleLabel = SettingsLabel(role: .primary)
     private let subtitleLabel = SettingsLabel(role: .secondary, wrapping: true)
@@ -53,7 +57,7 @@ public final class StepFlowView: NSView {
         symbol: "chevron.left", placement: .leading)
     private let skipButton = ThemedActionButton(
         title: String(localized: "Skip", bundle: .module, comment: "Step-by-step guide: end it, keeping the defaults"), style: .plain)
-    private let continueButton = ThemedActionButton(title: "", style: .primary, symbol: "chevron.right")
+    private let continueButton = ThemedActionButton(title: "", style: .primary)
 
     /// A guide over `steps` (at least one), showing the first.
     public init(steps: [StepFlowStep]) {
@@ -120,7 +124,6 @@ public final class StepFlowView: NSView {
             tileHost.leadingAnchor.constraint(equalTo: leadingAnchor, constant: m),
             tileHost.widthAnchor.constraint(equalToConstant: Self.tileSide),
             tileHost.heightAnchor.constraint(equalToConstant: Self.tileSide),
-            heading.leadingAnchor.constraint(equalTo: tileHost.trailingAnchor, constant: 16),
             heading.topAnchor.constraint(equalTo: tileHost.topAnchor, constant: -2),
             heading.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -m),
             subtitleLabel.widthAnchor.constraint(lessThanOrEqualToConstant: textWidth),
@@ -140,6 +143,8 @@ public final class StepFlowView: NSView {
             dots.centerXAnchor.constraint(equalTo: centerXAnchor),
             dots.centerYAnchor.constraint(equalTo: trailing.centerYAnchor),
         ])
+        headingBesideTile = heading.leadingAnchor.constraint(equalTo: tileHost.trailingAnchor, constant: 16)
+        headingAtMargin = heading.leadingAnchor.constraint(equalTo: leadingAnchor, constant: m)
         // The page starts under whichever is taller, the tile or the heading, and no lower.
         let tight = pageHost.topAnchor.constraint(equalTo: heading.bottomAnchor, constant: 22)
         tight.priority = .defaultHigh
@@ -159,6 +164,8 @@ public final class StepFlowView: NSView {
             tileHost.addSubview(tile)
             tile.pinEdges(to: tileHost)
         }
+        headingAtMargin.isActive = step.symbol == nil
+        headingBesideTile.isActive = step.symbol != nil
         pageHost.subviews.forEach { $0.removeFromSuperview() }
         let page = step.content.view
         pageHost.addSubview(page)
@@ -173,7 +180,6 @@ public final class StepFlowView: NSView {
             flow.isLast
             ? String(localized: "Done", bundle: .module, comment: "Step-by-step guide: the last page's Continue")
             : String(localized: "Continue", bundle: .module, comment: "Step-by-step guide: go to the next page")
-        continueButton.symbol = flow.isLast ? "checkmark" : "chevron.right"
         onStepShown?(index)
     }
 
@@ -194,6 +200,8 @@ public final class StepFlowView: NSView {
     public var tileShownForTesting: Bool { !tileHost.subviews.isEmpty }
     /// Return and Escape's buttons, as their key equivalents name them, for tests.
     public var keyEquivalentsForTesting: (continue: String, skip: String) { (continueButton.keyEquivalent, skipButton.keyEquivalent) }
+    /// The heading's frame in the view, for tests.
+    public var titleFrameForTesting: NSRect { convert(titleLabel.bounds, from: titleLabel) }
     /// The page area's frame in the view, for tests.
     public var pageFrameForTesting: NSRect { pageHost.frame }
 }

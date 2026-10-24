@@ -34,8 +34,13 @@ final class StepFlowViewTests: XCTestCase {
         XCTAssertEqual(view.pageFrameForTesting.width, StepFlowView.pageWidth, accuracy: 0.5)
         XCTAssertEqual(view.pageFrameForTesting.minX, StepFlowView.margin, accuracy: 0.5, "the same margin both sides")
         XCTAssertTrue(view.tileShownForTesting)
+        XCTAssertGreaterThan(view.titleFrameForTesting.minX, StepFlowView.margin + 40, "beside the tile")
         let plain = StepFlowView(steps: [StepFlowStep(title: "T", subtitle: "S", content: page(0))])
+        plain.layoutSubtreeIfNeeded()
         XCTAssertFalse(plain.tileShownForTesting)
+        XCTAssertEqual(
+            plain.titleFrameForTesting.minX, StepFlowView.margin, accuracy: 2.5,
+            "no tile: the heading at the margin (a label frame sits 2 pt out from its alignment edge)")
     }
 
     func testEachPageShowsUnderItsOwnHeading() {

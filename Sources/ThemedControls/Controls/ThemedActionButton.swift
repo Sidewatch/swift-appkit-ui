@@ -77,7 +77,9 @@ public final class ThemedActionButton: NSButton {
 
     public override var intrinsicContentSize: NSSize {
         let size = super.intrinsicContentSize
-        return NSSize(width: size.width + (style == .primary ? 28 : 12), height: Self.height)
+        // A symbol beside the title needs its own room, or it runs past the capsule's end.
+        let symbolRoom: CGFloat = image == nil ? 0 : 6
+        return NSSize(width: size.width + (style == .primary ? 28 : 12) + symbolRoom, height: Self.height)
     }
 
     /// The title's colour as drawn now.
