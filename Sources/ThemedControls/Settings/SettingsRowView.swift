@@ -33,7 +33,10 @@ public final class SettingsRowView: NSView {
     ///
     /// Keep a footnote to about a line: what you must know to choose correctly (a prerequisite,
     /// a caveat), never an explanation of internals — and never in a tooltip instead.
-    public init(_ title: String, control: NSView, footnote: String? = nil) {
+    ///
+    /// `symbol` (an SF Symbol name) puts the symbol in an accent-tinted tile before the caption,
+    /// as System Settings marks its rows; the caption and footnote move over to make room.
+    public init(_ title: String, control: NSView, footnote: String? = nil, symbol: String? = nil) {
         let caption = SettingsLabel(role: .primary)
         caption.stringValue = title
         caption.font = .systemFont(ofSize: 12)
@@ -59,24 +62,36 @@ public final class SettingsRowView: NSView {
         let line = NSLayoutGuide()
         addLayoutGuide(line)
 
+        // The text column: the line's leading edge, or past the symbol's tile.
+        let tile = symbol.map { SymbolTileView(symbol: $0) }
+        let textLeading = SettingsMetrics.cardInset + (tile == nil ? 0 : SymbolTileView.side + 10)
         var constraints: [NSLayoutConstraint] = [
             line.topAnchor.constraint(equalTo: topAnchor, constant: SettingsMetrics.rowPadding),
             line.leadingAnchor.constraint(equalTo: leadingAnchor, constant: SettingsMetrics.cardInset),
             line.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -SettingsMetrics.cardInset),
             line.heightAnchor.constraint(equalToConstant: SettingsMetrics.rowLineHeight),
 
-            caption.leadingAnchor.constraint(equalTo: line.leadingAnchor),
+            caption.leadingAnchor.constraint(equalTo: leadingAnchor, constant: textLeading),
             caption.centerYAnchor.constraint(equalTo: line.centerYAnchor),
             control.trailingAnchor.constraint(equalTo: line.trailingAnchor),
             control.centerYAnchor.constraint(equalTo: line.centerYAnchor),
             control.leadingAnchor.constraint(greaterThanOrEqualTo: caption.trailingAnchor, constant: 12),
         ]
 
+        if let tile {
+            tile.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(tile)
+            constraints += [
+                tile.leadingAnchor.constraint(equalTo: line.leadingAnchor),
+                tile.centerYAnchor.constraint(equalTo: line.centerYAnchor),
+            ]
+        }
         if let footnote {
             let note = SettingsRowView.footnote(footnote)
+            if tile != nil { note.preferredMaxLayoutWidth = SettingsMetrics.cardTextWidth - SymbolTileView.side - 10 }
             addSubview(note)
             constraints += [
-                note.leadingAnchor.constraint(equalTo: leadingAnchor, constant: SettingsMetrics.cardInset),
+                note.leadingAnchor.constraint(equalTo: leadingAnchor, constant: textLeading),
                 note.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -SettingsMetrics.cardInset),
                 note.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 2),
                 note.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -SettingsMetrics.rowPadding),

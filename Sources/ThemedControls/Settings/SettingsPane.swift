@@ -49,49 +49,18 @@ extension SettingsPane {
         scroll.documentView = content
         view.addSubview(scroll)
 
-        var constraints: [NSLayoutConstraint] = []
-        var previous: NSView?
-
-        /// Pins one page element full width under the last one, inside the scrolling
-        /// content. `inset` indents captions and footnotes to the card's text column.
-        func place(_ element: NSView, gap: CGFloat, inset: CGFloat = 0) {
-            element.translatesAutoresizingMaskIntoConstraints = false
-            content.addSubview(element)
-            constraints += [
-                element.leadingAnchor.constraint(
-                    equalTo: content.leadingAnchor,
-                    constant: SettingsMetrics.margin + inset),
-                element.trailingAnchor.constraint(
-                    equalTo: content.trailingAnchor,
-                    constant: -(SettingsMetrics.margin + inset)),
-                element.topAnchor.constraint(
-                    equalTo: previous?.bottomAnchor ?? content.topAnchor,
-                    constant: gap),
-            ]
-            previous = element
-        }
-
-        for (index, section) in sections.enumerated() {
-            let leading = index == 0 ? SettingsMetrics.margin : SettingsMetrics.sectionGap
-            if let header = section.header {
-                place(sectionHeader(header), gap: leading, inset: SettingsMetrics.cardInset)
-                place(SettingsCard(rows: section.rows), gap: 6)
-            } else {
-                place(SettingsCard(rows: section.rows), gap: leading)
-            }
-            if let footnote = section.footnote {
-                place(SettingsRowView.footnote(footnote), gap: 6, inset: SettingsMetrics.cardInset)
-            }
-        }
-        // The last element sets the scrolling content's height (+ a bottom margin). The content
-        // is the page's width, not the clip view's: the view is a scroller's gutter wider, so a
-        // scroller appearing never narrows the cards or moves their controls.
-        if let previous {
-            constraints.append(
-                content.bottomAnchor.constraint(
-                    equalTo: previous.bottomAnchor,
-                    constant: SettingsMetrics.margin))
-        }
+        // The sections, a margin in from each side; the content takes their height plus a margin
+        // above and below. The content is the page's width, not the clip view's: the view is a
+        // scroller's gutter wider, so a scroller appearing never narrows the cards or moves their
+        // controls.
+        let sections = SettingsSectionsView(sections: sections)
+        content.addSubview(sections)
+        var constraints: [NSLayoutConstraint] = [
+            sections.topAnchor.constraint(equalTo: content.topAnchor, constant: SettingsMetrics.margin),
+            sections.leadingAnchor.constraint(equalTo: content.leadingAnchor),
+            sections.trailingAnchor.constraint(equalTo: content.trailingAnchor),
+            content.bottomAnchor.constraint(equalTo: sections.bottomAnchor, constant: SettingsMetrics.margin),
+        ]
         constraints += [
             content.widthAnchor.constraint(equalToConstant: SettingsMetrics.paneWidth),
             scroll.topAnchor.constraint(equalTo: view.topAnchor),
@@ -121,12 +90,7 @@ extension SettingsPane {
     }
 
     /// A section's caption, above its card.
-    public func sectionHeader(_ text: String) -> NSTextField {
-        let label = SettingsLabel(role: .secondary)
-        label.stringValue = text
-        label.font = .systemFont(ofSize: 11, weight: .semibold)
-        return label
-    }
+    public func sectionHeader(_ text: String) -> NSTextField { SettingsSectionsView.header(text) }
 
     /// Groups controls into one unit for a row's trailing edge — a value and its
     /// stepper read as one control, not two that happen to be adjacent.

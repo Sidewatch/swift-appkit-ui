@@ -55,6 +55,24 @@ bar.target = self; bar.action = #selector(filterChanged)
 - `EmptyStateView` — symbol, title, subtitle, a primary action and any number of secondary ones beneath it (`show(…secondary:)`), centred.
 - `InnerGridTableView` — a table whose vertical grid lines fall between columns and never on its own leading or trailing edge. `NSTableView.solidVerticalGridLineMask` rules every boundary including the outer two, so the first column wears a line down its left where nothing is being divided. Set `gridStyleMask = [.solidHorizontalGridLineMask]` and this draws the rest.
 - `CellEditFormatter` — what a table or outline cell **draws** against what it **edits**: a string as `"nginx"`, a tree key as `image:`, a secret as `••••••••`, each typed over as the bare value. It is a `Formatter` because swapping a field's `stringValue` inside `controlTextDidBeginEditing` does NOT reach the field editor AppKit has already loaded, so the decoration would be edited into the value (a quoted value re-quoted on every double-click). Set `field.formatter` and `field.objectValue`, and read the edit back from `objectValue`, never `stringValue`.
+- `ThemedActionButton` — a larger button for moving on: `.primary` is an accent-filled capsule with `onAccent` text, `.plain` the title alone in the muted tone, brightening under the pointer; an optional SF Symbol before (`‹ Back`) or after (`Continue ›`) the title.
+- `SettingsRowView(_:control:footnote:symbol:)` — with `symbol`, the row carries the symbol on an accent-tinted tile before its caption, as System Settings marks rows.
+- `SettingsSectionsView` — sections down a column at whatever width it is given (`buildPane` puts one in its scrolling page; a guide page uses one directly).
+- `ChoiceCardView` — one of a few described choices: an SF Symbol, a name and a wrapped line of detail on the card fill, ringed in the accent while `isPicked`. A click, Space or VoiceOver's press calls `onPick`; the host sets `isPicked` on every card of the group. VoiceOver reads a radio button.
+
+## Step-by-step guides
+
+`StepFlowView` shows `StepFlowStep` pages one at a time — an SF Symbol on an accent tile beside a heading and its line, and a controller's view (a `SettingsSectionsView` makes a guide's rows the app's own Settings rows) — over a footer of `‹ Back`, a dot per step (the current one long; VoiceOver reads "Step 2 of 4"), `Skip` and the accent `Continue ›` (`Done ✓` on the last page). It is laid out for `StepFlowView.preferredSize`; a page fills `pageWidth`, which wrapping text in a page sizes itself from. Return continues, Escape skips, and `onFinish` reports `.completed` or `.skipped` once. `StepFlow` is the position and its moves as a plain value, tested without a window.
+
+```swift
+let guide = StepFlowView(steps: [
+    StepFlowStep(title: "Welcome", subtitle: "Pick a theme.", symbol: "paintpalette", content: themePage),
+    StepFlowStep(title: "The editor", subtitle: "What the editor shows.", symbol: "character.cursor.ibeam", content: editorPage),
+])
+guide.onFinish = { ending in window.close() }
+```
+
+The view owns no settings: a page's controls show the current values and write their own, so every page is optional.
 
 ## For agents
 
