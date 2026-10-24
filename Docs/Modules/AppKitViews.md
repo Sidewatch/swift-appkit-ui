@@ -26,6 +26,22 @@ measured as a visible stall on a 22,000-row document.
 `ExpandableTree` is the protocol a host adopts so one Expand All / Collapse All command can act on
 whichever tree is in front without knowing what any of them are showing.
 
+### Companion windows
+
+```swift
+let companion = CompanionWindowController(
+    hosting: panel.view, title: "Terminal — myapp", frame: savedFrame, defaultFrame: beside, minSize: NSSize(width: 360, height: 200))
+companion.onCloseRequest = { dockItBack() }    // the red button asks; it does not close
+companion.showWindow(nil)
+// later
+let view = companion.release()                 // the same view, out of the closed window
+```
+
+The view moves rather than being copied, so what it holds — a running shell, its scrollback —
+comes along and goes back intact. The red button never closes a window still holding the view:
+the host decides (dock it back, hide it) and calls `release()`. `frameDescriptor` is the frame to
+keep across launches.
+
 ### Tables
 
 ```swift
