@@ -59,6 +59,7 @@ bar.target = self; bar.action = #selector(filterChanged)
 - `ThemedActionButton` — a larger button for moving on: `.primary` is an accent-filled capsule with `onAccent` text, `.plain` the title alone in the muted tone, brightening under the pointer; an optional SF Symbol before (`‹ Back`) or after (`Continue ›`) the title.
 - `SettingsRowView(_:control:footnote:symbol:)` — with `symbol`, the row carries the symbol on an accent-tinted tile before its caption, as System Settings marks rows.
 - `SettingsSectionsView` — sections down a column at whatever width it is given (`buildPane` puts one in its scrolling page; a guide page uses one directly).
+- `SettingsDefaultsRestoring` — a `SettingsPane` that can put its own settings back: `buildPane` ends the page with a `SettingsRestoreDefaultsButton` at the cards' trailing edge, which asks in a sheet ("Restore this page's settings to their defaults?") and then calls `restoreDefaults()` and `syncFromSettings()`; Cancel does nothing.
 - `ChoiceCardView` — one of a few described choices: an SF Symbol, a name and a wrapped line of detail on the card fill, ringed in the accent while `isPicked`. A click, Space or VoiceOver's press calls `onPick`; the host sets `isPicked` on every card of the group. VoiceOver reads a radio button.
 
 ## Step-by-step guides

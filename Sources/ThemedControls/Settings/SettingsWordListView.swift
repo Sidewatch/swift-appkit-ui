@@ -50,7 +50,7 @@ public final class SettingsWordListView: NSObject, NSTableViewDataSource, NSTabl
     private let columnID = NSUserInterfaceItemIdentifier("WordListItem")
 
     /// The list as displayed — sorted, and the only place a not-yet-committed new row exists.
-    private(set) var words: [String] = []
+    public private(set) var words: [String] = []
 
     /// The row editor in flight, if any. Held to tell a live edit from one that has already
     /// ended: the end-editing notification arrives for both.

@@ -28,7 +28,8 @@ public protocol SettingsPane: NSViewController {
 extension SettingsPane {
 
     /// Lays the pane out as grouped-form sections down the page: caption, card,
-    /// footnote, next section. Content is top-aligned and the page is a fixed
+    /// footnote, next section; a ``SettingsDefaultsRestoring`` page ends with its Restore
+    /// Defaults button. Content is top-aligned and the page is a fixed
     /// size, so a short pane leaves the rest of the window empty rather than
     /// stretching its rows apart.
     public func buildPane(_ sections: [SettingsSection]) {
@@ -59,8 +60,21 @@ extension SettingsPane {
             sections.topAnchor.constraint(equalTo: content.topAnchor, constant: SettingsMetrics.margin),
             sections.leadingAnchor.constraint(equalTo: content.leadingAnchor),
             sections.trailingAnchor.constraint(equalTo: content.trailingAnchor),
-            content.bottomAnchor.constraint(equalTo: sections.bottomAnchor, constant: SettingsMetrics.margin),
         ]
+        // A page that restores its defaults has the button under its last card, at the cards'
+        // trailing edge; the page ends a margin below whichever comes last.
+        var last: NSView = sections
+        if let restoring = self as? any SettingsDefaultsRestoring {
+            let restore = SettingsRestoreDefaultsButton(pane: restoring)
+            restore.translatesAutoresizingMaskIntoConstraints = false
+            content.addSubview(restore)
+            constraints += [
+                restore.topAnchor.constraint(equalTo: sections.bottomAnchor, constant: SettingsMetrics.sectionGap),
+                restore.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -SettingsMetrics.margin),
+            ]
+            last = restore
+        }
+        constraints.append(content.bottomAnchor.constraint(equalTo: last.bottomAnchor, constant: SettingsMetrics.margin))
         constraints += [
             content.widthAnchor.constraint(equalToConstant: SettingsMetrics.paneWidth),
             scroll.topAnchor.constraint(equalTo: view.topAnchor),
