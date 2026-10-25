@@ -28,6 +28,10 @@ public final class CompanionWindowController: NSWindowController, NSWindowDelega
 
     /// The view being hosted, until it is released.
     public private(set) var hostedView: NSView?
+    /// Whether the view arrived laid out by its frame. Pinning it here turns that off; ``release()``
+    /// turns it back on, or a split view or frame-driven host it returns to would be fighting
+    /// constraints that are no longer there.
+    private let hostedViewUsedFrames: Bool
 
     /// A titled, resizable window of at least `minSize` holding `view` edge to edge, at `frame` (a
     /// saved ``frameDescriptor``) when given, else `defaultFrame`. The window is not shown.
@@ -39,6 +43,7 @@ public final class CompanionWindowController: NSWindowController, NSWindowDelega
         window.contentMinSize = minSize
         window.tabbingMode = .disallowed
         if let frame { window.setFrame(from: frame) }
+        hostedViewUsedFrames = view.translatesAutoresizingMaskIntoConstraints
         super.init(window: window)
         window.delegate = self
         let content = NSView()
@@ -62,6 +67,7 @@ public final class CompanionWindowController: NSWindowController, NSWindowDelega
         guard let view = hostedView else { return nil }
         hostedView = nil
         view.removeFromSuperview()
+        view.translatesAutoresizingMaskIntoConstraints = hostedViewUsedFrames
         window?.delegate = nil
         window?.orderOut(nil)
         window?.close()

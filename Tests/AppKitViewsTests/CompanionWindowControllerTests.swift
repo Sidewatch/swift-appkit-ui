@@ -3,8 +3,8 @@
 //  AppKitViewsTests
 //
 //  `CompanionWindowController`: the view moves into the window and fills it, the red button asks
-//  the host instead of closing, release gives the same view back and closes the window, and a
-//  saved frame comes back.
+//  the host instead of closing, release gives the same view back (laid out as it came) and closes
+//  the window, and a saved frame comes back.
 //
 //  Created by David Sherlock on 10/24/26.
 //  Copyright © 2026 ArrayPress Limited. MIT licence.
@@ -65,6 +65,19 @@ final class CompanionWindowControllerTests: XCTestCase {
         XCTAssertFalse(wc.window?.isVisible ?? true)
         XCTAssertEqual(asked, 0, "release is the host's own close, not a request")
         XCTAssertNil(wc.release(), "nothing to release twice")
+    }
+
+    func testReleaseGivesTheViewBackLaidOutByItsFrameAsItCame() {
+        let panel = NSView()
+        XCTAssertTrue(panel.translatesAutoresizingMaskIntoConstraints)
+        let wc = companion(panel)
+        XCTAssertFalse(panel.translatesAutoresizingMaskIntoConstraints, "pinned in the window")
+        wc.release()
+        XCTAssertTrue(panel.translatesAutoresizingMaskIntoConstraints, "a split view takes it back by its frame")
+        let pinned = NSView()
+        pinned.translatesAutoresizingMaskIntoConstraints = false
+        companion(pinned).release()
+        XCTAssertFalse(pinned.translatesAutoresizingMaskIntoConstraints, "a view that came pinned goes back pinned")
     }
 
     func testASavedFrameComesBack() {
