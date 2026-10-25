@@ -47,6 +47,7 @@ bar.target = self; bar.action = #selector(filterChanged)
 - Accessibility: `ThemedSegmentBar` is a VoiceOver radio group whose segments press, and ← → move its selection under Full Keyboard Access; `ThemedSwitch` reads as a switch, toggles on Space, and snaps instead of sliding when `ThemedControls.reduceMotion` is on (the host mirrors System Settings ▸ Accessibility ▸ Reduce Motion into it).
 - `ThemedSwitch` — an on/off switch drawn from the palette (`NSSwitch` fills with the macOS accent and cannot be tinted): `state`, `target`/`action`, `isEnabled`, the stock footprint, click and Space, a 0.18 s slide, VoiceOver switch role.
 - `ThemedSearchField`, `ThemedInputField` — fields with a themed border and placeholder.
+- `ThemedStepperField` — a number with up and down arrows in `ThemedPopUpButton`'s box and height (24 pt at 13 pt): grouped (`formatter`), clamped to `minValue`…`maxValue`, stepped by `increment` from the arrow halves (repeating while held) or ↑/↓ while typing; typed junk puts the last value back; every change the person makes sends `action` to `target`.
 - `ThemedRowView`, `ThemedSelectionRowView`, `ThemedGroupRowView` — `NSTableRowView`s with the palette's selection and separators.
 - `ThemedTableHeaderView` + `ThemedTableHeaderCell` — a table header in the palette: band, bottom hairline,
   column divider, title and pressed state. Use BOTH — the view alone leaves the stock cell painting a system

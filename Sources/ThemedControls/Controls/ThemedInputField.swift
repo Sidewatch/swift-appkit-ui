@@ -45,7 +45,7 @@ private enum ThemedInputStyle {
 ///
 /// The slack is MEASURED, never a tuned constant: half of what `cellSize(forBounds:)` leaves over
 /// comes off each end, so the text centres at any font size or box height.
-private final class PaddedFieldCell: NSTextFieldCell {
+final class PaddedFieldCell: NSTextFieldCell {
     private static let dx: CGFloat = 6
 
     /// `rect` inset horizontally for padding and vertically so a single line sits centred.
