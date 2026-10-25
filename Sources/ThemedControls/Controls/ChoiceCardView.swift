@@ -68,6 +68,7 @@ public final class ChoiceCardView: NSView {
 
         setAccessibilityElement(true)
         setAccessibilityRole(.radioButton)
+        focusRingType = .none  // until the keyboard brings focus (`showsFocusRing`)
         setAccessibilityLabel(title)
         setAccessibilityHelp(detail)
         setAccessibilityValue(0)
@@ -113,6 +114,35 @@ public final class ChoiceCardView: NSView {
 
     public override var acceptsFirstResponder: Bool { true }
     public override var canBecomeKeyView: Bool { true }
+
+    /// Whether the focus ring shows: only for focus the keyboard brought (Tab), never for focus
+    /// a window or page swap handed over, whose ring beside another card's pick reads as two picks.
+    public private(set) var showsFocusRing = false {
+        didSet {
+            focusRingType = showsFocusRing ? .default : .none
+            noteFocusRingMaskChanged()
+        }
+    }
+
+    public override func becomeFirstResponder() -> Bool {
+        let became = super.becomeFirstResponder()
+        if became { showsFocusRing = Self.isKeyboardFocus(NSApp?.currentEvent) }
+        return became
+    }
+
+    public override func resignFirstResponder() -> Bool {
+        let resigned = super.resignFirstResponder()
+        if resigned { showsFocusRing = false }
+        return resigned
+    }
+
+    /// Whether `event` moved focus by keyboard: a key press (Tab, ⇧Tab).
+    static func isKeyboardFocus(_ event: NSEvent?) -> Bool { event?.type == .keyDown }
+
+    /// A click takes focus too, so focus never stays on one card while another is picked.
+    public override func mouseDown(with event: NSEvent) {
+        window?.makeFirstResponder(self)
+    }
 
     public override func keyDown(with event: NSEvent) {
         if event.charactersIgnoringModifiers == " " { pick() } else { super.keyDown(with: event) }

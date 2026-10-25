@@ -62,4 +62,28 @@ final class ChoiceCardViewTests: XCTestCase {
         view.isPicked = true
         XCTAssertEqual(view.accessibilityValue() as? Int, 1)
     }
+
+    func testFocusHandedOverShowsNoRingAndAClickTakesFocus() throws {
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 200), styleMask: [], backing: .buffered, defer: true)
+        let first = card(), second = card()
+        window.contentView?.addSubview(first)
+        window.contentView?.addSubview(second)
+        XCTAssertEqual(first.focusRingType, .none, "no ring before anything has focus")
+        XCTAssertTrue(window.makeFirstResponder(first))
+        XCTAssertFalse(first.showsFocusRing, "focus a window or a page swap hands over draws no ring")
+        XCTAssertEqual(first.focusRingType, .none)
+        let tab = try XCTUnwrap(
+            NSEvent.keyEvent(
+                with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+                characters: "\t", charactersIgnoringModifiers: "\t", isARepeat: false, keyCode: 48))
+        XCTAssertTrue(ChoiceCardView.isKeyboardFocus(tab), "Tab brings the ring")
+        XCTAssertFalse(ChoiceCardView.isKeyboardFocus(nil))
+        let down = try XCTUnwrap(
+            NSEvent.mouseEvent(
+                with: .leftMouseDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, eventNumber: 0,
+                clickCount: 1, pressure: 1))
+        XCTAssertFalse(ChoiceCardView.isKeyboardFocus(down), "a click brings focus but no ring")
+        second.mouseDown(with: down)
+        XCTAssertTrue(window.firstResponder === second, "a click moves focus to the card picked")
+    }
 }

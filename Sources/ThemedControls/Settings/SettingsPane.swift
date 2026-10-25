@@ -95,16 +95,7 @@ extension SettingsPane {
     /// Groups controls into one unit for a row's trailing edge — a value and its
     /// stepper read as one control, not two that happen to be adjacent.
     public func controlGroup(_ views: [NSView], spacing: CGFloat = 6) -> NSView {
-        // Explicit rather than relying on the stack view to clear the flag as it
-        // adopts each view: an autoresizing constraint that survives here is a
-        // silently broken row, not a build error.
-        views.forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
-        let stack = NSStackView(views: views)
-        stack.orientation = .horizontal
-        stack.alignment = .centerY
-        stack.spacing = spacing
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
+        NSStackView.settingsControlGroup(views, spacing: spacing)
     }
 
     /// Pins the pane's width (``SettingsMetrics/columnWidth``: the page and its scroller's
