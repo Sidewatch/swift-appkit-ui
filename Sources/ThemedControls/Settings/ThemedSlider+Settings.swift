@@ -18,7 +18,10 @@ public extension ThemedSlider {
     /// Sets the slider up as a Settings value slider: `min`…`max`, continuous (what it changes is its
     /// own preview), small, ``settingsWidth`` wide, with `ticks` marks below as a scale cue only —
     /// `allowsTickMarkValuesOnly` stays off, so every value between them is still reachable.
-    func configureAsSettingsValue(min: Double, max: Double, ticks: Int, target: AnyObject?, action: Selector) {
+    func configureAsSettingsValue(
+        min: Double, max: Double, default defaultValue: Double? = nil, ticks: Int, target: AnyObject?, action: Selector
+    ) {
+        self.defaultValue = defaultValue
         minValue = min
         maxValue = max
         isContinuous = true
