@@ -31,12 +31,16 @@ extension NSOutlineView {
     /// lands open and ready to read while a big one lands at whatever depth keeps it a map
     /// rather than a wall.
     ///
-    /// Two rules worth keeping. The FIRST level always opens, however large, because a tree
-    /// whose roots are closed says nothing at all. And a level opens whole or not at all, so the
-    /// depth is even rather than depending on which branch the walk reached first.
+    /// Three rules worth keeping. The FIRST level opens however much it adds, because a tree
+    /// whose few roots are closed says nothing at all — but only while the roots themselves fit
+    /// `rowLimit`: a hundred thousand roots (an INI file's sections, a JSON Lines file's records)
+    /// are already the map, and opening each of them, one `expandItem` at a time, cost AppKit a
+    /// row-array insert per row, 12 s for an 8 MB file. A level opens whole or not at all, so
+    /// the depth is even rather than depending on which branch the walk reached first.
     public func autoExpand(rowLimit: Int, maxDepth: Int = 32) {
         var level = 0
         while level < maxDepth {
+            if level == 0, numberOfRows > rowLimit { return }
             let closed = (0..<numberOfRows).compactMap { row -> Any? in
                 guard self.level(forRow: row) == level, let item = item(atRow: row),
                     isExpandable(item), !isItemExpanded(item)

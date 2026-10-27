@@ -41,11 +41,22 @@ import AppKit
         withExtendedLifetime(window) {}
     }
 
-    /// The first level opens however large, because a tree with closed roots says nothing.
-    func testAutoExpandAlwaysOpensTheFirstLevel() {
+    /// A few roots open however much they add, because a tree with closed roots says nothing.
+    func testAutoExpandOpensAFewRootsHoweverMuchTheyAdd() {
+        let (outline, _, _) = makeOutline(roots: TreeNode.uniform(breadth: 20, depth: 2))
+        outline.autoExpand(rowLimit: 25)
+        XCTAssertEqual(outline.numberOfRows, 20 + 400, "level 0 is exempt from the limit on what it adds")
+    }
+
+    /// More roots than the limit are already the map: none opens (each would be a separate expansion, quadratic in
+    /// AppKit's row array).
+    func testAutoExpandLeavesMoreRootsThanTheLimitClosed() {
         let (outline, _, _) = makeOutline(roots: TreeNode.uniform(breadth: 20, depth: 2))
         outline.autoExpand(rowLimit: 5)
-        XCTAssertEqual(outline.numberOfRows, 20 + 400, "level 0 is exempt from the limit")
+        XCTAssertEqual(outline.numberOfRows, 20)
+        let (single, _, _) = makeOutline(roots: [TreeNode("root", TreeNode.uniform(breadth: 30, depth: 1))])
+        single.autoExpand(rowLimit: 5)
+        XCTAssertEqual(single.numberOfRows, 31, "one root still opens, however many children it has")
     }
 
     /// A level opens whole or not at all, so the depth is even.

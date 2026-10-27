@@ -109,3 +109,12 @@ the same app. 73 tests now.
 - 27 Sep 2026 — the one-call helpers above arrived from the Sidewatch app and swift-themed-controls
   (which now depends on this package); 14 tests, eight mutants each failing its own test.
 - 20 Oct 2026 — `CardGridView` and its tests removed: its only caller, Sidewatch's Usage dashboard, was removed. `ThemedSecureInputField` (ThemedControls) went the same way with the dashboard's Settings section.
+- 27 Oct 2026 — `LargeTextView` (+Drawing, +Selection, +Find), `LargeTextLayout`, `LargeTextSource`, `LargeTextStyle`,
+  `LargeTextPosition`: a read-only text of any size, only the screen read and drawn. Matches come from `matchFinder`
+  per line as it draws, asked only for what a line shows (a 100 MB line costs a screen's width); `goToLine`, not
+  `selectLine`, which is NSResponder's own action and won a call from another module (a crash, caught by Sidewatch's
+  `--selftest-large-files`). 21 mutants on the view and the layout, all caught.
+- 27 Oct 2026 — `autoExpand` opens the first level only while its roots fit the row limit. An INI file's 108,000
+  sections or a JSON Lines file's 107,000 records were each expanded on their own, a row-array insert per row: 12 s
+  for an 8 MB file in Sidewatch, 1.9 s after (most of it the reader). Two mutants (the old rule; the first level held
+  to the limit on what it adds), both caught.

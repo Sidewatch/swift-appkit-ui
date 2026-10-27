@@ -113,6 +113,27 @@ view.captions = ("HEAD · 64×64 · 4 KB", "Working tree · 64×64 · 3 KB")
 view.mode = .swipe
 ```
 
+### Text of any size
+
+`LargeTextView` shows a read-only text of any size: it reads only the lines on screen from a `LargeTextSource` (a
+protocol over line ranges and bytes, so the view holds no text of its own) and draws them with Core Text in one
+monospaced font. It scrolls by line, not by point, with its own scrollers (`LargeTextLayout` is the arithmetic), and a
+line too long to decode whole is read only as far as the screen shows it. A gutter numbers the lines; the mouse and
+the keyboard select; ⌘C copies up to `copyLimit` and says when a selection is larger. A search marks what it finds by
+answering `matchFinder` for each line as it draws, so it never has to hold every match, and moves with `showMatch(_:)`;
+`selectionBytes` is where the next search starts. A source still finding its lines, or growing, calls
+`sourceDidGrow()`, and a view resting at the last line follows it down.
+
+```swift
+let view = LargeTextView()
+view.style = LargeTextStyle(font: font, text: fg, background: bg, lineNumbers: muted, gutter: bg,
+    selection: sel, match: mark, currentMatch: current)
+view.source = file                       // a LargeTextSource
+view.matchFinder = { bytes in matches(in: bytes) }
+view.showMatch(found)                    // revealed, selected, the current one
+view.goToLine(41)                        // 0-based, selected, in the middle
+```
+
 ### Tooltips
 
 `LateToolTip` covers a view's bounds with a tooltip whose words are asked for only when AppKit is
