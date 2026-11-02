@@ -3,7 +3,8 @@
 //  ThemedControlsTests
 //
 //  The empty state's actions: a primary button and any number of secondary ones beneath it,
-//  each click reaching its own handler, and a later state hiding what it does not name.
+//  each click reaching its own handler, and a later state hiding what it does not name; and
+//  how it covers a split view's pane.
 //
 //  Copyright © 2026 ArrayPress Limited. MIT licence.
 //
@@ -29,6 +30,40 @@ final class EmptyStateViewTests: XCTestCase {
             state.centerYAnchor.constraint(equalTo: w.contentView!.centerYAnchor),
         ])
         return w
+    }
+
+    /// A state over a split view's pane covers the pane without becoming a pane: the split keeps its two panes,
+    /// and the state sits centred over the one it was installed over.
+    func testAStateOverASplitPaneCoversItWithoutBecomingAPane() {
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 600), styleMask: [.titled], backing: .buffered, defer: false)
+        let split = NSSplitView()
+        split.isVertical = false
+        let top = NSView(), bottom = NSView()
+        split.addArrangedSubview(top)
+        split.addArrangedSubview(bottom)
+        split.setHoldingPriority(.defaultLow - 1, forSubviewAt: 0)
+        split.setHoldingPriority(.defaultLow + 1, forSubviewAt: 1)
+        split.translatesAutoresizingMaskIntoConstraints = false
+        window.contentView!.addSubview(split)
+        NSLayoutConstraint.activate([
+            split.topAnchor.constraint(equalTo: window.contentView!.topAnchor),
+            split.bottomAnchor.constraint(equalTo: window.contentView!.bottomAnchor),
+            split.leadingAnchor.constraint(equalTo: window.contentView!.leadingAnchor),
+            split.trailingAnchor.constraint(equalTo: window.contentView!.trailingAnchor),
+            bottom.heightAnchor.constraint(greaterThanOrEqualToConstant: 100),
+        ])
+        let state = EmptyStateView(symbol: "folder", title: "Reading…", subtitle: "")
+        state.install(over: top)
+        state.isHidden = false
+        window.contentView!.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(split.arrangedSubviews, [top, bottom])
+        XCTAssertFalse(split.subviews.contains(state))
+        let pane = top.convert(top.bounds, to: nil)
+        let cover = state.convert(state.bounds, to: nil)
+        XCTAssertEqual(cover.midY, pane.midY, accuracy: 1)
+        XCTAssertGreaterThan(pane.height, 300, "the pane keeps the room its holding priority gives it")
     }
 
     func testEverySecondaryActionShowsInOrderAndReachesItsOwnHandler() {
