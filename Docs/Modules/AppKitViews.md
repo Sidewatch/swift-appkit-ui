@@ -23,6 +23,11 @@ it is — a tree whose roots are closed says nothing. Both sweeps batch their up
 row animation: walking row by row re-sets the outline's row map per call, which is quadratic and
 measured as a visible stall on a 22,000-row document.
 
+`RecyclingOutlineView.leafIconCentre` stands a leaf row's icon in the chevron column, for a tree that draws no
+folder icons: set it to where the icon is centred in its cell and a row that cannot expand starts its cell (in the
+outline column only) far enough left that the icon sits centred where a folder's chevron does at that level, so the
+names at a level line up. `chevronCentreBeforeCell` is AppKit's chevron position, measured (6.5 pt).
+
 `ExpandableTree` is the protocol a host adopts so one Expand All / Collapse All command can act on
 whichever tree is in front without knowing what any of them are showing.
 
@@ -81,6 +86,23 @@ Every outline is a `RecyclingOutlineView`. A plain `NSOutlineView` builds a new 
 for each expandable row it places after a reload and keeps the old ones: 200 reloads of a tree with
 8 expandable rows left 1,608 buttons alive. The subclass answers AppKit's request for a button with
 one it handed out before that is no longer in a row (16 built for the same run).
+
+### Split views with a pane that hides
+
+```swift
+let region = HiddenPaneSplitView()
+region.dividerStyle = .thin
+region.addSubview(editor)
+region.addSubview(terminal)
+terminal.isHidden = true
+region.adjustSubviews()      // the editor takes the room, and no line is left
+```
+
+NSSplitView collapses a hidden pane but keeps its divider. A thin divider is a layer of its own that
+moves only when the split view lays out, so after `adjustSubviews()` it stays where the pane's edge
+was, a line across the pane that took the room; laid out, it parks at the near edge, inside the
+visible pane, when the hidden pane is the first. `HiddenPaneSplitView` gives the divider no thickness
+while any pane is hidden and lays itself out after every adjustment.
 
 ### Images
 

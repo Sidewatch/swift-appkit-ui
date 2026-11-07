@@ -26,6 +26,28 @@ open class RecyclingOutlineView: NSOutlineView {
     /// How many outline buttons this outline has built; for a test.
     var outlineButtonsBuilt: Int { outlineButtons.count }
 
+    /// Where a leaf row's icon is centred, from its cell's leading edge, to stand that icon in the
+    /// disclosure column: set, a row that cannot expand starts its cell (in the outline column only) far
+    /// enough left that the icon sits centred where a folder's chevron does at that level, so every name
+    /// at a level starts at one x, as a tree without folder icons wants. Nil, cells sit where AppKit
+    /// puts them. The host reloads after changing it.
+    open var leafIconCentre: CGFloat?
+
+    /// How far before a cell's leading edge AppKit centres the disclosure chevron of an outline row,
+    /// measured on macOS 26 and 27 (`RecyclingOutlineViewTests` measures it again).
+    public static let chevronCentreBeforeCell: CGFloat = 6.5
+
+    open override func frameOfCell(atColumn column: Int, row: Int) -> NSRect {
+        var frame = super.frameOfCell(atColumn: column, row: row)
+        guard let centre = leafIconCentre, let outlineTableColumn, tableColumns.indices.contains(column),
+            tableColumns[column] === outlineTableColumn, let item = item(atRow: row), !isExpandable(item)
+        else { return frame }
+        let pull = centre + Self.chevronCentreBeforeCell
+        frame.origin.x -= pull
+        frame.size.width += pull
+        return frame
+    }
+
     open override func makeView(withIdentifier identifier: NSUserInterfaceItemIdentifier, owner: Any?) -> NSView? {
         guard identifier == NSOutlineView.disclosureButtonIdentifier || identifier == NSOutlineView.showHideButtonIdentifier
         else { return super.makeView(withIdentifier: identifier, owner: owner) }
