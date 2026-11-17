@@ -118,3 +118,4 @@ the same app. 73 tests now.
   sections or a JSON Lines file's 107,000 records were each expanded on their own, a row-array insert per row: 12 s
   for an 8 MB file in Sidewatch, 1.9 s after (most of it the reader). Two mutants (the old rule; the first level held
   to the limit on what it adds), both caught.
+- 18 Nov 2026 — `NSImage.sharedSymbol(_:)`: one shared image per SF Symbol name. `NSImage(systemSymbolName:)` builds a new image on every call (40 µs of CPU each, measured), which was most of the app's own share of reloading a list of file rows. `SharedSymbolTests` (two), failing without the cache.
